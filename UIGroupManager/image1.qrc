@@ -1,0 +1,19 @@
+<RCC>
+    <qresource prefix="/GroupManager">
+        <file>image1/search_horver.png</file>
+        <file>image1/search.png</file>
+        <file>image1/checkbox_checked.png</file>
+        <file>image1/checkbox_unchecked.png</file>
+        <file>image1/delete_horver.png</file>
+        <file>image1/delete_normal.png</file>
+        <file>image1/structure.png</file>
+        <file>image1/open.png</file>
+        <file>image1/close.png</file>
+        <file>image1/groupList.png</file>
+        <file>image1/friendList.png</file>
+        <file>image1/Recent.png</file>
+        <file>image1/star.png</file>
+        <file>image1/collapse.png</file>
+        <file>image1/extend.png</file>
+    </qresource>
+</RCC>

@@ -1,0 +1,222 @@
+﻿QLabel {
+    font-size:14px;
+    font-weight:400;
+    color:rgba(102,102,102,0.5);
+    line-height:14px;
+}
+
+QLabel#NavigationItemLabel {
+    font-size:15px;
+    font-weight:400;
+    color:rgba(51,51,51,1);
+    line-height:15px;
+}
+
+QLabel#UserCard_NameLabel {
+    font-size:20px;
+    font-weight:400;
+    color:rgba(29, 56, 90, 1);
+    line-height:16px;
+}
+
+QLabel#DepartmentEdit {
+    font-weight: 400;
+    color: rgba(51,51,51,1);
+    line-height: 14px;
+}
+
+QLineEdit {
+    background:transparent;
+    border-width:0;
+    border-style:outset;
+}
+
+QTextEdit#UserCard_UserMood {
+    font-size:14px;
+    font-weight:400;
+    color:rgba(153,153,153,1);
+    line-height:14px;
+}
+
+QFrame#UserCard_TopFrame {
+    background:rgba(255,255,255,1);
+    border-bottom: 1px solid #eee;
+}
+
+QFrame#UserCard_BottomFrame {
+    background:rgba(255,255,255,1);
+}
+
+QFrame#UserCard_titleFrame {
+    background:rgba(255,255,255,1);
+    border-bottom: 1px solid #eee;
+}
+
+QPushButton#UserCard_SendMessage
+, #Staff_CreatGroupBtn
+, #CreatGroupYesBtn
+{
+    background:#00C3BC;
+    color:#FFFFFF;
+    border: 5px solid #00C3BC;
+    border-radius:5px;
+}
+
+QPushButton:hover#UserCard_SendMessage
+, #Staff_CreatGroupBtn:hover
+, #CreatGroupYesBtn:hover
+{
+    background:#00A6A0;
+    color:#FFFFFF;
+    border: 5px solid #00A6A0;
+    border-radius:5px;
+}
+
+QPushButton#CreatGroupNoBtn
+{
+    background: rgba(255, 255, 255, 1);
+    color:rgba(102, 102, 102, 1);
+    padding: 4px;
+    border: 1px solid rgba(181, 181, 181, 0.5);
+    border-radius:5px;
+}
+
+QPushButton:hover#CreatGroupNoBtn:hover
+{
+    background: rgba(211, 249, 248, 1);
+    color:rgba(0, 202, 190, 1);
+    padding: 4px;
+    border: 1px solid rgba(211, 249, 248, 1);
+    border-radius:5px;
+}
+
+QPushButton:disabled#Staff_CreatGroupBtn
+{
+    background: rgba(220,220,220,1);
+    color: rgba(105,105,105,1);
+    border: 5px solid rgba(220,220,220,1);
+    border-radius:5px;
+}
+
+QPushButton#UserCard_SendMail {
+    border-image:url(:/addressbook/image1/SendMail_normal.png);
+}
+QPushButton#UserCard_SendCard {
+    border-image:url(:/addressbook/image1/SendCard_Normal.png);
+}
+QPushButton#UserCard_AddFriend {
+    border-image:url(:/addressbook/image1/AddFriend_normal.png);
+}
+QPushButton#UserCard_Star {
+    border-image:url(:/addressbook/image1/Star_normal.png);
+}
+QPushButton#btn_More {
+    border-image:url(:/addressbook/image1/More_normal.png);
+}
+
+QPushButton:hover#UserCard_SendMail {
+    border-image:url(:/addressbook/image1/SendMail_hover.png);
+}
+QPushButton:hover#UserCard_SendCard {
+    border-image:url(:/addressbook/image1/SendCard_hover.png);
+}
+QPushButton:hover#UserCard_AddFriend {
+    border-image:url(:/addressbook/image1/AddFriend_hover.png);
+}
+QPushButton:hover#UserCard_Star {
+    border-image:url(:/addressbook/image1/Star_hover.png);
+}
+QPushButton:hover#btn_More {
+    border-image:url(:/addressbook/image1/More_hover.png);
+}
+
+QPushButton:checked#UserCard_Star {
+    border-image:url(:/addressbook/image1/Star_hover.png);
+}
+
+QTreeView {
+    padding-left: 30px;
+    background: white;
+}
+
+QTreeView::item {
+    background: white;
+}
+
+QTreeView::item:hover {
+    background:rgba(242,242,242,1);
+}
+
+QTreeView::item:selected {
+    color: #333;
+    background:rgba(242,242,242,1);
+}
+
+QTreeView::branch:selected
+{
+    background:rgba(242,242,242,1);
+}
+
+QTreeView::branch:has-children:!has-siblings:closed,
+QTreeView::branch:closed:has-children:has-siblings {
+    border-image: none;
+    image:url(:/GroupManager/image1/close.png);
+}
+
+QTreeView::branch:open:has-children:!has-siblings,
+QTreeView::branch:open:has-children:has-siblings {
+    border-image: none;
+    image: url(:/GroupManager/image1/open.png);
+}
+
+QLabel#Staff_ParentLabel {
+    font-size:16px;
+    font-weight:500;
+    color:rgba(0,195,188,1);
+    line-height:14px;
+}
+
+QLabel#Staff_CurrentLabel {
+    font-size:20px;
+    font-weight:400;
+    color:rgba(40,55,85,1);
+    line-height:16px;
+}
+
+QLabel#Staff_CountLabel {
+    font-size:14px;
+    font-weight:400;
+    color:rgba(153,153,153,1);
+    line-height:14px;
+}
+
+QLabel#CreatGroupTitle {
+    font-size:16px;
+    color:rgba(51,51,51,1);
+    line-height:16px;
+}
+
+QLineEdit#CreatGroupName {
+    background:transparent;
+    border:2px solid rgba(221, 221, 221, 1);
+    border-radius: 4px;
+}
+
+QFrame#CreatGroupTitleFrm
+{
+    background:rgba(249, 249, 248, 1);
+    border-style: solid;
+}
+
+QLabel#CreatGroupWarning {
+    font-size: 13px;
+    color: red;
+}
+
+QFrame#mainFrm {
+    background:#fff;
+    border-bottom-left-radius:6px;
+    border-bottom-right-radius:6px;
+    border-top-left-radius:6px;
+    border-top-right-radius:6px;
+}

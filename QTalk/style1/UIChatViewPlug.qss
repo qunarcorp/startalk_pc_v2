@@ -1,0 +1,925 @@
+﻿
+QFrame#StatusWgt,
+QFrame#ToolWgt
+{
+    background:rgba(255,255,255,1);
+
+}
+
+QListWidget#ChatMainWgt {
+    background-color: rgb(255, 255, 255);
+    color: rgb(51,51,51);
+    outline: 0px;
+}
+
+QListWidget {
+    background-color: rgb(255, 255, 255);
+    color: rgb(51,51,51);
+    outline: 0px;
+}
+
+QListView:item:selected {
+    background-color: rgba(255, 255, 255,1);
+    color: #FF333333;
+}
+
+/**
+QListWidget#ChatMainWgt::Item {
+    background-color: rgb(255, 255, 255);
+}
+
+QListWidget#ChatMainWgt::Item:pressed {
+    background-color: rgb(255, 255, 255);
+}**/
+
+QListWidget#ChatMainWgt::item:selected {
+    background-color: rgb(249, 249, 249);
+    border: 1px solid rgb(249, 249, 249);
+}
+
+QListWidget#ChatMainWgt::item:selected:!active {
+    border: 1px solid rgb(249, 249, 249);
+    background-color: rgb(249, 249, 249);
+}
+
+QPushButton#Emoticon
+{
+	border-image:url(:/chatview/image1/toolBar/Emoticon_normal.png);
+}
+
+QPushButton#Emoticon:hover
+{
+	border-image:url(:/chatview/image1/toolBar/Emoticon_hover.png);
+}
+
+QPushButton#Screenshot
+{
+	border-image:url(:/chatview/image1/toolBar/Screenshot_normal.png);
+}
+
+QPushButton#Screenshot:hover{
+border-image:url(:/chatview/image1/toolBar/Screenshot_hover.png);
+}
+
+QPushButton#ScreenshotSet {
+    border-image: url(:/chatview/image1/toolBar/ScreenshotSet_normal.png);
+}
+
+QPushButton#ScreenshotSet:hover {
+    border-image: url(:/chatview/image1/toolBar/ScreenshotSet_hover.png);
+}
+
+QPushButton#Shock {
+    border-image: url(:/chatview/image1/toolBar/Shock_normal.png);
+}
+                                                            
+QPushButton#Shock:hover{
+	border-image:url(:/chatview/image1/toolBar/Shock_hover.png);
+}
+
+QPushButton#File
+{
+	border-image:url(:/chatview/image1/toolBar/File_normal.png);
+}
+
+QPushButton#File:hover{
+	border-image:url(:/chatview/image1/toolBar/File_hover.png);
+}
+
+QPushButton#Video
+{
+	border-image:url(:/chatview/image1/toolBar/Video_normal.png);
+}
+
+QPushButton#Video:hover{
+	border-image:url(:/chatview/image1/toolBar/Video_hover.png);
+}
+
+QPushButton#CodeBtn
+{
+	border-image:url(:/chatview/image1/toolBar/code_normal.png);
+}
+
+QPushButton#CodeBtn:hover{
+	border-image:url(:/chatview/image1/toolBar/code_hover.png);
+}
+
+QPushButton#CloseServer
+{
+	border-image:url(:/chatview/image1/toolBar/close_server_normal.png);
+}
+
+QPushButton#CloseServer:hover{
+	border-image:url(:/chatview/image1/toolBar/close_server_hover.png);
+}
+
+QPushButton#Transfer
+{
+	border-image:url(:/chatview/image1/toolBar/transfer_normal.png);
+}
+
+QPushButton#Transfer:hover{
+	border-image:url(:/chatview/image1/toolBar/transfer_hover.png);
+}
+
+QPushButton#QuickReply
+{
+	border-image:url(:/chatview/image1/toolBar/quick_reply_normal.png);
+}
+
+QPushButton#QuickReply:hover{
+	border-image:url(:/chatview/image1/toolBar/quick_reply_hover.png);
+}
+
+QPushButton#History
+{
+	border-image:url(:/chatview/image1/toolBar/History_normal.png);
+}
+
+QPushButton#History:hover{
+	border-image:url(:/chatview/image1/toolBar/History_hover.png);
+}
+
+QPushButton#Multifunction
+{
+	border-image:url(:/chatview/image1/toolBar/multifunction_normal.png);
+}
+
+QPushButton#Multifunction:hover
+{
+	border-image:url(:/chatview/image1/toolBar/multifunction_hover.png);
+}
+
+QPushButton#Structure
+{
+	border-image:url(:/chatview/image1/StatusBar/Structure_normal.png);
+}
+
+QPushButton#Structure:hover
+{
+	border-image:url(:/chatview/image1/StatusBar/Structure_hover.png);
+}
+
+QPushButton#AddGroup
+{
+	border-image:url(:/chatview/image1/StatusBar/AddGroup_normal.png);
+}
+
+QPushButton#AddGroup:hover
+{
+	border-image:url(:/chatview/image1/StatusBar/AddGroup_hover.png);
+}
+
+QPushButton#Lock
+{
+	border-image:url(:/chatview/image1/StatusBar/Lock_normal.png);
+}
+
+QPushButton#Lock:hover
+{
+	border-image:url(:/chatview/image1/StatusBar/Lock_hover.png);
+}
+
+QFrame#StatusWgt {
+    border-width: 0px 0px 1px 0px;
+    border-style: solid;
+    border-color: rgba(238,238,238,1);
+}
+
+QLabel#ChatUser
+{
+	font-size: 16px;
+	color: #333333;
+	font-weight: 500;
+}
+
+QFrame#GroupChatSidebar {
+    border-width: 0px 0px 0px 1px;
+    border-style: solid;
+    border-color: rgba(238,238,238,1);
+    background-color: rgba(248,248,248,1);
+}
+
+QListView#GroupMember {
+    background-color: rgba(248,248,248,1);
+    border-width: 1px 0px 0px 0px;
+    border-style: solid;
+    border-color: rgba(238,238,238,1);
+}
+
+QFrame#GroupTopic {
+    background-color: rgba(248,248,248,1);
+}
+
+QPushButton#BtnShowMore {
+    border-image: url(:/chatview/image1/StatusBar/Lock_hover.png);
+}
+
+QLineEdit[text=""]{ color: #bfbfbf; }
+
+QLineEdit {
+    color: rgba(51,51,51,1);
+    font-weight: 400;
+}
+
+QTextEdit#TopicEdit {
+    background-color: rgba(248,248,248,1);
+    font-size: 12px;
+    color: rgba(191,191,191,1);
+    font-weight: 400;
+}
+
+QLabel#GroupTopicTitle {
+    font-size: 13px;
+    color: rgba(102,102,102,1);
+    font-weight: 500;
+}
+
+QPushButton#GroupMemberSerchBtn {
+    border-image: url(:/chatview/image1/GroupChatSidebar/search.png);
+}
+
+QPushButton#GroupMemberSerchBtn:pressed {
+    border-image: url(:/chatview/image1/GroupChatSidebar/search_horver.png);
+}
+
+QPushButton#GroupMemberSerchBtn:pressed {
+    border-image: url(:/chatview/image1/GroupChatSidebar/search_horver.png);
+}
+
+QLineEdit#GroupMemberSearchLineEdit {
+    background: transparent;
+    border-width: 0;
+    border-style: outset;
+    color: #FF666666;
+    font-size: 13px;
+}
+
+QLineEdit#GroupMemberSearchLineEdit:focus {
+    border-radius:2px;
+    border: 1px solid rgba(0, 202, 190, 1);
+}
+
+QListView#GroupMemberListWgt {
+    background-color: rgba(248,248,248,1);
+    color: #FF333333;
+    outline: 0px;
+}
+
+QListView#GroupMemberListWgt::Item {
+    background-color: rgba(248,248,248,1);
+}
+
+QListView#GroupMemberListWgt::Item:pressed {
+    background-color: rgba(248,248,248,1);
+}
+
+QListView#GroupMemberListWgt::item:selected {
+    background-color: rgba(248,248,248,1);
+    color: #FF333333;
+    border: 1px solid rgba(248,248,248,1);
+}
+
+QListView#GroupMemberListWgt::item:selected:!active {
+    border: 1px solid rgba(248,248,248,1);
+    background-color: rgba(248,248,248,1);
+    color: #FF333333;
+}
+
+QLabel#GroupMemberNameLabel {
+    font-size: 13px;
+    font-weight: 400;
+    color: rgba(51,51,51,1);
+    line-height: 13px;
+}
+
+
+/**
+ * @brief 下面是消息气泡样式
+ * @author cyz
+ * @date 2018.10.19
+ */
+QLabel#chatitemnameLab{
+	font-size: 12px;
+    font-weight: 500;
+	color: rgba(153,153,153,1);
+}
+
+/**
+ * @brief 接收内容面板
+ * @author cyz
+ * @date 2018.10.19
+ */
+QFrame#messSendContentFrm{
+	background:#CDF3F1;
+	border-width: 0px;
+	border-style: solid;
+	border-color: rgba(218,241,240,1);
+	border-top-left-radius:4px;
+    border-top-right-radius:0px;
+    border-bottom-right-radius:4px;
+    border-bottom-left-radius:4px;
+}
+
+/**
+ * @brief 文件气泡发送内容底部面板
+ * @author cyz
+ * @date 2018.10.19
+ */
+QFrame#messSendContentBottomFrm{
+	background:rgba(255,255,255,1);
+	border-width: 1px;
+	border-style: solid;
+	border-color: rgba(218,241,240,1);
+	border-top-left-radius:0px;
+    border-top-right-radius:0px;
+    border-bottom-right-radius:4px;
+    border-bottom-left-radius:4px;
+}
+
+QFrame#messReceiveContentFrm{
+	background:#F2F2F2;
+	border-width: 0px;
+	border-style: solid;
+	border-color: rgba(242,242,242,1);
+	border-top-left-radius:0px;
+    border-top-right-radius:4px;
+    border-bottom-right-radius:4px;
+    border-bottom-left-radius:4px;
+}
+
+/*
+QFrame#messReceiveContentTopFrm{
+	background:rgba(218,241,240,1);
+	border-width: 0px;
+	border-style: solid;
+	border-color: rgba(218,241,240,1);
+	border-top-left-radius:4px;
+    border-top-right-radius:0px;
+    border-bottom-right-radius:4px;
+    border-bottom-left-radius:4px;
+}
+*/
+/**
+ * @brief 文件气泡接收内容底部面板
+ * @author cyz
+ * @date 2018.10.19
+ */
+QFrame#messReceiveContentBottomFrm{
+	background:rgba(255,255,255,1);
+	border-width: 1px;
+	border-style: solid;
+	border-color: rgba(242,242,242,1);
+	border-top-left-radius:0px;
+    border-top-right-radius:0px;
+    border-bottom-right-radius:4px;
+    border-bottom-left-radius:4px;
+}
+
+/**
+ * @brief 以下是文件气泡文本样式
+ * @author cyz
+ * @date 2018.10.19
+ */
+QLabel#contentTopFrmFileNameLab{
+	font-size: 14px;
+    font-weight: 400;
+	color: rgba(51,51,51,1);
+}
+QLabel#contentTopFrmFileSizeLab{
+	font-size: 12px;
+    font-weight: 400;
+	color: rgba(191,191,191,1);
+}
+
+QLabel#contentButtomFrmMessLab{
+	font-size: 12px;
+    font-weight: 400;
+	color: rgba(191,191,191,1);
+}
+
+QPushButton#contentButtomFrmDownLoadBtn, QToolButton#FileItemWgt_downloadBtn {
+    border-image: url(:/chatview/image1/messageItem/FileItemDownLoadBtn_1.png);
+}
+
+QPushButton#contentButtomFrmDownLoadBtn:hover, QToolButton#FileItemWgt_downloadBtn:hover {
+    border-image: url(:/chatview/image1/messageItem/FileItemDownLoadBtn_hover_1.png);
+}
+
+QToolButton#contentButtomFrmMenuBtn, QToolButton#FileItemWgt_moreBtn {
+    border-image: url(:/chatview/image1/messageItem/FileItemMenuBtn_1.png);
+}
+
+QToolButton#contentButtomFrmMenuBtn:hover, QToolButton#FileItemWgt_moreBtn:hover {
+    border-image: url(:/chatview/image1/messageItem/FileItemMenuBtn_hover_1.png);
+}
+
+QPushButton#contentButtomFrmOPenFileBtn, QToolButton#FileItemWgt_openPathBtn {
+    border-image: url(:/chatview/image1/messageItem/FileItemOPenFileBtn_1.png);
+}
+
+QPushButton#contentButtomFrmOPenFileBtn:hover, QToolButton#FileItemWgt_openPathBtn:hover {
+    border-image: url(:/chatview/image1/messageItem/FileItemOPenFileBtn_hover_1.png);
+}
+
+QLabel#TipLabel{
+    font-size:12px;
+    font-weight:400;
+    color:rgba(181,181,181,1);
+    line-height:14px;
+}
+
+QLabel#ReadStateLabel {
+    font-size: 10px;
+    font-weight:400;
+    color:rgba(0,195,188,1);
+}
+
+QFrame#AtMessageView {
+    background: transparent;
+    border-radius:4px;
+}
+
+QListView#AtMessageViewListView {
+    padding: 6px;
+    border-radius:4px;
+}
+
+QLabel#MessagePromptName {
+    font-size:14px;
+    font-weight:500;
+    color:rgba(51,51,51,1);
+}
+
+QLabel#MessagePromptContent {
+    font-size:11px;
+    font-weight:400;
+    color:rgba(102,102,102,1);
+}
+
+QTextBrowser {
+	selection-color: #fff;
+    selection-background-color: #6CA6CD;
+}
+
+QFrame#NewMessageTip {
+    background:rgba(255,255,255,1);
+    border-radius:4px;
+    border:1px solid rgba(181,181,181,1);
+}
+
+QFrame#AtMessageTip {
+    border:1px solid rgba(228,228,228,1);
+    background:rgba(255,255,255,1);
+	border-top-left-radius:6px;
+    border-top-right-radius:0px;
+    border-bottom-right-radius:0px;
+    border-bottom-left-radius:6px;
+}
+
+QLabel#NewMessageTipLabel {
+    font-size:12px;
+    color:rgba(0,202,190,1);
+    line-height:12px;
+}
+
+QLabel#AtMessageTipNameLabel {
+    color:rgba(51,51,51,1);
+    font-size:14px;
+}
+
+QLabel#AtMessageTipAtLabel {
+    font-size:14px;
+    color: rgba(255, 0, 0, 1)
+}
+
+QFrame#AtViewMainFrm {
+    background:rgba(255,255,255,1);
+    padding: 6px;
+    border-style: solid;
+    border-color: white;
+    border-top-left-radius:6px;
+    border-top-right-radius:6px;
+    border-bottom-right-radius:6px;
+    border-bottom-left-radius:6px;
+}
+
+QFrame#MainFrm
+{
+    background:rgba(255,255,255,1);
+    border-bottom-right-radius:6px;
+    border-bottom-left-radius:6px;
+}
+
+QFrame#CodeShell, #SearchMainWgt {
+    background:rgba(255,255,255,1);
+    border-top-left-radius:6px;
+    border-top-right-radius:6px;
+    border-bottom-right-radius:6px;
+    border-bottom-left-radius:6px;
+}
+
+QFrame#titleFrm {
+    background:rgba(249,249,248,1);
+    border-top-left-radius:6px;
+    border-top-right-radius:6px;
+}
+
+QLabel#TitleLabel {
+    font-size:16px;
+    font-weight:500;
+    color:rgba(51,51,51,1);
+    line-height:16px;
+}
+
+QComboBox {
+    width:180px;
+    height:30px;
+    background:rgba(255,255,255,1);
+    border-radius:6px;
+    border:1px solid rgba(181,181,181,1);
+}
+
+QComboBox::drop-down{
+    background-color:#fff;
+    image:url(:/chatview/image1/arrow_sortdown_smal.png);
+    margin-top: 5px;
+    border-radius:2px;
+}
+
+QToolButton#CloseBtn {
+
+    border-image: url(:/chatview/image1/closeBtn_normal.png);
+}
+QToolButton#CloseBtn:hover {
+    border-image: url(:/chatview/image1/closeBtn_hover.png);
+}
+QToolButton#macCloseBtn {
+    border-image: url(":/chatview/image1/mac_close.png");
+}
+QToolButton#macCloseBtn:hover {
+    border-image: url(":/chatview/image1/mac_close_hover.png");
+}
+
+QPushButton#cancelBtn {
+    width:72px;
+    height:32px;
+   background:rgba(255,255,255,1);
+   border-radius:2px;
+   border:1px solid rgba(217,217,217,1);
+   font-size:14px;
+   font-weight:400;
+   color:rgba(102,102,102,1);
+   line-height:20px;
+}
+
+QPushButton#cancelBtn:hover {
+   background:rgba(217, 217, 217, 1);
+}
+
+QPushButton#sendBtn {
+    width:72px;
+    height:32px;
+    background:rgba(0,202,190,0.8);
+    border-radius:2px;
+    font-size:14px;
+    font-weight:400;
+    color:rgba(255,255,255,1);
+    line-height:20px;
+}
+
+QPushButton#sendBtn:hover {
+    background:rgba(0,202,190,1);
+}
+
+QFrame#CodeLeftFrm {
+    background:rgba(255,255,255,1);
+}
+
+QFrame#CodeRightFrm {
+    background:rgba(255,255,255,1);
+}
+
+QLabel#CodeTitle {
+    font-size:14px;
+    font-weight:400;
+    color:rgba(51,51,51,1);
+    line-height:14px;
+}
+
+QLabel#CodeContent {
+    font-size:12px;
+    font-weight:500;
+    color:rgba(191,191,191,1);
+    line-height:18px;
+}
+
+QLabel#CodeBottomLab {
+    font-size:14px;
+    font-weight:500;
+    color:rgba(153,153,153,1);
+    line-height:14px;
+}
+
+QWebEngineView#CodeWebView
+{
+	background:rgba(239, 236, 242, 1);
+	border: 2px solid rgba(239, 236, 243, 1);
+}
+
+
+QPushButton#SendMessageBtn
+{
+	border-radius:2px;
+	border:1px solid rgba(191,191,191,1);
+	font-size:13px;
+	font-weight:400;
+	color:rgba(102,102,102,1);
+}
+
+QPushButton#SendMessageBtn:hover
+{
+	border-radius:2px;
+	border:1px solid rgba(0,195,188,1);
+	font-size:13px;
+	font-weight:400;
+	color:rgba(0,195,188,1);
+}
+
+QToolButton#ShareCheck {
+    border-image: url(:/chatview/image1/toolBar/checkbox_unchecked.png);
+}
+
+QToolButton#ShareCheck:checked {
+    border-image: url(:/chatview/image1/toolBar/checkbox_checked.png);
+}
+
+QLabel#FunctionButtonLabel {
+    font-size:13px;
+    font-weight:400;
+    color:rgba(51,51,51,1);
+    line-height:14px;
+}
+
+QToolButton#ShareBtn {
+    background:rgba(242, 242, 242, 1);
+    border-radius:10px;
+    border-image: url(:/chatview/image1/toolBar/share-normal.png);
+}
+
+QToolButton#ShareBtn:hover {
+    border-image: url(:/chatview/image1/toolBar/share-hover.png);
+}
+
+QToolButton#CancelShareBtn {
+    border-image: url(:/chatview/image1/toolBar/closeShare.png);
+}
+
+QToolButton#CancelShareBtn:hover {
+    border-image: url(:/chatview/image1/toolBar/closeShare-hover.png);
+}
+
+QLabel#SelectCountLabel {
+    font-size:12px;
+    font-weight:400;
+    color:rgba(191,191,191,1);
+    line-height:14px
+}
+
+QFrame#titleFrm {
+     background:rgba(249,249,248,1);
+     border-top-left-radius:6px;
+     border-top-right-radius:6px;
+}
+
+QFrame#bodyFrm, QFrame#btnFrm {
+     background:rgba(255, 255, 255, 1);
+}
+
+QFrame#bottomFrm {
+     background:rgba(255, 255, 255, 1);
+     border-bottom-right-radius:6px;
+     border-bottom-left-radius:6px;
+}
+
+QFrame#Select_SearchFrm {
+     background:rgba(255, 255, 255, 1);
+}
+
+QLabel#titleLabel {
+    font-size:14px;
+    font-weight:500;
+    color:rgba(51,51,51,1);
+    line-height:20px;
+}
+
+QPushButton#Select_HeaderBtn {
+    background-color: rgba(255,255,255,0);
+}
+
+QPushButton#Select_HeaderBtn:checked {
+    background-color:rgba(255,255,255,1);
+    color:rgb(0,195,188);
+    border-width: 0px;
+    border-style: solid;
+    border-color: rgba(255,255,255,0);
+}
+
+QPushButton#Select_HeaderBtn:hover {
+    background-color:rgba(255,255,255,1);
+    color:rgb(0,195,188);
+    border-width: 0px;
+    border-style: solid;
+    border-color: rgba(255,255,255,0);
+}
+
+QLabel#UserDept {
+    color:#999999;
+    font-size:12px;
+}
+
+QFrame#QRcode {
+    background:rgba(255,255,255,1);
+    border:1px solid rgba(228,228,228,1);
+    border-bottom-right-radius:6px;
+    border-bottom-left-radius:6px;
+    border-top-right-radius:6px;
+    border-top-left-radius:6px;
+}
+
+QPushButton#makeQRCodeBtn {
+    background:rgba(0,202,190,1);
+    border-radius:2px;
+    font-size:13px;
+    font-weight:400;
+    color:rgba(255,255,255,1);
+    line-height:18px;
+}
+
+QPushButton#makeQRCodeBtn:hover {
+    background:rgba(0,172,162,1);
+}
+
+QFrame#QRCodeFrm {
+    background:rgba(242, 242, 242, 1);
+}
+
+
+QTextEdit#QRCodeEdit {
+ background:rgba(255,255,255,1);
+    border-radius:2px;
+    border:1px solid rgba(151,151,151,0.15)
+}
+
+QTextEdit#QRCodeEdit:focus {
+    border:1px solid rgba(0,202,190,1);
+}
+
+QLabel#Mood {
+    color:#BFBFBF;
+    font-size:12px;
+}
+
+QLabel#SecondsLabel {
+    font-size:14px;
+    font-weight:500;
+    color:rgba(191,191,191,1);
+    line-height:22px;
+}
+
+QTextEdit#contentLab {
+    font-size:12px;
+    color:#bfbfbf;
+}
+
+QTextEdit#contentLab {
+    font-size:12px;
+    color:#bfbfbf;
+    selection-color: #bfbfbf;
+    selection-background-color: #fff;
+}
+
+QFrame#toolFrm, #btnFrm {
+    background:rgba(255,255,255,1);
+}
+
+QFrame#LocalSearchMainFrm {
+    background:rgba(255,255,255,1);
+    border:1px thin rgba(181,181,181,0.3);
+    border-top-left-radius:6px;
+    border-top-right-radius:6px;
+    border-bottom-right-radius:6px;
+    border-bottom-left-radius:6px;
+}
+
+QFrame #LocalSearchBodyFrm {
+    background:rgba(255,255,255,1);
+    border-bottom-right-radius:6px;
+    border-bottom-left-radius:6px;
+}
+
+QLisetView {
+    border-bottom-right-radius:6px;
+    border-bottom-left-radius:6px;
+}
+
+QPushButton#CalendarBtn {
+    border-image: url(:/chatview/image1/CalendarBtn-normal.png);
+}
+
+QPushButton#CalendarBtn:hover {
+    border-image: url(:/chatview/image1/CalendarBtn-hover.png);
+}
+
+QPushButton#SearchWgtBtn {
+    font-size: 14px;
+    font-weight: 400;
+    color: rgba(51,51,51,1);
+    line-height: 14px;
+    background-color: rgba(255,255,255,1);
+    border-style: solid;
+    border-color: rgba(255,255,255,1);
+}
+
+QPushButton#SearchWgtBtn:checked, #SearchWgtBtn:pressed {
+    color: rgba(0, 195, 188, 1);
+    font-weight: 500;
+    background-color: rgba(255,255,255,1);
+    border-style: solid;
+    border-color: rgba(255,255,255,1);
+    background-color: rgba(255,255,255,1);
+}
+
+QFrame#FileItemWgtLeftFrm {
+    background:rgba(255,255,255,1);
+    border-radius:2px;
+    border:1px solid rgba(237,238,237,1);
+}
+
+QLabel#FileItemWgtFileNameLabel {
+    font-size:14px;
+    font-weight:500;
+    color:rgba(51,51,51,1);
+    line-height:14px;
+}
+
+QLabel#FileItemWgtFileSizeLabel, #FileItemWgtTimeLabel, #FileItemWgtNameLabel {
+    font-size:12px;
+    font-weight:400;
+    color:rgba(153,153,153,1);
+    line-height:12px;
+}
+
+QToolButton#openMessageBtn {
+    border-image: url(:/chatview/image1/positionMessage.png);
+}
+
+QToolButton#openMessageBtn:hover {
+    border-image: url(:/chatview/image1/positionMessage_hover.png);
+}
+
+QLabel#localSearchTitleLabel {
+    font-size:14px;
+    font-weight:500;
+    color:rgba(51,51,51,1);
+    line-height:20px;
+}
+
+QLabel#ChatViewEmptyLabel {
+    background:rgba(255,255,255,1);
+}
+
+
+QFrame#CommonTrdInfoItemMainFrm {
+    background:rgba(255,255,255,1);
+    border-radius: 4px;
+}
+
+
+QLabel#CommonTrdInfoItemTitleLabel {
+    font-size:14px;
+    color:rgba(51,51,51,1);
+    line-height:14px;
+}
+
+QFrame#BtnBgFrame {
+    background:rgba(0,0,0,0.5);
+    border-radius:18px;
+}
+
+QLabel#fileSizeLbl {
+    color:#fff;
+    font-size:12px;
+    font-weight:500;
+}
+
+QFrame#MeetingRemindItem{
+    background: #f5f5f5;
+    border-width:0px;
+    border-radius:5px;
+}
+
+QTextEdit#InputWgt
+{
+    margin-left: 15px;
+}

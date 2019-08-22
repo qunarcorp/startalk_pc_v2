@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>English</string>
+	<key>CFBundleExecutable</key>
+	<string>StarTalk</string>
+	<key>CFBundleGetInfoString</key>
+	<string></string>
+	<key>CFBundleIconFile</key>
+	<string>StarTalk.icns</string>
+	<key>CFBundleIdentifier</key>
+	<string>startalk.im</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleLongVersionString</key>
+	<string></string>
+	<key>CFBundleName</key>
+	<string>StarTalk</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string></string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleVersion</key>
+	<string></string>
+	<key>CSResourcesFileMapped</key>
+	<true/>
+	<key>NSHumanReadableCopyright</key>
+	<string></string>
+	<key>NSHighResolutionCapable</key><true/>
+    <key>NSCameraUsageDescription</key>
+    <string>请点击"好"以允许访问。
+    若不允许，你将无法使用拍照、录制视频、扫一扫等功能。</string>
+</dict>
+</plist>

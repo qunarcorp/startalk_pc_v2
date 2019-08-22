@@ -1,0 +1,38 @@
+<Style>
+    <_nav_normal_color>39, 43, 48,255</_nav_normal_color>
+    <_nav_select_color>55,209,206, 64</_nav_select_color>
+    <_nav_top_color>39, 43, 48,255</_nav_top_color>
+    <_nav_tip_color>40, 158, 156, 255</_nav_tip_color>
+    <_nav_name_font_color>236, 241, 243,255</_nav_name_font_color>
+    <_nav_content_font_color>124,137,144,255</_nav_content_font_color>
+    <_nav_time_font_color>106, 116, 121,255</_nav_time_font_color>
+    <_nav_name_font_select_color>255,255,255,255</_nav_name_font_select_color>
+    <_nav_content_font_select_color>255,255,255,255</_nav_content_font_select_color>
+    <_nav_time_font_select_color>236, 241, 243,255</_nav_time_font_select_color>
+    <_nav_at_font_color>255,80,80,255</_nav_at_font_color>
+    <_nav_unread_font_color>255,255,255,255</_nav_unread_font_color>
+    <_chat_group_normal_color>53,57,61,255</_chat_group_normal_color>
+    <_chat_group_font_color>177,191,199,255</_chat_group_font_color>
+    <_adr_normal_color>39,43,48,255</_adr_normal_color>
+    <_adr_select_color>55,209,206,51</_adr_select_color>
+    <_adr_name_font_color>236,241,243,255</_adr_name_font_color>
+    <_drop_normal_color>68,73,77,255</_drop_normal_color>
+    <_drop_select_color>31,34,38,255</_drop_select_color>
+    <_drop_normal_font_color>255,255,255,255</_drop_normal_font_color>
+    <_drop_select_font_color>225,236,239,255</_drop_select_font_color>
+    <_link_url_color>74, 241, 255, 255</_link_url_color>
+    <_local_search_time_font_color>255,255,255,255</_local_search_time_font_color>
+    <_at_block_font_color>255,255,255,255</_at_block_font_color>
+    <_emo_select_icon_color>55, 209, 206,82</_emo_select_icon_color>
+    <_group_card_group_member_normal_color>47, 51, 55, 255</_group_card_group_member_normal_color>
+    <_group_manager_normal_color>47,51,55, 255</_group_manager_normal_color>
+    <_group_manager_normal_font_color>177, 191, 199, 255</_group_manager_normal_font_color>
+    <_title_search_normal_color>63,66,71, 255</_title_search_normal_color>
+    <_title_search_select_color>63,66,71, 255</_title_search_select_color>
+    <_quote_block_background_color>106,116,121, 255</_quote_block_background_color>
+    <_quote_block_tip_color>228,228,230, 255</_quote_block_tip_color>
+    <_quote_block_font_color>177,191,199, 255</_quote_block_font_color>
+    <_file_process_bar_background>60,66,72, 255</_file_process_bar_background>
+    <_file_process_bar_line>106, 116, 121, 255</_file_process_bar_line>
+    <_head_photo_mask_color>0, 0, 0, 64</_head_photo_mask_color>
+</Style>

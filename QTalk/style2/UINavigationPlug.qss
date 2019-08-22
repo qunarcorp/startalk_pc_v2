@@ -1,0 +1,16 @@
+﻿QFrame#navigationMianPanel{
+	background:rgba(39, 43, 48, 1);
+
+    border-width: 1px 0px 0px 0px;
+    border-style: solid;
+    border-color: #16191C;
+}
+
+QFrame#TcpDisconnectWgt {
+    height: 40px;
+    background: rgba(255, 80, 80, 1);
+}
+
+QListView#SessionView {
+    background:rgba(39, 43, 48, 1);
+}

@@ -1,0 +1,46 @@
+<RCC>
+    <qresource prefix="/title">
+        <file>image1/btn_sk_cancel.png</file>
+        <file>image1/btn_sk_delete.png</file>
+        <file>image1/skin_icon_1.png</file>
+        <file>image1/skin_icon_2.png</file>
+        <file>image1/skin_icon_3.png</file>
+        <file>image1/arrow_sortdown_smal.png</file>
+        <file>image1/closeBtn_hover.png</file>
+        <file>image1/closeBtn_normal.png</file>
+        <file>image1/closeBtn_hover_1.png</file>
+        <file>image1/closeBtn_normal_1.png</file>
+        <file>image1/maximizeBtn_hover.png</file>
+        <file>image1/maximizeBtn_normal.png</file>
+        <file>image1/minimizeBtn_hover.png</file>
+        <file>image1/minimizeBtn_normal.png</file>
+        <file>image1/qrCodeBtn_hover.png</file>
+        <file>image1/qrCodeBtn_normal.png</file>
+        <file>image1/restoreBtn_hover.png</file>
+        <file>image1/restoreBtn_normal.png</file>
+        <file>image1/mac_close.png</file>
+        <file>image1/mac_close_hover.png</file>
+        <file>image1/mac_max.png</file>
+        <file>image1/mac_max_hover.png</file>
+        <file>image1/mac_min.png</file>
+        <file>image1/mac_min_hover.png</file>
+        <file>image1/close.svg</file>
+        <file>image1/aboutQtalk.png</file>
+        <file>image1/aboutQchat.png</file>
+        <file>image1/aboutStarTalk.png</file>
+        <file>image1/creatGroup.png</file>
+        <file>image1/creatGroup_hover.png</file>
+        <file>image1/sessionBtn_normal_2.png</file>
+        <file>image1/sessionBtn_checked_2.png</file>
+        <file>image1/sessionBtn_checked_1.png</file>
+        <file>image1/sessionBtn_normal_1.png</file>
+        <file>image1/contactBtn_checked_1.png</file>
+        <file>image1/contactBtn_normal_1.png</file>
+        <file>image1/contactBtn_checked_2.png</file>
+        <file>image1/contactBtn_normal_2.png</file>
+        <file>image1/multifunctionBtn_checked_1.png</file>
+        <file>image1/multifunctionBtn_normal_1.png</file>
+        <file>image1/multifunctionBtn_normal_2.png</file>
+        <file>image1/multifunctionBtn_checked_2.png</file>
+    </qresource>
+</RCC>

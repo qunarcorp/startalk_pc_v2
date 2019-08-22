@@ -1,0 +1,118 @@
+QFrame#TitleFrame{
+    background: rgba(249, 249, 249, 0.9);
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+}
+QFrame#Line_1, QFrame#Line_2{
+    background: #D8D8D8;
+}
+
+QFrame#bottomFrame {
+    background:#FFF;
+    border-bottom-right-radius: 6px;
+    border-bottom-left-radius: 6px;
+}
+
+QGraphicsScene#GraphicsView
+{
+    border-width: 100px;
+    border-bottom-right-radius: 6px;
+    border-bottom-left-radius: 6px;
+}
+
+QToolButton#TurnLeftBtn {
+    border-image: url(":/PictureBrowser/image1/turnLeft_normal.png");
+}
+QToolButton#TurnRightBtn {
+    border-image: url(":/PictureBrowser/image1/turnRight_normal.png");
+}
+QToolButton#EnlargeBtn {
+    border-image: url(":/PictureBrowser/image1/enlarge_normal.png");
+}
+QToolButton#NarrowBtn {
+    border-image: url(":/PictureBrowser/image1/narrow_normal.png");
+}
+QToolButton#One2OneBtn {
+    border-image: url(":/PictureBrowser/image1/one2one_normal.png");
+}
+QToolButton#RotateBtn {
+    border-image: url(":/PictureBrowser/image1/rotate_normal.png");
+}
+QToolButton#SaveAsBtn {
+    border-image: url(":/PictureBrowser/image1/saveAs_normal.png");
+}
+QToolButton#MinBtn {
+    border-image: url(":/PictureBrowser/image1/min_normal.png");
+}
+QToolButton#MaxBtn {
+    border-image: url(":/PictureBrowser/image1/max_normal.png");
+}
+QToolButton#RestBtn {
+    border-image: url(":/PictureBrowser/image1/reset_normal.png");
+}
+QToolButton#CloseBtn {
+    border-image: url(":/PictureBrowser/image1/close_normal.png");
+}
+QToolButton#CloseBtn:hover {
+    border-image: url(":/PictureBrowser/image1/close_hover.png");
+}
+QToolButton#macCloseBtn {
+    border-image: url(":/PictureBrowser/image1/mac_close.png");
+}
+QToolButton#macCloseBtn:hover {
+    border-image: url(":/PictureBrowser/image1/mac_close_hover.png");
+}
+
+QToolButton#TurnLeftBtn:hover {
+    border-image: url(":/PictureBrowser/image1/turnLeft_hover.png");
+}
+QToolButton#TurnRightBtn:hover {
+    border-image: url(":/PictureBrowser/image1/turnRight_hover.png");
+}
+QToolButton#EnlargeBtn:hover {
+    border-image: url(":/PictureBrowser/image1/enlarge_hover.png");
+}
+QToolButton#NarrowBtn:hover {
+    border-image: url(":/PictureBrowser/image1/narrow_hover.png");
+}
+QToolButton#One2OneBtn:hover {
+    border-image: url(":/PictureBrowser/image1/one2one_hover.png");
+}
+QToolButton#RotateBtn:hover {
+    border-image: url(":/PictureBrowser/image1/rotate_hover.png");
+}
+ToolButton#SaveAsBtn:hover {
+    border-image: url(":/PictureBrowser/image1/saveAs_hover.png");
+}
+QToolButton#MinBtn:hover {
+    border-image: url(":/PictureBrowser/image1/min_hover.png");
+}
+QToolButton#MaxBtn:hover {
+    border-image: url(":/PictureBrowser/image1/max_hover.png");
+}
+QToolButton#RestBtn:hover {
+    border-image: url(":/PictureBrowser/image1/reset_hover.png");
+}
+
+
+QToolButton#TurnLeftBtn:disabled {
+    border-image: url(":/PictureBrowser/image1/turnLeft_disable.png");
+}
+QToolButton#TurnRightBtn:disabled {
+    border-image: url(":/PictureBrowser/image1/turnRight_disable.png");
+}
+QToolButton#EnlargeBtn:disabled {
+    border-image: url(":/PictureBrowser/image1/enlarge_disable.png");
+}
+QToolButton#NarrowBtn:disabled {
+    border-image: url(":/PictureBrowser/image1/narrow_disable.png");
+}
+QToolButton#One2OneBtn:disabled {
+    border-image: url(":/PictureBrowser/image1/one2one_disable.png");
+}
+QToolButton#RotateBtn:disabled {
+    border-image: url(":/PictureBrowser/image1/rotate_disable.png");
+}
+ToolButton#SaveAsBtn:disabled {
+    border-image: url(":/PictureBrowser/image1/saveAs_disable.png");
+}

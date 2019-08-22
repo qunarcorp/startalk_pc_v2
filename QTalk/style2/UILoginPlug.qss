@@ -1,0 +1,277 @@
+﻿QFrame#loginMainFrm>QFrame#leftFrame{
+	background:rgba(39, 43, 48, 0.9);
+	border-top-left-radius:6px;
+    border-top-right-radius:0px;
+    border-bottom-right-radius:0px;
+    border-bottom-left-radius:6px;
+}
+
+QFrame#loginMainFrm {
+    background:rgba(5, 13, 23, 0.7);
+    border-radius:6px;
+}
+
+QFrame#rightFrame {
+    background:rgba(5, 13, 23, 0.7);
+    border-top-left-radius:0px;
+    border-top-right-radius:6px;
+    border-bottom-right-radius:6px;
+    border-bottom-left-radius:0px;
+}
+
+QFrame#leftFrame>QFrame#userNameFrm, QFrame#passworldFrm{
+	background:rgba(0,0,0,0);
+	border-width: 0px;
+}
+
+QLineEdit#passworldEdt, QLineEdit#userNameEdt{
+	background-color: rgba(0,0,0,0);
+	border-width:0;
+	border-style:outset;
+	font-weight:400;
+	color:rgba(255, 255, 255, 1);
+	font-size: 14px;
+}
+
+QPushButton#loginBtn { 
+	border-image:url(:/login/image1/loginBtn_normal.png);
+	
+}
+QPushButton#loginBtn:hover{
+	border-image:url(:/login/image1/loginBtn_hover.png);
+}
+
+QPushButton#loginBtn:pressed{
+	border-image:url(:/login/image1/loginBtn_hover.png);
+}
+
+QPushButton#settingBtn { 
+	border-image:url(:/login/image1/settingBtn_normal.png);
+}
+
+QPushButton#settingBtn:checked {
+	border-image:url(:/login/image1/settingBtn_normal_checked.png);
+}
+
+QPushButton#settingBtn:hover{
+	border-image:url(:/login/image1/settingBtn_hover.png);
+}
+
+QPushButton#settingBtn:hover:checked{
+	border-image:url(:/login/image1/settingBtn_hover_checked.png);
+}
+
+QPushButton#settingBtn:pressed{
+	border-image:url(:/login/image1/settingBtn_hover.png);
+}
+
+QPushButton#settingBtn:pressed:checked{
+	border-image:url(:/login/image1/settingBtn_hover_checked.png);
+}
+
+QPushButton#closeBtn { 
+	border-image:url(:/login/image1/closeBtn_normal.png);
+	
+}
+QPushButton#closeBtn:hover{
+	border-image:url(:/login/image1/closeBtn_hover.png);
+}
+
+QPushButton#closeBtn:pressed{
+	border-image:url(:/login/image1/closeBtn_hover.png);
+}
+
+QPushButton#severBtn,
+QPushButton#changePwdBtn{
+	background:rgba(61,68,76,1);
+    border-radius:2px;
+    font-size:12px;
+    font-weight:400;
+    color:rgba(177,191,199,1);
+    line-height:17px;
+}
+
+QPushButton#severBtn:hover,
+QPushButton#changePwdBtn:hover{
+	border-radius:2px;
+	border:1px solid rgba(0,195,188,1);
+	font-size:12px;
+	font-weight:400;
+	color:rgba(0,195,188,1);
+	text-align:center
+}
+
+QPushButton#severBtn:pressed,
+QPushButton#changePwdBtn:pressed{
+	border-radius:2px;
+	border:1px solid rgba(0,195,188,1);
+	font-size:12px;
+	font-weight:400;
+	color:rgba(0,195,188,1);
+	text-align:center
+}
+
+QFrame#AuthFailedFrm {
+	background:rgba(255,108,86,0.2);
+	border-radius:10px 0px 0px 0px;
+}
+
+QPushButton#cancelLoginButton {
+	background:rgba(61,68,76,1);
+	padding: 5px;
+    font-size:12px;
+    font-weight:400;
+    color:rgba(177,191,199,1);
+    line-height:17px;
+}
+
+QPushButton#cancelLoginButton:hover {
+	background: rgba(61,68,76,0.7);;
+	border-radius:2px;
+	padding: 5px;
+	color:rgba(177, 191, 199, 1);
+}
+
+QLabel#LogingWnd_Loging {
+	font-size:17px;
+	font-weight:400;
+	color:rgba(236, 241, 243, 1);
+	line-height:22px;
+}
+
+QLabel#LogingWnd_status {
+	font-size:13px;
+	font-weight:400;
+	color:rgba(124, 137, 144, 1);
+	line-height:22px;
+}
+
+QLabel#AuthFailedLabel {
+	font-size:14px;
+	font-weight:400;
+	color:rgba(0,0,0,0.65);
+	line-height:22px;
+}
+
+QLabel#GlobalVersion {
+    font-size: 12px;
+    font-weight: 400;
+    color:rgba(106,116,121,1);
+    line-height: 20px;
+}
+
+QLabel#wenanLabel {
+    font-size: 14px;
+    font-weight: 400;
+    color: rgba(255,255,255, 0.7);
+    line-height: 20px;
+    padding-top: 20px;
+    border-bottom-right-radius:6px;
+    background: qlineargradient(x1:0, y1:1, x2:0, y2:0,stop:0 (0,0,0,1), stop:0.5 rgba(0,0,0,0.3),stop:1 rgba(0,0,0,0));
+}
+
+QFrame#NavManager_TopFrm {
+    background:rgba(57, 61, 65, 1);
+    border-top-left-radius:6px;
+    border-top-right-radius:6px;
+    border-bottom-right-radius:0px;
+    border-bottom-left-radius:0px;
+}
+
+QFrame#NavManager_MainFrm {
+    background:rgba(47, 51, 55, 1);
+    border-top-left-radius:0px;
+    border-top-right-radius:0px;
+    border-bottom-right-radius:6px;
+    border-bottom-left-radius:6px;
+}
+
+QLabel#NavManager_TitleLabel {
+    font-size:16px;
+    color:rgba(236, 241, 243, 1);
+    line-height:16px;
+}
+
+QPushButton#NavManager_CloseBtn {
+    border-image:url(:/login/image1/closeBtn_normal.png);
+}
+QPushButton#NavManager_CloseBtn:hover{
+	border-image:url(:/login/image1/closeBtn_hover.png);
+}
+
+QPushButton#NavView_addbtn, #DeleteBtn, #AddNavWnd_cancel {
+    color:rgba(177, 191, 199, 0.8);
+    background:rgba(61,68,76,0.8);
+    border-radius:2px;
+}
+
+QPushButton#NavView_addbtn:hover, #DeleteBtn:hover, #AddNavWnd_cancel:hover {
+    color:rgba(177, 191, 199, 1);
+    background:rgba(61,68,76, 1);
+}
+
+QPushButton#ChoseBtn, #AddNavWnd_Add {
+    background:rgba(0,202,190,1);
+    color:rgba(255,255,255,1);
+    border-radius:2px;
+}
+
+QPushButton#ChoseBtn:hover, #AddNavWnd_Add:hover {
+    background:rgba(0,172,162,1);
+}
+
+QPushButton#ChoseBtn:disabled {
+    background:rgba(0,202,190, 0.6);
+}
+
+QFrame#NavMainView > QLineEdit{
+    border-width:0px;
+    border-style:outset;
+}
+
+QFrame#NavMainView > QTextEdit:focus {
+    border-style:solid;
+    border:1px solid rgba(0, 202, 190, 0.6);
+}
+
+QLabel#QRCodeLabel {
+    border:5px solid rgba(242, 242, 242, 1);
+}
+
+QLineEdit#AddNavWnd_Name {
+    border-radius:2px;
+    border:1px solid rgba(221, 221, 221, 1);
+}
+
+QLineEdit#AddNavWnd_Name:focus {
+    border:1px solid rgba(0, 202, 190, 0.6);
+}
+
+QTextEdit {
+    border-radius:2px;
+    border:1px solid rgba(221, 221, 221, 1);
+}
+
+QTextEdit#AddNavWnd_Addr:focus {
+    border:1px solid rgba(0, 202, 190, 0.6);
+}
+
+QLabel {
+    font-size:13px;
+    font-weight:400;
+    color:rgba(236, 241, 243, 1);
+    line-height:13px;
+}
+
+QLineEdit, QLineEdit:!focus {
+    background:rgba(0, 0, 0, 0);
+    font-size:14px;
+    font-weight:400;
+    color:rgba(255,255,255,1);
+    line-height:14px;
+    border-radius:4px;
+}
+
+QLineEdit:focus {
+    border:1px solid rgba(0, 202, 190, 0.6);
+}

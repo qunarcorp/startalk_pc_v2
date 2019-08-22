@@ -1,0 +1,9 @@
+﻿
+QFrame#navigationMianPanel{
+	background:rgba(255,255,255,1);
+}
+
+QFrame#TcpDisconnectWgt {
+    height: 40px;
+    background: rgba(255,108,86,0.2);
+}

@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/UINavigationPlug">
+        <file>image1/error.png</file>
+        <file>image1/system.png</file>
+        <file>image1/noNotice.png</file>
+    </qresource>
+</RCC>

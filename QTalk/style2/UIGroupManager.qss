@@ -1,0 +1,136 @@
+﻿QFrame#searchWgt {
+    border-width: 3px;
+    border-radius:2px;
+    border:1px solid rgba(61,68,76,1);
+}
+
+QToolButton#SearchIcon {
+    border-image:url(:/GroupManager/image1/search.png);
+
+}
+QToolButton#SearchIcon:hover{
+    border-image:url(:/GroupManager/image1/search_horver.png);
+}
+
+QToolButton#SearchIcon:pressed{
+    border-image:url(:/GroupManager/image1/search_horver.png);
+}
+
+QLineEdit#SearchEdit {
+    border-width:0;
+    border-style:outset;
+    background:rgba(47,51,55,1);
+    color:rgba(124,137,144,1);
+}
+
+QLineEdit#GroupNameEdit, QLineEdit#GroupNameEdit:disabled {
+    border-radius:2px;
+    border:1px solid rgba(61,68,76,1);
+    background:rgba(47,51,55,1);
+    font-size:13px;
+    font-weight:400;
+    color:rgba(124,137,144,1);
+    line-height:14px;
+}
+
+QTreeView {
+    background: rgba(47, 51, 55, 1);
+}
+
+QTreeView::item {
+    background: rgba(47, 51, 55, 1);
+}
+
+QPushButton#cancelButton
+{
+    background:rgba(61,68,76,1);
+    color:rgba(177, 191, 199, 1);
+    border-radius:2px;
+    border-radius:2px;
+}
+
+QPushButton#makeSureButton
+{
+    background:rgba(0,202,190,1);
+    border-radius:2px;
+    font-size:14px;
+    color:rgba(255,255,255,1);
+}
+
+QPushButton#cancelButton:hover
+{
+    background:rgba(61,68,76,0.8);
+    color:rgba(177, 191, 199, 1);
+    border-radius:2px;
+    border-radius:2px;
+}
+
+QPushButton#makeSureButton:hover
+{
+    color: #FFFFFF;
+    background: #00A6A0;
+    border-radius:2px;
+    border:1px solid #00A6A0;
+}
+
+QPushButton#cancelChoseBtn {
+    border-image:url(:/GroupManager/image1/delete_normal.png);
+}
+
+QPushButton#cancelChoseBtn:hover {
+    border-image:url(:/GroupManager/image1/delete_horver.png);
+}
+
+QFrame#groupNaemFrm {
+    background:rgba(47,51,55,1);
+    border-top: 1px solid rgba(238, 238, 238, 1);
+}
+
+QFrame#titleFrm {
+    background:rgba(57,61,65,1);
+    border-top-left-radius:6px;
+    border-top-right-radius:6px;
+}
+
+QFrame#bodyFrm {
+    background:rgba(47, 51, 55,1);
+    border-bottom-left-radius:6px;
+    border-bottom-right-radius:6px;
+}
+
+QFrame#mainFrm {
+    background:rgba(47, 51, 55,1);
+    border-bottom-left-radius:6px;
+    border-bottom-right-radius:6px;
+    border-bottom-left-radius:6px;
+    border-bottom-right-radius:6px;
+}
+
+QLabel#TitleLabel {
+    font-size:16px;
+    color:rgba(236,241,243,1);
+    line-height:16px;
+}
+
+QTextEdit#TextEdit {
+    background:rgba(39, 43, 48,1);
+}
+
+QLabel#TipLabel
+{
+    font-size:13px;
+    font-weight:400;
+    color:rgba(124,137,144,1);
+    line-height:13px;
+}
+
+QLabel#GroupNameLabel {
+    font-size:13px;
+    font-weight:400;
+    color:rgba(177,191,199,1);
+    line-height:14px;
+}
+
+QListView {
+    background:rgba(47,51,55,1);
+}

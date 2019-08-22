@@ -1,0 +1,31 @@
+<RCC>
+    <qresource prefix="/PictureBrowser">
+        <file>image1/enlarge_disable.png</file>
+        <file>image1/enlarge_hover.png</file>
+        <file>image1/enlarge_normal.png</file>
+        <file>image1/max_hover.png</file>
+        <file>image1/max_normal.png</file>
+        <file>image1/min_hover.png</file>
+        <file>image1/min_normal.png</file>
+        <file>image1/narrow_disable.png</file>
+        <file>image1/narrow_hover.png</file>
+        <file>image1/narrow_normal.png</file>
+        <file>image1/one2one_disable.png</file>
+        <file>image1/one2one_hover.png</file>
+        <file>image1/one2one_normal.png</file>
+        <file>image1/reset_hover.png</file>
+        <file>image1/reset_normal.png</file>
+        <file>image1/rotate_disable.png</file>
+        <file>image1/rotate_hover.png</file>
+        <file>image1/rotate_normal.png</file>
+        <file>image1/saveAs_disable.png</file>
+        <file>image1/saveAs_hover.png</file>
+        <file>image1/saveAs_normal.png</file>
+        <file>image1/turnLeft_disable.png</file>
+        <file>image1/turnLeft_hover.png</file>
+        <file>image1/turnLeft_normal.png</file>
+        <file>image1/turnRight_disable.png</file>
+        <file>image1/turnRight_hover.png</file>
+        <file>image1/turnRight_normal.png</file>
+    </qresource>
+</RCC>

@@ -1,0 +1,34 @@
+<RCC>
+    <qresource prefix="/login">
+        <file>image1/loginBtn_hover.png</file>
+        <file>image1/loginBtn_normal.png</file>
+        <file>image1/closeBtn_hover.png</file>
+        <file>image1/closeBtn_normal.png</file>
+        <file>image1/settingBtn_normal.png</file>
+        <file>image1/settingBtn_hover.png</file>
+        <file>image1/checkbox_checked.png</file>
+        <file>image1/checkbox_unchecked.png</file>
+        <file>image1/settingBtn_hover_checked.png</file>
+        <file>image1/settingBtn_normal_checked.png</file>
+        <file>image1/error.png</file>
+        <file>image1/loginbj/1.png</file>
+        <file>image1/loginbj/2.png</file>
+        <file>image1/loginbj/3.png</file>
+        <file>image1/loginbj/4.png</file>
+        <file>image1/loginbj/5.png</file>
+        <file>image1/loginbj/6.png</file>
+        <file>image1/loginbj/7.png</file>
+        <file>image1/loginbj/8.png</file>
+        <file>image1/loginbj/9.png</file>
+        <file>image1/loginbj/10.png</file>
+        <file>image1/loginbj/11.png</file>
+        <file>image1/loginbj/12.png</file>
+        <file>image1/loginbj/13.png</file>
+        <file>image1/loginbj/14.png</file>
+        <file>image1/loginbj/15.png</file>
+        <file>image1/loginbj/16.png</file>
+        <file>image1/loginbj/17.png</file>
+        <file>image1/loginbj/18.png</file>
+        <file>tips.xml</file>
+    </qresource>
+</RCC>

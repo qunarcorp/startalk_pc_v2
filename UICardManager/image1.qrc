@@ -1,0 +1,34 @@
+<RCC>
+    <qresource prefix="/CardManager">
+        <file>image1/closeBtn_hover_1.png</file>
+        <file>image1/closeBtn_normal_1.png</file>
+        <file>image1/AddFriend_hover_1.png</file>
+        <file>image1/AddFriend_normal_1.png</file>
+        <file>image1/More_hover_1.png</file>
+        <file>image1/More_normal_1.png</file>
+        <file>image1/QuitGroup_hover_1.png</file>
+        <file>image1/QuitGroup_normal_1.png</file>
+        <file>image1/SendCard_hover_1.png</file>
+        <file>image1/SendCard_Normal_1.png</file>
+        <file>image1/SendMail_hover_1.png</file>
+        <file>image1/SendMail_normal_1.png</file>
+        <file>image1/Star_hover_1.png</file>
+        <file>image1/Star_normal_1.png</file>
+        <file>image1/sex_female_1.png</file>
+        <file>image1/sex_male_1.png</file>
+        <file>image1/AddFriend_hover_2.png</file>
+        <file>image1/AddFriend_normal_2.png</file>
+        <file>image1/More_hover_2.png</file>
+        <file>image1/More_normal_2.png</file>
+        <file>image1/QuitGroup_hover_2.png</file>
+        <file>image1/QuitGroup_normal_2.png</file>
+        <file>image1/SendCard_hover_2.png</file>
+        <file>image1/SendCard_Normal_2.png</file>
+        <file>image1/SendMail_hover_2.png</file>
+        <file>image1/SendMail_normal_2.png</file>
+        <file>image1/Star_hover_2.png</file>
+        <file>image1/Star_normal_2.png</file>
+        <file>image1/sex_female_2.png</file>
+        <file>image1/sex_male_2.png</file>
+    </qresource>
+</RCC>

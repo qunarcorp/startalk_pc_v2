@@ -1,0 +1,52 @@
+QFrame#OaMainWgt_topFrm {
+    background:rgba(31,34,38,1);
+    border-width: 0px 0px 1px 0px;
+    border-style: solid;
+    border-color: rgba(61, 68, 76, 1);
+}
+
+QLabel#OaMainWgt_titleLab {
+    font-size:16px;
+    font-weight:400;
+    color:rgba(177,191,199,1);
+    line-height:16px;
+    background:rgba(53, 57, 61, 1);
+}
+
+QTableWidget {
+    background:rgba(53, 57, 61, 1);
+}
+
+QTableWidget:item {
+    background:rgba(53, 57, 61, 1);
+}
+
+QTableWidget:item:selected {
+    background:rgba(53, 57, 61, 1);
+}
+
+QTableWidget:item:hover {
+    background:rgba(53, 57, 61, 1);
+}
+
+QFrame#OaMainWgt {
+    background:rgba(39, 43, 48, 1);
+    border-width: 1px 0px 0px 0px;
+    border-style: solid;
+    border-color: #16191C;
+}
+
+QFrame#OAManagerLeftFrm {
+    background: rgba(39, 43, 48, 1);
+    border-width: 1px 0px 0px 0px;
+    border-style: solid;
+    border-color: #16191C;
+}
+
+QFrame#NavigationItem {
+    background:rgba(39, 43, 48, 1);
+}
+
+QFrame#CellWgtItem {
+    background:rgba(53, 57, 61, 1);
+}

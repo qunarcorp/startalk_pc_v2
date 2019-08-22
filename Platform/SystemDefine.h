@@ -1,0 +1,38 @@
+﻿//
+// Created by QITMAC000260 on 2019-02-25.
+//
+
+#ifndef QTALK_V2_SYSTEMDEFINE_H
+#define QTALK_V2_SYSTEMDEFINE_H
+
+#include <string>
+
+#define DB_VERSION 100009
+
+#ifndef _QCHAT
+
+#define GLOBAL_INTERNAL_VERSION 19009070
+#define GLOBAL_VERSION "build-1.9.970"
+
+#ifndef _WINDOWS
+
+#define APPLICATION_VERSION "2.0 BETA "  GLOBAL_VERSION
+
+#else
+
+#ifdef PLATFORM_WIN32
+
+#define APPLICATION_VERSION "2.0 BETA Windows(x86) " GLOBAL_VERSION
+
+#else
+#define APPLICATION_VERSION "2.0 BETA Windows(x64) " GLOBAL_VERSION
+
+#endif // PLATFORM_WNI32
+#endif // _WINDOWS
+#else
+#define APPLICATION_NAME  "QunarChatIM"
+#define APPLICATION_VERSION  "2.0.006W"
+#define GLOBAL_INTERNAL_VERSION  200006
+#endif // !QCHAT
+
+#endif //QTALK_V2_SYSTEMDEFINE_H

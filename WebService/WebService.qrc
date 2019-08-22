@@ -1,0 +1,21 @@
+<RCC>
+    <qresource prefix="/web">
+        <file>style1/WebService.qss</file>
+        <file>image1/mac_close.png</file>
+        <file>image1/mac_close_hover.png</file>
+        <file>image1/mac_max.png</file>
+        <file>image1/mac_max_hover.png</file>
+        <file>image1/mac_min.png</file>
+        <file>image1/mac_min_hover.png</file>
+        <file>image1/copyUrl.png</file>
+        <file>image1/forward_disable.png</file>
+        <file>image1/forward_normal.png</file>
+        <file>image1/jumpToBrowser.png</file>
+        <file>image1/back_normal.png</file>
+        <file>image1/back_disable.png</file>
+        <file>image1/reload.png</file>
+        <file>image1/share.png</file>
+        <file>image1/closeBtn_hover.png</file>
+        <file>image1/closeBtn_normal.png</file>
+    </qresource>
+</RCC>

@@ -1,0 +1,26 @@
+<RCC>
+    <qresource prefix="/addressbook">
+        <file>image1/edit_hover.png</file>
+        <file>image1/edit_normal.png</file>
+        <file>image1/Artboard_1.png</file>
+        <file>image1/AddFriend_hover.png</file>
+        <file>image1/AddFriend_normal.png</file>
+        <file>image1/More_hover.png</file>
+        <file>image1/More_normal.png</file>
+        <file>image1/QuitGroup_hover.png</file>
+        <file>image1/QuitGroup_normal.png</file>
+        <file>image1/SendCard_hover.png</file>
+        <file>image1/SendCard_Normal.png</file>
+        <file>image1/SendMail_hover.png</file>
+        <file>image1/SendMail_normal.png</file>
+        <file>image1/Star_hover.png</file>
+        <file>image1/Star_normal.png</file>
+        <file>image1/structure.png</file>
+        <file>image1/balck_list_default.png</file>
+        <file>image1/friend_default.png</file>
+        <file>image1/group_default.png</file>
+        <file>image1/staff_default.png</file>
+        <file>image1/star_default.png</file>
+        <file>image1/Artboard_2.png</file>
+    </qresource>
+</RCC>

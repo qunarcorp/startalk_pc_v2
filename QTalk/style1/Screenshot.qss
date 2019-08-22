@@ -1,0 +1,494 @@
+QWidget#SnipScreenToolBar{
+background-color:#00000000;
+}
+
+QWidget#basebar{
+background-color:#DD333333;
+border-radius: 4px;
+}
+
+QWidget#split_point_down{
+background-color:#DD333333;
+border-radius: 2px;
+}
+
+QWidget#split_point_up{
+background-color:#DD333333;
+border-radius: 2px;
+}
+
+QWidget#extfuctions_down{
+background-color:#DD333333;
+border-radius: 4px;
+}
+
+QWidget#extfuctions_up{
+background-color:#DD333333;
+border-radius: 4px;
+}
+
+/* 方框工具 */
+QPushButton#tool_rec{
+image: url(:/chatview/image1/ScreenShoot/ScreenCapture_toolbar_rect_ineffect.png);
+border:1px solid #00000000;
+}
+QPushButton#tool_rec:checked{
+image: url(:/chatview/image1/ScreenShoot/ScreenCapture_toolbar_rect_effect.png);
+border: 1px solid #1BA9BA;
+}
+QPushButton#tool_rec:hover{
+image : url(:/chatview/image1/ScreenShoot/ScreenCapture_toolbar_rect_effect.png);
+}
+/* 圆圈工具 */
+QPushButton#tool_ring{
+image: url(:/chatview/image1/ScreenShoot/ScreenCapture_toolbar_ellipse_ineffect.png);
+border:1px solid #00000000;
+}
+QPushButton#tool_ring:checked{
+image: url(:/chatview/image1/ScreenShoot/ScreenCapture_toolbar_ellipse_effect.png);
+border: 1px solid #1BA9BA;
+}
+QPushButton#tool_ring:hover{
+image : url(:/chatview/image1/ScreenShoot/ScreenCapture_toolbar_ellipse_effect.png);
+}
+/* 画笔工具 */
+QPushButton#tool_pen{
+image: url(:/chatview/image1/ScreenShoot/ScreenCapture_toolbar_pen_ineffect.png);
+border:1px solid #00000000;
+}
+QPushButton#tool_pen:checked{
+image: url(:/chatview/image1/ScreenShoot/ScreenCapture_toolbar_pen_effect.png);
+border: 1px solid #1BA9BA;
+}
+QPushButton#tool_pen:hover{
+image : url(:/chatview/image1/ScreenShoot/ScreenCapture_toolbar_pen_effect.png);
+}
+
+/* 文本工具 */
+QPushButton#tool_text{
+image: url(:/chatview/image1/ScreenShoot/ScreenCapture_toolbar_text_ineffect.png);
+border:1px solid #00000000;
+}
+QPushButton#tool_text:checked{
+image: url(:/chatview/image1/ScreenShoot/ScreenCapture_toolbar_text_effect.png);
+border: 1px solid #1BA9BA;
+}
+QPushButton#tool_text:hover{
+image : url(:/chatview/image1/ScreenShoot/ScreenCapture_toolbar_text_effect.png);
+}
+
+/* 箭头工具 */
+QPushButton#tool_arrow{
+image: url(:/chatview/image1/ScreenShoot/ScreenCapture_toolbar_arrow_ineffect.png);
+border:1px solid #00000000;
+}
+QPushButton#tool_arrow:checked{
+image: url(:/chatview/image1/ScreenShoot/ScreenCapture_toolbar_arrow_effect.png);
+border: 1px solid #1BA9BA;
+}
+QPushButton#tool_arrow:hover{
+image : url(:/chatview/image1/ScreenShoot/ScreenCapture_toolbar_arrow_effect.png);
+}
+
+/* 回退操作 */
+QPushButton#tool_undo{
+image: url(:/chatview/image1/ScreenShoot/ScreenCapture_toolbar_undo_normal.png);
+border:1px solid #00000000;
+}
+QPushButton#tool_undo:pressed{
+background-color:#BBBBBB;
+}
+QPushButton#tool_undo:hover{
+background-color:#999999;
+}
+/* 关闭操作 */
+QPushButton#tool_cancle{
+image: url(:/chatview/image1/ScreenShoot/ScreenCapture_toolbar_cross_normal.png);
+border:1px solid #00000000;
+}
+QPushButton#tool_cancle:pressed{
+background-color:#BBBBBB;
+}
+QPushButton#tool_cancle:hover{
+background-color:#999999;
+}
+/* 选择操作 */
+QPushButton#tool_select{
+image: url(:/chatview/image1/ScreenShoot/ScreenCapture_toolbar_tick_normal.png);
+border:1px solid #00000000;
+}
+QPushButton#tool_select:pressed{
+background-color:#BBBBBB;
+}
+QPushButton#tool_select:hover{
+background-color:#999999;
+}
+
+/* 分隔符 */
+QWidget#splite_tool,#sp_color_down,#sp_color_up{
+	margin-top:5px;
+margin-bottom:5px;
+border-radius: 2px;
+background: qlineargradient( x1:0, y1:1, x2:0, y2:0,
+	 stop:0 #00000000,
+	 stop:0.2 #FFFFFF,
+	 stop:0.8 #FFFFFF,
+	 stop:1.0 #00000000 );
+}
+
+/* 线宽 */
+QLabel#point_down_2{
+   background-color:#FEFEFE;
+   border-radius: 1px;
+}
+QLabel#point_down_4{
+   background-color:#FEFEFE;
+   border-radius: 2px;
+}
+QLabel#point_down_8{
+   background-color:#FEFEFE;
+   border-radius: 3px;
+}
+
+QLabel#point_up_2{
+   background-color:#FEFEFE;
+   border-radius: 1px;
+}
+QLabel#point_up_4{
+   background-color:#FEFEFE;
+   border-radius: 2px;
+}
+QLabel#point_up_8{
+   background-color:#FEFEFE;
+   border-radius: 3px;
+}
+
+QWidget#selected_color_frame_down{
+border:1px solid #1BA9BA;
+}
+
+QLabel#selected_color_down{
+border:1px solid #00000000;
+   background-color:#FEFEFE;
+}
+
+
+QWidget#color_down_f0{
+border:1px solid #FEFEFE;
+background-color:#00000000;
+}
+QLabel#color_down_c0{
+border:1px solid #000000;
+background-color:#000000;
+}
+QWidget#color_down_f1{
+border:1px solid #FEFEFE;
+background-color:#00000000;
+}
+QLabel#color_down_c1{
+border:1px solid #808080;
+background-color:#808080;
+}
+
+QWidget#color_down_f2{
+border:1px solid #FEFEFE;
+background-color:#00000000;
+}
+QLabel#color_down_c2{
+border:1px solid #800000;
+background-color:#800000;
+}
+QWidget#color_down_f3{
+border:1px solid #FEFEFE;
+background-color:#00000000;
+}
+QLabel#color_down_c3{
+border:1px solid #F7883A;
+background-color:#F7883A;
+}
+
+QWidget#color_down_f4{
+border:1px solid #FEFEFE;
+background-color:#00000000;
+}
+QLabel#color_down_c4{
+border:1px solid #308430;
+background-color:#308430;
+}
+
+QWidget#color_down_f5{
+border:1px solid #FEFEFE;
+background-color:#00000000;
+}
+QLabel#color_down_c5{
+border:1px solid #385AD3;
+background-color:#385AD3;
+}
+QWidget#color_down_f6{
+border:1px solid #FEFEFE;
+background-color:#00000000;
+}
+QLabel#color_down_c6{
+border:1px solid #800080;
+background-color:#800080;
+}
+
+QWidget#color_down_f7{
+border:1px solid #FEFEFE;
+background-color:#00000000;
+}
+QLabel#color_down_c7{
+border:1px solid #009999;
+background-color:#009999;
+}
+
+
+
+QWidget#color_down_f0_2{
+border:1px solid #FEFEFE;
+background-color:#00000000;
+}
+QLabel#color_down_c0_2{
+border:1px solid #FFFFFF;
+background-color:#FFFFFF;
+}
+QWidget#color_down_f1_2{
+border:1px solid #FEFEFE;
+background-color:#00000000;
+}
+QLabel#color_down_c1_2{
+border:1px solid #C0C0C0;
+background-color:#C0C0C0;
+}
+
+QWidget#color_down_f2_2{
+border:1px solid #FEFEFE;
+background-color:#00000000;
+}
+QLabel#color_down_c2_2{
+border:1px solid #FF0000;
+background-color:#FF0000;
+}
+QWidget#color_down_f3_2{
+border:1px solid #FEFEFE;
+background-color:#00000000;
+}
+QLabel#color_down_c3_2{
+border:1px solid #FFFF00;
+background-color:#FFFF00;
+}
+
+QWidget#color_down_f4_2{
+border:1px solid #FEFEFE;
+background-color:#00000000;
+}
+QLabel#color_down_c4_2{
+border:1px solid #99cc00;
+background-color:#99cc00;
+}
+
+QWidget#color_down_f5_2{
+border:1px solid #FEFEFE;
+background-color:#00000000;
+}
+QLabel#color_down_c5_2{
+border:1px solid #3894E4;
+background-color:#3894E4;
+}
+QWidget#color_down_f6_2{
+border:1px solid #FEFEFE;
+background-color:#00000000;
+}
+QLabel#color_down_c6_2{
+border:1px solid #F31BF3;
+background-color:#F31BF3;
+}
+
+QWidget#color_down_f7_2{
+border:1px solid #FEFEFE;
+background-color:#00000000;
+}
+QLabel#color_down_c7_2{
+border:1px solid #16DCDC;
+background-color:#16DCDC;
+}
+
+/* up  */
+/* 线宽 */
+QLabel#point_up_2{
+   background-color:#FEFEFE;
+   border-radius: 1px;
+}
+QLabel#point_up_4{
+   background-color:#FEFEFE;
+   border-radius: 2px;
+}
+QLabel#point_up_8{
+   background-color:#FEFEFE;
+   border-radius: 3px;
+}
+
+QLabel#point_up_2{
+   background-color:#FEFEFE;
+   border-radius: 1px;
+}
+QLabel#point_up_4{
+   background-color:#FEFEFE;
+   border-radius: 2px;
+}
+QLabel#point_up_8{
+   background-color:#FEFEFE;
+   border-radius: 3px;
+}
+
+QWidget#selected_color_frame_up{
+border:1px solid #1BA9BA;
+}
+
+QLabel#selected_color_up{
+border:1px solid #00000000;
+   background-color:#FEFEFE;
+}
+
+
+QWidget#color_up_f0{
+border:1px solid #FEFEFE;
+background-color:#00000000;
+}
+QLabel#color_up_c0{
+border:1px solid #000000;
+background-color:#000000;
+}
+QWidget#color_up_f1{
+border:1px solid #FEFEFE;
+background-color:#00000000;
+}
+QLabel#color_up_c1{
+border:1px solid #808080;
+background-color:#808080;
+}
+
+QWidget#color_up_f2{
+border:1px solid #FEFEFE;
+background-color:#00000000;
+}
+QLabel#color_up_c2{
+border:1px solid #800000;
+background-color:#800000;
+}
+QWidget#color_up_f3{
+border:1px solid #FEFEFE;
+background-color:#00000000;
+}
+QLabel#color_up_c3{
+border:1px solid #F7883A;
+background-color:#F7883A;
+}
+
+QWidget#color_up_f4{
+border:1px solid #FEFEFE;
+background-color:#00000000;
+}
+QLabel#color_up_c4{
+border:1px solid #308430;
+background-color:#308430;
+}
+
+QWidget#color_up_f5{
+border:1px solid #FEFEFE;
+background-color:#00000000;
+}
+QLabel#color_up_c5{
+border:1px solid #385AD3;
+background-color:#385AD3;
+}
+QWidget#color_up_f6{
+border:1px solid #FEFEFE;
+background-color:#00000000;
+}
+QLabel#color_up_c6{
+border:1px solid #800080;
+background-color:#800080;
+}
+
+QWidget#color_up_f7{
+border:1px solid #FEFEFE;
+background-color:#00000000;
+}
+QLabel#color_up_c7{
+border:1px solid #009999;
+background-color:#009999;
+}
+
+
+
+QWidget#color_up_f0_2{
+border:1px solid #FEFEFE;
+background-color:#00000000;
+}
+QLabel#color_up_c0_2{
+border:1px solid #FFFFFF;
+background-color:#FFFFFF;
+}
+QWidget#color_up_f1_2{
+border:1px solid #FEFEFE;
+background-color:#00000000;
+}
+QLabel#color_up_c1_2{
+border:1px solid #C0C0C0;
+background-color:#C0C0C0;
+}
+
+QWidget#color_up_f2_2{
+border:1px solid #FEFEFE;
+background-color:#00000000;
+}
+QLabel#color_up_c2_2{
+border:1px solid #FF0000;
+background-color:#FF0000;
+}
+QWidget#color_up_f3_2{
+border:1px solid #FEFEFE;
+background-color:#00000000;
+}
+QLabel#color_up_c3_2{
+border:1px solid #FFFF00;
+background-color:#FFFF00;
+}
+
+QWidget#color_up_f4_2{
+border:1px solid #FEFEFE;
+background-color:#00000000;
+}
+QLabel#color_up_c4_2{
+border:1px solid #99cc00;
+background-color:#99cc00;
+}
+
+QWidget#color_up_f5_2{
+border:1px solid #FEFEFE;
+background-color:#00000000;
+}
+QLabel#color_up_c5_2{
+border:1px solid #3894E4;
+background-color:#3894E4;
+}
+QWidget#color_up_f6_2{
+border:1px solid #FEFEFE;
+background-color:#00000000;
+}
+QLabel#color_up_c6_2{
+border:1px solid #F31BF3;
+background-color:#F31BF3;
+}
+
+QWidget#color_up_f7_2{
+border:1px solid #FEFEFE;
+background-color:#00000000;
+}
+QLabel#color_up_c7_2{
+border:1px solid #16DCDC;
+background-color:#16DCDC;
+}
+
+z

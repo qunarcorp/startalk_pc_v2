@@ -1,0 +1,30 @@
+<RCC>
+    <qresource prefix="/style">
+        <file>style1/data.xml</file>
+        <file>style1/app.qss</file>
+        <file>style1/Emoticon.qss</file>
+        <file>style1/Screenshot.qss</file>
+        <file>style1/UIAddressBook.qss</file>
+        <file>style1/UICardManager.qss</file>
+        <file>style1/UIChatViewPlug.qss</file>
+        <file>style1/UIGroupManager.qss</file>
+        <file>style1/UILoginPlug.qss</file>
+        <file>style1/UINavigationPlug.qss</file>
+        <file>style1/UIOAManager.qss</file>
+        <file>style1/UIPictureBrowser.qss</file>
+        <file>style1/UITitlebarPlug.qss</file>
+        <file>style2/data.xml</file>
+        <file>style2/app.qss</file>
+        <file>style2/Emoticon.qss</file>
+        <file>style2/Screenshot.qss</file>
+        <file>style2/UIAddressBook.qss</file>
+        <file>style2/UICardManager.qss</file>
+        <file>style2/UIChatViewPlug.qss</file>
+        <file>style2/UIGroupManager.qss</file>
+        <file>style2/UILoginPlug.qss</file>
+        <file>style2/UINavigationPlug.qss</file>
+        <file>style2/UIOAManager.qss</file>
+        <file>style2/UIPictureBrowser.qss</file>
+        <file>style2/UITitlebarPlug.qss</file>
+    </qresource>
+</RCC>

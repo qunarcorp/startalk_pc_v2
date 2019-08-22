@@ -1,0 +1,293 @@
+﻿
+/**
+ * @brief 标题栏主面板背景色
+ * @author cyz
+ * @date 2018.9.18
+ */
+
+QFrame#loginMainFrm>QFrame#leftFrame{
+	background:rgba(255,255,255,0.9);
+	border-top-left-radius:6px;
+    border-top-right-radius:0px;
+    border-bottom-right-radius:0px;
+    border-bottom-left-radius:6px;
+}
+
+QFrame#leftFrame>QFrame#userNameFrm{
+	background:rgba(0,0,0,0);
+	border-width: 0px 0px 0px 0px;
+	border-style: solid;
+	border-color: rgba(238,238,238,1);
+}
+
+QLineEdit#userNameEdt{
+	background-color: rgba(0,0,0,0);
+	border-width:0;
+	border-style:outset;
+	font-weight:400;
+	color:rgba(51,51,51,1);
+	font-size: 14px;
+}
+
+QFrame#leftFrame>QFrame#passworldFrm{
+	background:rgba(0,0,0,0);
+	border-width: 0px 0px 1px 0px;
+	border-style: solid;
+	border-color: rgba(238,238,238,1);
+}
+
+QLineEdit#passworldEdt{
+	background-color: rgba(0,0,0,0);
+	border-width:0;
+	border-style:outset;
+	font-weight:400;
+	color:rgba(51,51,51,1);
+	font-size: 14px;
+}
+
+QPushButton#loginBtn { 
+	border-image:url(:/login/image1/loginBtn_normal.png);
+	
+}
+QPushButton#loginBtn:hover{
+	border-image:url(:/login/image1/loginBtn_hover.png);
+}
+
+QPushButton#loginBtn:pressed{
+	border-image:url(:/login/image1/loginBtn_hover.png);
+}
+
+QPushButton#settingBtn { 
+	border-image:url(:/login/image1/settingBtn_normal.png);
+}
+
+QPushButton#settingBtn:checked {
+	border-image:url(:/login/image1/settingBtn_normal_checked.png);
+}
+
+QPushButton#settingBtn:hover{
+	border-image:url(:/login/image1/settingBtn_hover.png);
+}
+
+QPushButton#settingBtn:hover:checked{
+	border-image:url(:/login/image1/settingBtn_hover_checked.png);
+}
+
+QPushButton#settingBtn:pressed{
+	border-image:url(:/login/image1/settingBtn_hover.png);
+}
+
+QPushButton#settingBtn:pressed:checked{
+	border-image:url(:/login/image1/settingBtn_hover_checked.png);
+}
+
+QPushButton#closeBtn { 
+	border-image:url(:/login/image1/closeBtn_normal.png);
+	
+}
+QPushButton#closeBtn:hover{
+	border-image:url(:/login/image1/closeBtn_hover.png);
+}
+
+QPushButton#closeBtn:pressed{
+	border-image:url(:/login/image1/closeBtn_hover.png);
+}
+
+QPushButton#severBtn,
+QPushButton#changePwdBtn{
+	border-radius:2px;
+	border:1px solid rgba(191,191,191,1);
+	font-size:13px;
+	font-weight:400;
+	color:rgba(102,102,102,1);
+}
+
+QPushButton#severBtn:hover,
+QPushButton#changePwdBtn:hover{
+	border-radius:2px;
+	border:1px solid rgba(0,195,188,1);
+	font-size:13px;
+	font-weight:400;
+	color:rgba(0,195,188,1);
+	text-align:center
+}
+
+QPushButton#severBtn:pressed,
+QPushButton#changePwdBtn:pressed{
+	border-radius:2px;
+	border:1px solid rgba(0,195,188,1);
+	font-size:13px;
+	font-weight:400;
+	color:rgba(0,195,188,1);
+	text-align:center
+}
+
+QFrame#AuthFailedFrm {
+	background:rgba(255,108,86,0.2);
+	border-radius:10px 0px 0px 0px;
+}
+
+QPushButton#cancelLoginButton {
+	background: white;
+	border-radius:2px;
+	padding: 5px;
+	border:1px solid #BFBFBF;
+	font-size:13px;
+	font-weight:400;
+	color:rgba(102,102,102,1);
+	line-height:18px;
+}
+
+QPushButton#cancelLoginButton:hover {
+	background: #E0F7F7;
+	border-radius:2px;
+	padding: 5px;
+	border:1px solid #BFBFBF;
+}
+
+QLabel#LogingWnd_Loging {
+	font-size:17px;
+	font-weight:400;
+	color:rgba(0,0,0,0.65);
+	line-height:22px;
+}
+
+QLabel#LogingWnd_status {
+	font-size:13px;
+	font-weight:400;
+	color:rgba(153,153,153,1);
+	line-height:22px;
+}
+
+QLabel#AuthFailedLabel {
+	font-size:14px;
+	font-weight:400;
+	color:rgba(0,0,0,0.65);
+	line-height:22px;
+}
+
+QLabel#GlobalVersion {
+    font-size: 12px;
+    font-weight: 400;
+    color:rgba(191,191,191,1);
+    line-height: 20px;
+}
+
+QLabel#wenanLabel {
+    font-size: 14px;
+    font-weight: 400;
+    color: rgba(51,51,51, 0.7);
+    line-height: 20px;
+    padding-top: 20px;
+    border-bottom-right-radius:6px;
+    background: qlineargradient(x1:0, y1:1, x2:0, y2:0,stop:0 white, stop:0.5 rgba(255,255,255,0.3),stop:1 rgba(255,255,255,0));
+}
+
+QFrame#NavManager_TopFrm {
+    background:rgba(249,249,249,1);
+    border-top-left-radius:6px;
+    border-top-right-radius:6px;
+    border-bottom-right-radius:0px;
+    border-bottom-left-radius:0px;
+}
+
+QFrame#NavManager_MainFrm {
+    background:rgba(255,255,255,1);
+    border-top-left-radius:0px;
+    border-top-right-radius:0px;
+    border-bottom-right-radius:6px;
+    border-bottom-left-radius:6px;
+}
+
+QLabel#NavManager_TitleLabel {
+    font-size:16px;
+    color:rgba(51,51,51,1);
+    line-height:16px;
+}
+
+QPushButton#NavManager_CloseBtn {
+    border-image:url(:/login/image1/closeBtn_normal.png);
+}
+QPushButton#NavManager_CloseBtn:hover{
+	border-image:url(:/login/image1/closeBtn_hover.png);
+}
+
+QPushButton#NavView_addbtn, #DeleteBtn, #AddNavWnd_cancel {
+    color:rgba(102,102,102,1);
+    background:rgba(255,255,255,1);
+    border-radius:2px;
+    border:1px solid rgba(181,181,181,1);
+}
+
+QPushButton#NavView_addbtn:hover, #DeleteBtn:hover, #AddNavWnd_cancel:hover {
+    background:rgba(242,242,242,1);
+    border:1px solid rgba(217,217,217,1);
+}
+
+QPushButton#ChoseBtn, #AddNavWnd_Add {
+    background:rgba(0,202,190,1);
+    color:rgba(255,255,255,1);
+    border-radius:2px;
+}
+
+QPushButton#ChoseBtn:hover, #AddNavWnd_Add:hover {
+    background:rgba(0,172,162,1);
+}
+
+QPushButton#ChoseBtn:disabled {
+    background:rgba(0,202,190, 0.6);
+}
+
+QFrame#NavMainView > QLineEdit{
+    border-width:0px;
+    border-style:outset;
+}
+
+QFrame#NavMainView > QTextEdit:focus {
+    border-style:solid;
+    border:1px solid rgba(0, 202, 190, 0.6);
+}
+
+QLabel#QRCodeLabel {
+    border:5px solid rgba(242, 242, 242, 1);
+}
+
+QLineEdit#AddNavWnd_Name {
+    border-radius:2px;
+    border:1px solid rgba(221, 221, 221, 1);
+}
+
+QLineEdit#AddNavWnd_Name:focus {
+    border:1px solid rgba(0, 202, 190, 0.6);
+}
+
+QTextEdit {
+    border-radius:2px;
+    border:1px solid rgba(221, 221, 221, 1);
+}
+
+QTextEdit#AddNavWnd_Addr:focus {
+    border:1px solid rgba(0, 202, 190, 0.6);
+}
+
+QWidget#AddNavWnd > QLabel {
+    font-size:13px;
+    font-weight:400;
+    color:rgba(102,102,102,1);
+    line-height:13px;
+}
+
+QTextEdit#FeedbackEdit {
+    border-radius:2px;
+    border:1px solid rgba(221,221,221,1);
+}
+
+QLineEdit {
+
+}
+QLineEdit[text=""]{ color:gray; }
+
+QFrame#loginMainFrm {
+    background:rgba(255,255,255,1);
+    border-radius:6px;
+}

@@ -1,0 +1,40 @@
+<RCC>
+    <qresource prefix="/QTalk">
+        <file>image1/QTalk_2019.png</file>
+        <file>image1/QTalk.png</file>
+        <file>image1/QTalk_50.png</file>
+        <file>image1/StarTalk.png</file>
+        <file>image1/Qchat.png</file>
+        <file>image1/StarTalk_200.png</file>
+        <file>image1/StarTalk_50.png</file>
+        <file>image1/starTalkTip.png</file>
+        <file>image1/redPoint.png</file>
+        <file>config/PluginManager.json</file>
+        <file>image1/edit_hover.png</file>
+        <file>image1/edit_normal.png</file>
+        <file>image1/search_hover.png</file>
+        <file>image1/search_normal.png</file>
+        <file>image1/headPortrait.png</file>
+        <file>image1/defaultGroupHead.png</file>
+        <file>image1/headPortrait_female.png</file>
+        <file>image1/StarTalk_defaultGroup.png</file>
+        <file>image1/StarTalk_defaultHead.png</file>
+        <file>image1/closeBtn_hover.png</file>
+        <file>image1/closeBtn_normal.png</file>
+        <file>image1/mac_close.png</file>
+        <file>image1/mac_close_hover.png</file>
+        <file>image1/arrow_sort_down_small.png</file>
+        <file>image1/atalk_50.png</file>
+        <file>image1/atalk.png</file>
+        <file>config/qt_zh_CN.qm</file>
+        <file>config/widgets.qm</file>
+        <file>config/english.qm</file>
+        <file>qml/main.qml</file>
+        <file>image1/radio_icon_normal.png</file>
+        <file>image1/radio_icon_selected.png</file>
+        <file>image1/checkbox_icon_uncheck.png</file>
+        <file>image1/checkbox_icon_check.png</file>
+        <file>ttf/FZLTHJW.TTF</file>
+        <file>ttf/FZLTZHJW.TTF</file>
+    </qresource>
+</RCC>

@@ -1,0 +1,26 @@
+<RCC>
+    <qresource prefix="/">
+        <file alias="head_mask">Resource/head_mask.png</file>
+        <file alias="head_shadow">Resource/head_shadow.png</file>
+        <file alias="error">Resource/error.png</file>
+        <file alias="information">Resource/information.png</file>
+        <file alias="question">Resource/question.png</file>
+        <file alias="success">Resource/success.png</file>
+        <file alias="warning">Resource/warning.png</file>
+        <file>Resource/BlackList.png</file>
+        <file>Resource/friendList.png</file>
+        <file>Resource/groupList.png</file>
+        <file>Resource/staff.png</file>
+        <file>Resource/starTalk_staff.png</file>
+        <file>Resource/starContact.png</file>
+        <file>Resource/subscription.png</file>
+        <file alias="rshadow_bottom">Resource/rshadow_bottom.png</file>
+        <file alias="rshadow_left">Resource/rshadow_left.png</file>
+        <file alias="rshadow_left_bottom">Resource/rshadow_left_bottom.png</file>
+        <file alias="rshadow_left_top">Resource/rshadow_left_top.png</file>
+        <file alias="rshadow_right">Resource/rshadow_right.png</file>
+        <file alias="rshadow_right_bottom">Resource/rshadow_right_bottom.png</file>
+        <file alias="rshadow_right_top">Resource/rshadow_right_top.png</file>
+        <file alias="rshadow_top">Resource/rshadow_top.png</file>
+    </qresource>
+</RCC>

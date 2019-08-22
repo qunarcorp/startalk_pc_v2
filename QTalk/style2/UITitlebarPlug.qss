@@ -1,0 +1,342 @@
+﻿QFrame#titleMainFrm{
+	background:rgba(39, 43, 48, 1);
+    border-top-left-radius:6px;
+    border-top-right-radius:6px;
+    border-bottom-right-radius:0px;
+    border-bottom-left-radius:0px;
+    border-width: 0px 0px 1px 0px;
+    border-style: solid;
+    border-color: #33373C;
+}
+
+QFrame#titleMainFrm>QFrame#leftCorFrm{
+    background:rgba(39, 43, 48, 1);
+    border-width: 0px 0px 0px 0px;
+    border-style: solid;
+    border-top-left-radius:6px;
+    border-top-right-radius:0px;
+    border-bottom-right-radius:0px;
+    border-bottom-left-radius:0px;
+}
+
+QFrame#searchFrm{
+    border-radius:4px;
+    background:rgba(63, 66, 71, 1);
+    border-radius:4px;
+}
+
+QLineEdit#SearchEdit_ {
+    background: transparent;
+    border-width:0px;
+    border-style:outset;
+	border-color:#fff;
+    font-weight:400;
+    font-size: 13px;
+    color: #fff;
+}
+
+QLineEdit#SearchEdit_:focus {
+    color: #fff;
+}
+
+QToolButton#creatGroupBtn {
+	border-image:url(:/title/image1/creatGroup.png);
+	
+}
+QToolButton#creatGroupBtn:hover{
+	border-image:url(:/title/image1/creatGroup_hover.png);
+}
+
+QToolButton#creatGroupBtn:pressed{
+	border-image:url(:/title/image1/creatGroup_hover.png);
+}
+
+QToolButton#contactBtn {
+	border-image:url(:/title/image1/contactBtn_normal_2.png);
+}
+QToolButton#contactBtn:hover{
+	border-image:url(:/title/image1/contactBtn_normal_2.png);
+}
+QToolButton#contactBtn:pressed{
+	border-image:url(:/title/image1/contactBtn_checked_2.png);
+}
+
+QToolButton#contactBtn:checked{
+	border-image:url(:/title/image1/contactBtn_checked_2.png);
+}
+
+QToolButton#multifunctionBtn { 
+	border-image:url(:/title/image1/multifunctionBtn_normal_2.png);
+}
+QToolButton#multifunctionBtn:hover{
+	border-image:url(:/title/image1/multifunctionBtn_normal_2.png);
+}
+QToolButton#multifunctionBtn:pressed{
+	border-image:url(:/title/image1/multifunctionBtn_checked_2.png);
+}
+QToolButton#multifunctionBtn:checked{
+	border-image:url(:/title/image1/multifunctionBtn_checked_2.png);
+}
+
+QToolButton#minimizeBtn { 
+	border-image:url(:/title/image1/minimizeBtn_normal.png);
+	
+}
+QToolButton#minimizeBtn:hover{
+	border-image:url(:/title/image1/minimizeBtn_hover.png);
+}
+
+QToolButton#minimizeBtn:pressed{
+	border-image:url(:/title/image1/minimizeBtn_hover.png);
+}
+
+QToolButton#maximizeBtn { 
+	border-image:url(:/title/image1/maximizeBtn_normal.png);
+	
+}
+QToolButton#maximizeBtn:hover{
+	border-image:url(:/title/image1/maximizeBtn_hover.png);
+}
+
+QToolButton#maximizeBtn:pressed{
+	border-image:url(:/title/image1/maximizeBtn_hover.png);
+}
+
+QToolButton#restoreBtn { 
+	border-image:url(:/title/image1/restoreBtn_normal.png);
+	
+}
+QToolButton#restoreBtn:hover{
+	border-image:url(:/title/image1/restoreBtn_hover.png);
+}
+
+QToolButton#restoreBtn:pressed{
+	border-image:url(:/title/image1/restoreBtn_hover.png);
+}
+
+QToolButton#macmaximizeBtn {
+	border-image:url(:/title/image1/mac_max.png);
+
+}
+QToolButton#macmaximizeBtn:hover{
+	border-image:url(:/title/image1/mac_max_hover.png);
+}
+
+QToolButton#macminimizeBtn {
+	border-image:url(:/title/image1/mac_min.png);
+
+}
+QToolButton#macminimizeBtn:hover{
+	border-image:url(:/title/image1/mac_min_hover.png);
+}
+
+QFrame#DropMenu
+{
+    background:rgba(68,73,77,1);
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+    border-bottom-left-radius: 6px;
+}
+
+QFrame#DropMenu > QLabel {
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+QLabel {
+    font-size:14px;
+    font-weight:400;
+    color:rgba(225,236,239,1);
+}
+
+QLabel#DropMenu_Name {
+    font-size:14px;
+    font-weight:400;
+    color:rgba(225,236,239,1);
+}
+
+QWidget#SearchResultPanel{
+    background:rgba(48,51,55,255);
+}
+
+QFrame#AboutMainFrm {
+     border-top-left-radius:6px;
+     border-top-right-radius:6px;
+     border-bottom-right-radius:6px;
+     border-bottom-left-radius:6px;
+}
+
+QLabel#AboutVersionLabel {
+    font-size:12px;
+    font-weight:400;
+    color:rgba(0,59,55,1);
+    line-height:17px;
+}
+
+QLabel#AboutCopyrightLabel {
+    font-size:11px;
+    font-weight:400;
+    color:rgba(0,59,55,1);
+    line-height:15px;
+}
+
+QPushButton#SettingBtn {
+    background:rgba(68,73,77,1);
+    border-radius:2px;
+    font-size:14px;
+    border:1px solid rgba(0,0,0,0.3);
+    color:rgba(225,236,239,1);
+}
+
+QPushButton#SettingBtn:hover {
+    color:rgba(225,236,239,0.6);
+}
+
+QPushButton#SubmitBtn {
+    background:rgba(0,202,190,1);
+    font-size:12px;
+    font-weight:400;
+    color:#fff;
+    border-radius:2px;
+}
+
+QPushButton#SubmitBtn:hover {
+    background:rgba(0,202,190, 0.8);
+}
+
+QLineEdit#SettingLineEdit {
+    Text-align: left;
+    border-radius:2px;
+    border:1px solid rgba(221,221,221,1);
+    font-size:12px;
+    font-weight:400;
+    color:rgba(191,191,191);
+    height:28px;
+    padding-left:5px;
+    padding-right:5px;
+}
+
+QFrame#SettingTitleFrm{
+    background:rgba(59, 63, 68, 1);
+    border-top-left-radius:6px;
+    border-top-right-radius:6px;
+}
+
+QLabel#SettingTitleLabel {
+    color:rgba(191,191,191,1);
+    font-size:16px;
+}
+
+QFrame#SettingContentFrm {
+    background:rgba(48, 51, 55, 1);
+    border-bottom-left-radius:6px;
+    border-bottom-right-radius:6px;
+}
+
+QListWidget#SettingListWidget {
+    background:rgba(48, 51, 55, 1);
+    outline:0px;
+}
+
+QListWidget#SettingListWidget::Item {
+    background:rgba(48, 51, 55, 1);
+}
+
+QListWidget#SettingListWidget::Item:hover {
+    background:rgba(48, 51, 55, 1);
+}
+
+QListWidget#SettingListWidget::item:selected {
+    background:rgba(48, 51, 55, 1);
+}
+
+QListWidget#SettingListWidget::item:selected:!active {
+    background:rgba(48, 51, 55, 1);
+}
+
+QLabel#SettingTitleLbl {
+    color:rgba(255,255,255,1);
+    font-size:15px;
+    font-weight:500;
+}
+
+QLabel#SettingTLabel, #sendMessageLabel {
+    color:rgba(225,236,239,1);
+    font-size:13px;
+    font-weight:400;
+}
+
+
+QFrame#topFrm {
+    background:rgba(249,249,248,1);
+
+    border-top-left-radius:6px;
+    border-top-right-radius:6px;
+}
+
+QFrame#bodyFrm {
+    background-color: rgb(255, 255, 255);
+}
+
+QFrame#bottomFrm {
+    background-color: rgb(255, 255, 255);
+
+    border-bottom-left-radius:6px;
+    border-bottom-right-radius:6px;
+}
+
+QPushButton#ChangeBtn {
+    width:72px;
+    height:32px;
+    background:rgba(0,202,190,0.8);
+    border-radius:2px;
+    font-size:14px;
+    font-weight:400;
+    color:rgba(255,255,255,1);
+    line-height:20px;
+}
+
+QPushButton#ChangeBtn:hover {
+    background:rgba(0,202,190,1);
+}
+
+QLabel#titleLab {
+    font-size:16px;
+    font-weight:500;
+    color:rgba(51,51,51,1);
+    line-height:16px;
+}
+
+QToolButton#ClearBtn {
+    border-image:url(:/title/image1/btn_sk_delete.png);
+}
+
+QTextEdit, QLineEdit{
+    background: transparent;
+    font-size:14px;
+    font-weight:400;
+    color:rgba(153,153,153,1);
+    border: 1px solid rgba(191,191,191, 0.5);
+}
+
+QTextEdit:focus, QLineEdit:focus {
+    border: 1px solid rgba(0, 202, 190, 0.6);
+}
+
+QLabel#SearchTipWnd {
+    font-size:14px;
+    color:rgba(255,255,255,1);
+}
+
+QToolButton#closeBtn {
+	border-image:url(:/title/image1/closeBtn_normal.png);
+
+}
+QToolButton#closeBtn:hover{
+	border-image:url(:/title/image1/closeBtn_hover.png);
+}
+
+QToolButton#closeBtn:pressed{
+	border-image:url(:/title/image1/closeBtn_hover.png);
+}

@@ -1,0 +1,63 @@
+﻿
+QFrame#WebServiceMainFrm{
+	background:rgba(255,255,255,1);
+    border-top-left-radius:6px;
+    border-top-right-radius:6px;
+    border-bottom-right-radius:6px;
+    border-bottom-left-radius:6px;
+    border: 1px solid rgba(248,248,248,1);
+}
+
+QToolButton#macCloseBtn {
+    border-image: url(:/web/image1/mac_close.png);
+}
+
+QToolButton#closeBtn {
+    border-image: url(:/web/image1/closeBtn_normal.png);
+}
+
+QToolButton#macCloseBtn:hover {
+    border-image: url(:/web/image1/mac_close_hover.png);
+}
+
+QToolButton#closeBtn:hover {
+    border-image: url(:/web/image1/closeBtn_hover.png);
+}
+
+QToolButton#BackBtn {
+    border-image: url(:/web/image1/back_normal.png);
+}
+QToolButton#ForwardBtn {
+    border-image: url(:/web/image1/forward_normal.png);
+}
+QToolButton#ReloadBtn {
+    border-image: url(:/web/image1/reload.png);
+}
+QToolButton#ShareBtn {
+    border-image: url(:/web/image1/share.png);
+}
+QToolButton#CopyUrlBtn {
+    border-image: url(:/web/image1/copyUrl.png);
+}
+QToolButton#JumpToBrowserBtn {
+    border-image: url(:/web/image1/jumpToBrowser.png);
+}
+
+QLineEdit#LinkAddressEdit {
+    height: 28px;
+    background:rgba(255,255,255,1);
+    border-radius:14px;
+    border:2px solid rgba(151,151,151,0.15);
+    font-size:14px;
+    color:rgba(51,51,51,0.8);
+    padding-left: 10px;
+}
+
+QLineEdit#LinkAddressEdit:hover {
+    background:rgba(250,250,250,1);
+}
+
+QLineEdit#LinkAddressEdit:focus {
+    background:rgba(250,250,250,1);
+    border:2px solid rgba(0,202,190,1);
+}

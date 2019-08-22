@@ -1,0 +1,225 @@
+﻿EmoIconWgt QToolButton {
+    border-color: transparent;
+    background: transparent;
+}
+
+EmoIconWgt QToolButton:checked {
+    border-width:0px;
+    background: rgba(255,255,255,0.37);
+}
+
+QPushButton#Emoticon {
+    border-image: url(:/chatview/image1/Emoticon/Emoticon_normal.png);
+}
+
+QPushButton#Emoticon:hover{
+	border-image:url(:/chatview/image1/Emoticon/Emoticon_hover.png);
+}
+
+QPushButton#Emoticon:pressed{
+	border-image:url(:/chatview/image1/Emoticon/Emoticon_hover.png);
+}
+
+EmoticonMainWgt  QFrame#EmoticonTop {
+    background: rgba(255,255,255,1);
+    border-width: 0px;
+    border-style: solid;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+}
+
+EmoticonMainWgt  QFrame#EmoticonBottom {
+    background: rgba(242,242,242,1);
+    border-width: 0px;
+    border-style: solid;
+    border-bottom-right-radius: 6px;
+    border-bottom-left-radius: 6px;
+}
+
+EmoticonMainWgt QPushButton#EmoticonLeftPage {
+    border-image: url(:/chatview/image1/Emoticon/leftPage_normal.png);
+}
+
+EmoticonMainWgt QPushButton#EmoticonLeftPage:hover {
+    border-image: url(:/chatview/image1/Emoticon/leftPage_hover.png);
+}
+
+EmoticonMainWgt QPushButton#EmoticonLeftPage:pressed {
+    border-image: url(:/chatview/image1/Emoticon/leftPage_hover.png);
+}
+
+EmoticonMainWgt QPushButton#EmoticonLeftPage:disabled {
+    border-image: url(:/chatview/image1/Emoticon/leftPage_disabled.png);
+}
+
+EmoticonMainWgt QPushButton#EmoticonRightPage {
+    border-image: url(:/chatview/image1/Emoticon/RightPage_normal.png);
+}
+
+EmoticonMainWgt QPushButton#EmoticonRightPage:hover {
+    border-image: url(:/chatview/image1/Emoticon/RightPage_hover.png);
+}
+
+EmoticonMainWgt QPushButton#EmoticonRightPage:pressed {
+    border-image: url(:/chatview/image1/Emoticon/RightPage_hover.png);
+}
+
+EmoticonMainWgt QPushButton#EmoticonRightPage:disabled {
+    border-image: url(:/chatview/image1/Emoticon/RightPage_disabled.png);
+}
+
+EmoticonMainWgt QPushButton#EmoticonSetting {
+    border-image: url(:/chatview/image1/Emoticon/Setting_normal.png);
+}
+
+EmoticonMainWgt QPushButton#EmoticonSetting:hover {
+    border-image: url(:/chatview/image1/Emoticon/Setting_hover.png);
+}
+
+EmoticonMainWgt QPushButton#EmoticonSetting:pressed {
+    border-image: url(:/chatview/image1/Emoticon/Setting_hover.png);
+}
+
+EmoticonManager QFrame#EmoticonManagerTopFrame {
+    background: rgba(249,249,249,1);
+    border-width: 0px;
+    border-style: solid;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    border-bottom-right-radius:0px;
+    border-bottom-left-radius:0px;
+}
+
+EmoticonManager QFrame#EmoticonManagerMidFrame {
+    background: rgba(255,255,255,1);
+    border-width: 0px;
+    border-style: solid;
+    border-radius: 0px;
+}
+
+EmoticonManager QFrame#EmoticonManagerbottomFrame {
+    background: rgba(255,255,255,1);
+    border-width: 0px;
+    border-style: solid;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+    border-bottom-right-radius:6px;
+    border-bottom-left-radius:6px;
+}
+
+EmoticonManager QToolButton#EmoticonManagerClose {
+    border-image: url(:/chatview/image1/Emoticon/closeBtn_normal.png);
+}
+
+EmoticonManager QToolButton#EmoticonManagerClose:hover {
+    border-image: url(:/chatview/image1/Emoticon/closeBtn_hover.png);
+}
+
+EmoticonManager QToolButton#EmoticonManagerClose:pressed {
+    border-image: url(:/chatview/image1/Emoticon/closeBtn_hover.png);
+}
+
+EmoticonManager QLabel#EmoticonManagerTitle {
+    font-size: 14px;
+    font-weight: 600;
+    color: rgba(51,51,51,1);
+    line-height: 16px;
+}
+
+EmoticonManager QPushButton#EmoticonManagerLocalEmo, #EmoticonManagerNetEmo {
+    font-size: 14px;
+    font-weight: 400;
+    color: rgba(51,51,51,1);
+    line-height: 14px;
+    background: transparent;
+}
+
+EmoticonManager QPushButton#EmoticonManagerLocalEmo:checked, #EmoticonManagerNetEmo:checked {
+    color: rgba(0, 195, 188, 1);
+    font-weight: 500;
+    background-color: rgba(255,255,255,1);
+    border-style: solid;
+    border-color: rgba(255,255,255,1);
+    background-color: rgba(255,255,255,1);
+}
+
+EmoticonManager QPushButton#EmoticonManagerLocalEmo:pressed, #EmoticonManagerNetEmo:pressed {
+    color: rgba(0, 195, 188, 1);
+    font-weight: 500;
+    background-color: rgba(255,255,255,1);
+    border-style: solid;
+    border-color: rgba(255,255,255,1);
+    background-color: rgba(255,255,255,1);
+}
+
+LocalEmoticon QListWidget#LocalEmoLst::item {
+    height: 50px;
+}
+
+LocalEmoticon QListWidget#LocalEmoLst::item:selected {
+    height: 50px;
+    background: rgba(245,246,247,1);
+}
+
+LocalEmoticon QListWidget#LocalEmoLst::item:hover {
+    height: 50px;
+    background: rgba(245,246,247,1);
+}
+
+NetEmoticon QListWidget#NetEmoLst::item {
+    height: 50px;
+}
+
+NetEmoticon QListWidget#NetEmoLst::item:selected {
+    height: 50px;
+    background: rgba(245,246,247,1);
+}
+
+NetEmoticon QListWidget#NetEmoLst::item:hover {
+    height: 50px;
+    background: rgba(245,246,247,1);
+}
+
+NetEmoticon QLabel#NetEmoNameLabel {
+    font-size: 16px;
+    font-weight: 400;
+    color: rgba(51,51,51,1);
+    line-height: 16px;
+}
+
+NetEmoticon QLabel#NetEmoDescLabel {
+    font-size: 14px;
+    font-weight: 400;
+    color: rgba(102,102,102,1);
+    line-height: 14px;
+}
+
+NetEmoticon QLabel#NetEmoFileSizeLabel {
+    font-size: 14px;
+    font-weight: 400;
+    color: rgba(153,153,153,1);
+    line-height: 14px;
+}
+
+NetEmoticon QPushButton#DownloadEmoticonButton {
+    width: 160px;
+    height: 32px;
+    background: rgba(0,195,188,1);
+    border-radius: 4px;
+}
+
+NetEmoticon QPushButton#DownloadEmoticonButton:disabled {
+    width: 160px;
+    height: 32px;
+    background: rgba(255,255,255,1);
+    border-radius: 4px;
+    border: 1px solid rgba(217,217,217,1);
+}
+
+EmoPreviewWgt QTableWidget::item:selected {
+    background: rgba(245,246,247,1);
+}
+
+EmoPreviewWgt QTableWidget::item:hover {
+    background: rgba(245,246,247,1);
+} 

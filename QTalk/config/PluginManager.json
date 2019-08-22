@@ -1,0 +1,14 @@
+﻿{
+  "PluginsQt": {
+    "UILoginPlug": "UILoginPlug",
+    "UITitlebarPlug": "UITitlebarPlug",
+    "UINavigationPlug": "UINavigationPlug",
+    "UIChatViewPlug": "UIChatViewPlug",
+    "UICardManager": "UICardManager",
+    "UIGroupManager": "UIGroupManager",
+    "UIPictureBrowser": "UIPictureBrowser",
+    "UIAddressBook": "UIAddressBook",
+    "UIOAManager": "UIOAManager"
+  },
+  "comment": "插件配置文件,代码中通过插件关键字注册识别插件。在该文件中替换关键字的值就实现了插件的替换 PluginsC和PluginsQt是软件打开就会加载的插件"
+}

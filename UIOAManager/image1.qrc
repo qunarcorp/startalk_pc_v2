@@ -1,0 +1,19 @@
+<RCC>
+    <qresource prefix="/oamanager">
+        <file>image1/it_assistant.png</file>
+        <file>image1/oa.png</file>
+        <file>image1/task.png</file>
+        <file>image1/utilities.png</file>
+        <file>image1/icon/approvalCenters.png</file>
+        <file>image1/icon/attendance.png</file>
+        <file>image1/icon/boardroom.png</file>
+        <file>image1/icon/expenseAccount.png</file>
+        <file>image1/icon/hr.png</file>
+        <file>image1/icon/personalCenter.png</file>
+        <file>image1/icon/qunarIt.png</file>
+        <file>image1/icon/task.png</file>
+        <file>image1/icon/totaken.png</file>
+        <file>image1/icon/warring.png</file>
+        <file>image1/icon/watcher.png</file>
+    </qresource>
+</RCC>
