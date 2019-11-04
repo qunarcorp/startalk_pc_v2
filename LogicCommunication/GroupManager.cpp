@@ -117,13 +117,20 @@ bool GroupManager::getUserGroupInfo(MapGroupCard &mapGroups) {
         }
         if (restSts && !deleteGroups.empty()) {
             restSts = LogicManager::instance()->getDatabase()->bulkDeleteGroup(deleteGroups);
+            // all top
+            std::map<std::string, std::string> allTop;
+            LogicManager::instance()->getDatabase()->getConfig("kStickJidDic", allTop);
 			// 删除置顶群
  			for (const auto& groupId : deleteGroups)
  			{
- 				_pComm->_pUserConfig->updateUserSetting(UserSettingMsg::EM_OPERATOR_CANCEL,
- 					"kStickJidDic",
- 					QTalk::Entity::UID(groupId).toStdString(),
- 					"{\"topType\":0,\"chatType\":1}");
+                std::string uid = QTalk::Entity::UID(groupId).toStdString();
+                if(allTop.find(uid) != allTop.end())
+                {
+                    _pComm->_pUserConfig->updateUserSetting(UserSettingMsg::EM_OPERATOR_CANCEL,
+                                                            "kStickJidDic",
+                                                            uid,
+                                                            "{\"topType\":0,\"chatType\":1}");
+                }
  			}
         }
 
@@ -287,7 +294,7 @@ void GroupManager::upateGroupInfo(const std::vector<QTalk::StGroupInfo> &groupIn
 
             cJSON *resData = cJSON_Parse(data.c_str());
             if (nullptr == resData) {
-                error_log("upateGroupInfo 返回值 json 解析失败");
+                error_log("upateGroupInfo json error {0}", data.data());
                 return;
             }
             int ret = cJSON_GetObjectItem(resData, "ret")->valueint;

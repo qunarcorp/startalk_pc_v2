@@ -75,6 +75,7 @@ protected:
 
 class GroupItemPopDelegate : public QStyledItemDelegate
 {
+    Q_OBJECT
 public:
     explicit GroupItemPopDelegate(QObject *parent = Q_NULLPTR)
         : QStyledItemDelegate(parent)
@@ -122,13 +123,13 @@ protected:
             }
         } else if (index.column() == EM_COLUMN_ROLE) {
             int role = index.data(EM_DATA_USERROLE).toString().toInt();
-            QString strRole = "";
+            QString strRole = tr("");
             switch (role) {
                 case 1:
-                    strRole = "群主";
+                    strRole = tr("群主");
                     break;
                 case 2:
-                    strRole = "管理员";
+                    strRole = tr("管理员");
                     break;
                 case 0:
                 default:
@@ -158,7 +159,7 @@ public:
     {
         setFixedSize(330, 500);
         //
-        _titleLabel = new QLabel("群成员");
+        _titleLabel = new QLabel(tr("群成员"));
         _titleLabel->setObjectName("title");
         _titleLabel->setAlignment(Qt::AlignCenter);
         _pCloseBtn = new QPushButton(this);
@@ -253,8 +254,8 @@ public:
         _pMemberView->setColumnWidth(0, 200);
         _pMemberView->setColumnWidth(1, 60);
         _pModel->sort(1);
-        _pSrcModel->setHeaderData(0, Qt::Horizontal, "成员名");
-        _pSrcModel->setHeaderData(1, Qt::Horizontal, "群职");
+        _pSrcModel->setHeaderData(0, Qt::Horizontal, tr("成员名"));
+        _pSrcModel->setHeaderData(1, Qt::Horizontal, tr("群职"));
     }
 
 protected:

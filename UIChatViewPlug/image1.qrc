@@ -14,6 +14,8 @@
         <file>image1/morning_2.png</file>
         <file>image1/night_2.png</file>
         <file>image1/go.png</file>
+        <file>image1/coedit_hover.png</file>
+        <file>image1/coedit_normal.png</file>
         <file>image1/closeBtn_hover.png</file>
         <file>image1/closeBtn_normal.png</file>
         <file>image1/mac_close.png</file>
@@ -76,16 +78,6 @@
         <file>image1/messageItem/FileItemOPenFileBtn_1.png</file>
         <file>image1/messageItem/FileItemMenuBtn_1.png</file>
         <file>image1/messageItem/FileItemMenuBtn_hover_1.png</file>
-        <file>image1/messageItem/filetype/audio.png</file>
-        <file>image1/messageItem/filetype/excel.png</file>
-        <file>image1/messageItem/filetype/pdf.png</file>
-        <file>image1/messageItem/filetype/ppt.png</file>
-        <file>image1/messageItem/filetype/process.png</file>
-        <file>image1/messageItem/filetype/text.png</file>
-        <file>image1/messageItem/filetype/unknown.png</file>
-        <file>image1/messageItem/filetype/video.png</file>
-        <file>image1/messageItem/filetype/word.png</file>
-        <file>image1/messageItem/filetype/zip.png</file>
         <file>image1/messageItem/FileItemClose_hover_1.png</file>
         <file>image1/messageItem/FileItemDownLoadBtn_hover_1.png</file>
         <file>image1/messageItem/FileItemOPenFileBtn_hover_1.png</file>
@@ -104,6 +96,14 @@
         <file>image1/messageItem/FileItemMenuBtn_hover_2.png</file>
         <file>image1/messageItem/FileItemOPenFileBtn_2.png</file>
         <file>image1/messageItem/FileItemOPenFileBtn_hover_2.png</file>
+        <file>image1/messageItem/no_chose.png</file>
+        <file>image1/messageItem/no_unchose.png</file>
+        <file>image1/messageItem/yes_chose.png</file>
+        <file>image1/messageItem/yes_unchose.png</file>
+        <file>image1/messageItem/yes_unchose_black.png</file>
+        <file>image1/messageItem/no_unchose_black.png</file>
+        <file>image1/messageItem/no_chose_black.png</file>
+        <file>image1/messageItem/yes_chose_black.png</file>
         <file>image1/Emoticon/closeBtn_hover.png</file>
         <file>image1/Emoticon/closeBtn_normal.png</file>
         <file>image1/Emoticon/leftPage_disabled.png</file>

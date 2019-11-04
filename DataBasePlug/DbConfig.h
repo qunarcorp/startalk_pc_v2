@@ -5,17 +5,16 @@
 #ifndef QTALK_V2_DBCONFIG_H
 #define QTALK_V2_DBCONFIG_H
 
-#include "sqlite/database.h"
+#include "DaoInterface.h"
 
-class DbConfig
+class DbConfig : public DaoInterface
 {
 public:
-    DbConfig(qtalk::sqlite::database * sqlDb = nullptr);
+    explicit DbConfig(qtalk::sqlite::database * sqlDb = nullptr);
+    bool creatTable() override;
+    bool clearData() override;
 
 public:
-    bool creatTable();
-    bool clearData();
-
     bool getDbVersion(int &version);
     bool setDbVersion(const int& ver);
 
@@ -23,9 +22,6 @@ public:
 
 private:
     bool initGroupMainVersion();
-
-private:
-    qtalk::sqlite::database * _pSqlDb;
 };
 
 

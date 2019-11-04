@@ -10,6 +10,7 @@
 #include "SearchManager.h"
 #include "UserConfig.h"
 #include "GroupManager.h"
+#include "HotLinesConfig.h"
 
 /**
  * 
@@ -307,6 +308,17 @@ void CommMsgManager::gotIncrementUser(const std::vector<QTalk::Entity::ImUserInf
     EventBus::FireEvent(e);
 }
 
+void CommMsgManager::sendGetHistoryError() {
+    GetHistoryError e;
+    EventBus::FireEvent(e);
+}
+
+void CommMsgManager::onUserMadelChanged(const std::vector<QTalk::Entity::ImUserStatusMedal> &userMedals) {
+    UserMedalChangedEvt e;
+    e.userMedals = userMedals;
+    EventBus::FireEvent(e);
+}
+
 /**
  * 
  */
@@ -393,6 +405,15 @@ CommMsgListener::CommMsgListener(Communication *pComm)
 	EventBus::AddHandler<DestroyGroupRet>(*this);
 	EventBus::AddHandler<RetryConnectToServerEvt>(*this);
 	EventBus::AddHandler<S_AddHttpQeq>(*this);
+	EventBus::AddHandler<HotLineMessageListEvt>(*this);
+	EventBus::AddHandler<UpdateMsgExtendInfo>(*this);
+	EventBus::AddHandler<GetHotLines>(*this);
+	EventBus::AddHandler<CheckUpdaterEvt>(*this);
+	EventBus::AddHandler<UserMedalEvt>(*this);
+	EventBus::AddHandler<SgMedalListChanged>(*this);
+	EventBus::AddHandler<SgUserMedalChanged>(*this);
+	EventBus::AddHandler<GetMedalUserEvt>(*this);
+	EventBus::AddHandler<ModifyUserMedalStatusEvt>(*this);
 }
 
 CommMsgListener::~CommMsgListener() {
@@ -707,7 +728,7 @@ void CommMsgListener::onEvent(GetQchatToken &e) {
         return;
     }
     if(_pComm){
-        e.userMap = _pComm->getQchatTokenByQVT(e.strQVT);
+        _pComm->getQchatTokenByQVT(e.strQVT,e.userMap);
     }
 }
 
@@ -1226,4 +1247,60 @@ void CommMsgListener::onEvent(S_AddHttpQeq& e)
 {
     if (nullptr != _pComm)
         _pComm->addHttpRequest(e.request, e.callback);
+}
+
+void CommMsgListener::onEvent(HotLineMessageListEvt &e) {
+    if (nullptr != _pComm && _pComm->_pHotLinesConfig)
+        _pComm->_pHotLinesConfig->getHotLineMessageList(e.xmppId);
+}
+
+void CommMsgListener::onEvent(UpdateMsgExtendInfo &e) {
+    try {
+        LogicManager::instance()->getDatabase()->updateMessageExtendInfo(e.msgId, e.extendInfo);
+    }
+    catch (const std::exception& e)
+    {
+        error_log(e.what());
+    }
+}
+
+void CommMsgListener::onEvent(GetHotLines &e) {
+    if (nullptr != _pComm && _pComm->_pHotLinesConfig)
+        _pComm->_pHotLinesConfig->getVirtualUserRole();
+}
+
+void CommMsgListener::onEvent(CheckUpdaterEvt &e) {
+    if (nullptr != _pComm)
+        e.updater_link = _pComm->checkUpdater(e.version);
+}
+
+void CommMsgListener::onEvent(UserMedalEvt &e)
+{
+    try {
+        LogicManager::instance()->getDatabase()->getUserMedal(e.xmppId, e.medal);
+    }
+    catch (const std::exception& e)
+    {
+        error_log(e.what());
+    }
+}
+
+void CommMsgListener::onEvent(SgMedalListChanged &e) {
+    if (nullptr != _pComm)
+        _pComm->getMedalList();
+}
+
+void CommMsgListener::onEvent(SgUserMedalChanged &e) {
+    if (nullptr != _pComm)
+        _pComm->getUserMedal(true);
+}
+
+void CommMsgListener::onEvent(GetMedalUserEvt &e) {
+    if (nullptr != _pComm)
+        _pComm->getMedalUser(e.medalId, e.metalUsers);
+}
+
+void CommMsgListener::onEvent(ModifyUserMedalStatusEvt &e) {
+    if(nullptr != _pComm)
+        e.result = _pComm->modifyUserMedalStatus(e.medalId, e.isWear);
 }

@@ -155,22 +155,34 @@ void NavManager::initUi()
 {
     setFixedSize(630, 500);
     // top
-    QFrame* topFrm = new QFrame(this);
+    auto* topFrm = new QFrame(this);
     topFrm->setObjectName("NavManager_TopFrm");
     topFrm->setFixedHeight(50);
     auto * topLay = new QHBoxLayout(topFrm);
-    QLabel* titleLabel = new QLabel(tr("服务器设置"));
+    auto* titleLabel = new QLabel(tr("配置导航"));
     titleLabel->setObjectName("NavManager_TitleLabel");
     _pCloseBtn = new QPushButton();
-    _pCloseBtn->setFixedSize(30, 30);
-    _pCloseBtn->setObjectName("NavManager_CloseBtn");
+    titleLabel->setAlignment(Qt::AlignCenter);
     topLay->addWidget(titleLabel);
-    topLay->addItem(new QSpacerItem(10, 10, QSizePolicy::Expanding));
     topLay->addWidget(_pCloseBtn);
+
+#ifdef _MACOS
+    _pCloseBtn->setFixedSize(12, 12);
+    _pCloseBtn->setObjectName("gmCloseBtn");
+    topLay->addWidget(_pCloseBtn);
+    topLay->addWidget(titleLabel);
+    topLay->setContentsMargins(15, 6, 0, 0);
+#else
+    _pCloseBtn->setFixedSize(30, 30);
+    _pCloseBtn->setObjectName("gwCloseBtn");
+    topLay->setMargin(0);
+    topLay->addWidget(titleLabel);
+    topLay->addWidget(_pCloseBtn);
+#endif
     //
     this->setMoverAble(true, topFrm);
     // main left
-    QFrame* mainFrame = new QFrame(this);
+    auto* mainFrame = new QFrame(this);
     mainFrame->setObjectName("NavManager_MainFrm");
     auto * mainLay = new QHBoxLayout(mainFrame);
     mainLay->setMargin(0);
@@ -193,6 +205,9 @@ void NavManager::initUi()
     connect(_pCloseBtn, &QPushButton::clicked, [this](bool){this->setVisible(false);});
     connect(_pNavView, &NavView::saveConfSignal, this, &NavManager::onSaveConf);
     connect(_pNavView, &NavView::addNavSinal, this, &NavManager::onAddNav);
+    connect(_pNavView, &NavView::sgClose, [this](){
+        this->setVisible(false);
+    });
 
     //
     _pNavView->onItemClicked(_defaultKey);
@@ -222,10 +237,14 @@ void NavManager::saveConfig()
 
         navConfig->addChild(item);
     }
-    navConfig->setAttribute(DEM_DEFAULT_KEY,
-            _defaultKey.isEmpty() ?  navConfig->children[0]->attribute("name") : _defaultKey);
-    //
-    QTalk::qConfig::saveConfig(newConfig.data(), false, navConfig);
+
+    if(!navConfig->children.empty())
+    {
+        navConfig->setAttribute(DEM_DEFAULT_KEY,
+                                _defaultKey.isEmpty() ?  navConfig->children[0]->attribute("name") : _defaultKey);
+        //
+        QTalk::qConfig::saveConfig(newConfig.data(), false, navConfig);
+    }
 }
 
 /**

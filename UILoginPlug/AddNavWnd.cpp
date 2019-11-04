@@ -29,7 +29,6 @@ AddNavWnd::AddNavWnd(NavView* view )
     _pNameEdit = new QLineEdit(this);
     _pAddrEdit = new QTextEdit(this);
     _pAddrEdit->setAcceptRichText(false);
-    _pNavDetail = new LinkButton(tr("导航详情"));
     //
     _pAddrEdit->setMaximumHeight(70);
     _pNameEdit->setObjectName("AddNavWnd_Name");
@@ -47,7 +46,6 @@ AddNavWnd::AddNavWnd(NavView* view )
     mainLay->addWidget(addrLab, 1, 0, Qt::AlignLeft | Qt::AlignTop);
     mainLay->addWidget(_pNameEdit, 0, 1, 1, 2);
     mainLay->addWidget(_pAddrEdit, 1, 1, 1, 2);
-    mainLay->addWidget(_pNavDetail, 2, 1);
     //
     mainLay->addItem(new QSpacerItem(10, 10, QSizePolicy::Minimum, QSizePolicy::Expanding), 3, 0 ,1, 3);
     //
@@ -72,27 +70,6 @@ AddNavWnd::AddNavWnd(NavView* view )
     layout->addWidget(mainFrm);
     //
     setMoverAble(true, titleFrm);
-
-    connect(_pNavDetail, &LinkButton::clicked, [this]()
-    {
-        QString strUrl = _pAddrEdit->toPlainText();
-        if(strUrl.isEmpty())
-        {
-            return;
-        }
-
-        QUrl url(strUrl);
-        QUrlQuery query;
-        query.addQueryItem("p", "pc");
-        url.setQuery(query);
-
-        if(!url.isValid())
-        {
-            return;
-        }
-
-        QDesktopServices::openUrl(url);
-    });
 
     connect(_pCancelBtn, &QPushButton::clicked, [this](){
         _evtRet = EM_NO;

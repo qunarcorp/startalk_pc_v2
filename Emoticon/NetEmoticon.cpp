@@ -13,7 +13,6 @@
 
 #define STDSTR2QSTR(str) QString::fromStdString(str)
 #define DOUBLE_IS_EQUAL(x, y) (std::abs(x - y)) < 10e-6
-#define DEM_BTNPROCESS_TEXT QStringLiteral("下载中 ( % %1 ) ")
 
 NetEmoDetailWgt::NetEmoDetailWgt(const QString& pkgId, const QString& icon, const QString name, const QString& desc, QInt32 fileSize, bool exists)
 	:QWidget(nullptr), _strPkgId(pkgId), _isDownloading(false)
@@ -53,12 +52,12 @@ NetEmoDetailWgt::NetEmoDetailWgt(const QString& pkgId, const QString& icon, cons
 	downloadBtnLayout->addSpacerItem(new QSpacerItem(10, 10, QSizePolicy::Expanding));
 	if (exists)
 	{
-		_pDownloadBtn->setText(QStringLiteral("已下载"));
+		_pDownloadBtn->setText(tr("已下载"));
 		_pDownloadBtn->setEnabled(false);
 	}
 	else
 	{
-		_pDownloadBtn->setText(QStringLiteral("下载"));
+		_pDownloadBtn->setText(tr("下载"));
 	}
 
 	QVBoxLayout* mLayout = new QVBoxLayout;
@@ -110,13 +109,13 @@ void NetEmoDetailWgt::updateDownloadProcess(const QString& pkgId, double dtotal,
 	{
 		_isDownloading = false;
 		_pDownloadBtn->setEnabled(false);
-		_pDownloadBtn->setText(QStringLiteral("安装中..."));
+		_pDownloadBtn->setText(tr("安装中..."));
 		EmoticonMainWgt::getInstance()->installEmoticon(pkgId);
 	}
 	else
 	{
 		double process = dnow / dtotal * 100;
-		_pDownloadBtn->setText(QString(DEM_BTNPROCESS_TEXT).arg(QString::number(process, 'f', 0)));
+		_pDownloadBtn->setText(tr("下载中 ( % %1 ) ").arg(QString::number(process, 'f', 0)));
 	}
 }
 
@@ -131,7 +130,7 @@ void NetEmoDetailWgt::onInstalledEmoticon(const QString& pkgId)
 {
 	if (_isDownloading || _strPkgId != pkgId) return;
 
-	_pDownloadBtn->setText(QStringLiteral("已下载"));
+	_pDownloadBtn->setText(tr("已下载"));
 }
 
 /**
@@ -145,7 +144,7 @@ void NetEmoDetailWgt::onInstallError(const QString& pkgId)
 {
 	if (_isDownloading || _strPkgId != pkgId) return;
 
-	_pDownloadBtn->setText(QStringLiteral("安装错误"));
+	_pDownloadBtn->setText(tr("安装错误"));
 }
 
 /**
@@ -159,7 +158,7 @@ void NetEmoDetailWgt::onRemoveLocalEmotion(const QString& pkgId)
 {
 	if (_isDownloading || _strPkgId != pkgId) return;
 	_pDownloadBtn->setEnabled(true);
-	_pDownloadBtn->setText(QStringLiteral("下载"));
+	_pDownloadBtn->setText(tr("下载"));
 }
 
 /**
@@ -193,7 +192,7 @@ void NetEmoDetailWgt::readyDownloadEmo()
 		return;
 	}
 	_isDownloading = true;
-	_pDownloadBtn->setText(QStringLiteral("等待下载"));
+	_pDownloadBtn->setText(tr("等待下载"));
 	emit downloadEmoticon(_strPkgId);
 }
 

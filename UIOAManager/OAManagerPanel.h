@@ -17,7 +17,7 @@ public:
 	OAManagerPanel();
 	~OAManagerPanel();
 
-signals:
+Q_SIGNALS:
 	void updateStartContact();
 	void updateUiSignal();
 

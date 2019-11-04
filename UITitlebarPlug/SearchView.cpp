@@ -133,7 +133,7 @@ void addGroupItem(QStandardItemModel *model, const std::vector<StGroupItem>& gro
         pItem->setData(it.name.data(), EM_ITEMROLE_NAME);
         if(!it._hits.empty())
         {
-            QString subMessage = "包含: ";
+            QString subMessage = QObject::tr("包含: ");
             for(const auto& hit : it._hits)
             {
                 subMessage.append(QString("%1 ").arg(hit.data()));
@@ -143,6 +143,44 @@ void addGroupItem(QStandardItemModel *model, const std::vector<StGroupItem>& gro
         pItem->setData(it.xmppId.data(), EM_ITEMROLE_XMPPID);
         pItem->setData(it.name.data(), Qt::ToolTipRole);
 
+        model->appendRow(pItem);
+    }
+}
+
+void addHistoryItem(QStandardItemModel *model, const std::vector<StHistory>& historys)
+{
+    for(const auto& it : historys)
+    {
+        auto* pItem = new QStandardItem;
+        pItem->setData(EM_ITEM_TYPE_ITEM, EM_TYPE_TYPE);
+        pItem->setData(it.type, EM_ITEMROLE_ITEM_TYPE);
+        pItem->setData(QTalk::GetHeadPathByUrl(it.icon).data(), EM_ITEMROLE_ICON);
+        pItem->setData(it.name.data(), EM_ITEMROLE_NAME);
+        if(it.count <= 1)
+        {
+            QString content = QFontMetricsF(pItem->font()).elidedText(it.body.data(), Qt::ElideRight, 230);
+            pItem->setData(it.body.data(), EM_ITEMROLE_SUB_MESSAGE);
+        }
+        else
+        {
+            QString content = QObject::tr("%1条与“%2”相关聊天记录").arg(it.count).arg(it.key.data());
+            pItem->setData(content, EM_ITEMROLE_SUB_MESSAGE);
+        }
+        model->appendRow(pItem);
+    }
+}
+
+void addHistoryFileItem(QStandardItemModel *model, const std::vector<StHistoryFile>& files)
+{
+    for(const auto& it : files)
+    {
+        auto* pItem = new QStandardItem;
+        pItem->setData(EM_ITEM_TYPE_ITEM, EM_TYPE_TYPE);
+        pItem->setData(EM_ACTION_HS_FILE, EM_ITEMROLE_ITEM_TYPE);
+        pItem->setData(QTalk::GetHeadPathByUrl(it.icon).data(), EM_ITEMROLE_ICON);
+        pItem->setData(it.file_name.data(), EM_ITEMROLE_NAME);
+        QString content = QObject::tr("来自：%1").arg(it.source.data());
+        pItem->setData(content, EM_ITEMROLE_SUB_MESSAGE);
         model->appendRow(pItem);
     }
 }
@@ -176,6 +214,16 @@ void SearchView::addSearchResult(const QTalk::Search::StSearchResult& ret, int r
     {
         addGroupItem(_srcModel, ret._groups);
     }
+    else if((ret.resultType & EM_ACTION_HS_SINGLE) ||
+            (ret.resultType & EM_ACTION_HS_MUC))
+    {
+        addHistoryItem(_srcModel, ret._history);
+    }
+
+    else if((ret.resultType & EM_ACTION_HS_FILE))
+    {
+        addHistoryFileItem(_srcModel, ret._files);
+    }
 
     if(ret.hasMore && reqType != REQ_TYPE_ALL)
     {
@@ -192,7 +240,7 @@ void SearchView::addOpenWithIdItem(const QString& keyId) {
     auto* titleItem = new QStandardItem;
     titleItem->setData(EM_ITEM_TYPE_TITLE, EM_TYPE_TYPE);
 //    titleItem->setData(REQ_TYPE_ALL, EM_TITLEROLE_TYPE);
-    titleItem->setData(QString("打开ID为[ %1 ]的会话").arg(keyId), EM_TITLEROLE_NAME);
+    titleItem->setData(QString(tr("打开ID为[ %1 ]的会话")).arg(keyId), EM_TITLEROLE_NAME);
     titleItem->setData(false, EM_TITLEROLE_HASMORE);
 //    titleItem->setData(REQ_TYPE_ALL, EM_TITLEROLE_REQ_TYPE);
     //
@@ -214,7 +262,7 @@ void SearchView::addOpenWithIdItem(const QString& keyId) {
     pItem->setData(keyId, EM_ITEMROLE_NAME);
     pItem->setData("/", EM_ITEMROLE_SUB_MESSAGE);
     pItem->setData(id, EM_ITEMROLE_XMPPID);
-    pItem->setData("打开离职员工或者跨域用户会话", Qt::ToolTipRole);
+    pItem->setData(tr("打开离职员工或者跨域用户会话"), Qt::ToolTipRole);
 
     _srcModel->appendRow(pItem);
 }

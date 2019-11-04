@@ -23,9 +23,9 @@ public:
 public slots:
 
     void onShowChatPicture(const QString &messageId, const QString &messageContent, int index);
-    void showPicture(const QString &picPath);
+    void showPicture(const QString &picPath, const QString& linkPath);
 
-signals:
+Q_SIGNALS:
     void enlargeSignal();
     void narrowSignal();
     void one2oneSiganl();
@@ -39,6 +39,7 @@ public:
 
 protected:
     void keyPressEvent(QKeyEvent* e) override;
+    void changeEvent(QEvent *e) override ;
 
 private:
     void initUi();

@@ -7,6 +7,7 @@
 
 #include "../CustomUi/UShadowWnd.h"
 #include "../CustomUi/HeadPhotoLab.h"
+#include <QMenu>
 
 /**
 * @description: ChangeHeadWnd
@@ -26,15 +27,22 @@ public:
 Q_SIGNALS:
     void sgChangeHead(const QString& headPath);
 
+protected:
+    bool event(QEvent* e) override ;
+
 private:
     void initUi();
     void showChangeHeadWnd();
+    void onCopyImage();
 
 protected:
     HeadPhotoLab* _pHeadLab;
     QFrame* _bottomFrm;
     QString _headPath;
     QLabel* _pTitleLab;
+
+private:
+    QMenu* _pMenu;
 };
 
 

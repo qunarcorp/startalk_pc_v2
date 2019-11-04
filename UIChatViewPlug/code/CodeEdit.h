@@ -15,6 +15,7 @@
 * @create: 2019-02-28 13:44
 **/
 class CodeEdit : public QTextEdit{
+	Q_OBJECT
 public:
     explicit CodeEdit(QWidget* parent = nullptr);
     ~CodeEdit() override;

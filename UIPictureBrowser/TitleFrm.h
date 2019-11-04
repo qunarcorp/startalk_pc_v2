@@ -13,6 +13,7 @@ class PictureBrowser;
 class QToolButton;
 class TitleFrm : public QFrame
 {
+	Q_OBJECT
 public:
     explicit TitleFrm(PictureBrowser* pPicBrowser);
     ~TitleFrm() override;

@@ -31,7 +31,7 @@ public:
 protected slots:
     //  五个编辑条的选取，被选中的按钮数要<= 0
     void onEditToolSelected(bool checked);
-signals:
+Q_SIGNALS:
     void sgColorChange(const QString& colorString);
     void sgPenSizeChange(int penSize);
     void sgToolSelect(TOOLTYPE type);

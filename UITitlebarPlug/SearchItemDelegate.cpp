@@ -101,12 +101,12 @@ void SearchItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
             if(REQ_TYPE_ALL == req || REQ_TYPE_HISTORY == req)
             {
                 if(hasMore)
-                    btnName = "展开更多";
+                    btnName = tr("展开更多");
                 else
                     break;
             }
             else
-                btnName = "收起";
+                btnName = tr("收起");
 
             painter->setFont(titleBtnFont);
             QFontMetricsF titleBtnF(titleBtnFont);
@@ -124,37 +124,70 @@ void SearchItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
         }
         case EM_ITEM_TYPE_ITEM:
         {
-            QString icon = index.data(EM_ITEMROLE_ICON).toString();
             QString name = index.data(EM_ITEMROLE_NAME).toString();
             QString subMessage = index.data(EM_ITEMROLE_SUB_MESSAGE).toString();
+            int retType = index.data(EM_ITEMROLE_ITEM_TYPE).toInt();
             bool showCenter = subMessage.isEmpty();
             // icon
-            QFileInfo iconInfo(icon);
-            if(!iconInfo.exists() || iconInfo.isDir() )
-            {
-#ifdef _STARTALK
-                icon =  ":/QTalk/image1/StarTalk_defaultHead.png";
-#else
-                icon = ":/QTalk/image1/headPortrait.png";
-#endif
-            }
-            int dpi = QTalk::qimage::instance().dpi();
-            QPixmap pixmap = QTalk::qimage::instance().loadPixmap(icon, true, true, HEAD_WIDTH * dpi);
-
-            QPainterPath path;
-            QRect headRect(rect.x() + 16, (rect.height() - HEAD_WIDTH) / 2 + rect.y(),
-                    HEAD_WIDTH, HEAD_WIDTH);
             painter->setRenderHints(QPainter::Antialiasing, true);
             painter->setRenderHints(QPainter::SmoothPixmapTransform, true);
             painter->setPen(Qt::NoPen);
-            painter->setBrush(QColor(240, 240, 240, 200));
-            painter->drawEllipse(headRect);
-            path.addEllipse(headRect);
-            painter->setClipPath(path);
-            int w = pixmap.width() / dpi;
-            int h = pixmap.height() / dpi;
-            painter->drawPixmap((HEAD_WIDTH - w) / 2 + headRect.x(),
-                                (HEAD_WIDTH - h) / 2 + headRect.y(), w, h, pixmap);
+            QRect headRect(rect.x() + 16, (rect.height() - HEAD_WIDTH) / 2 + rect.y(),
+                           HEAD_WIDTH, HEAD_WIDTH);
+            int dpi = QTalk::qimage::instance().dpi();
+            if(QTalk::Search::EM_ACTION_HS_FILE == retType)
+            {
+                QFileInfo iconInfo(name);
+                QString iconPath;
+                QString suffix = iconInfo.suffix().toLower();
+                if(suffix == "mp3")
+                    iconPath = ":/QTalk/image1/file_type/audio.png";
+                else if(suffix == "mp4")
+                    iconPath = ":/QTalk/image1/file_type/video.png";
+                else if(suffix == "txt" || suffix == "json")
+                    iconPath = ":/QTalk/image1/file_type/text.png";
+                else if(suffix == "pdf")
+                    iconPath = ":/QTalk/image1/file_type/pdf.png";
+                else if(suffix == "ppt" || suffix == "pptx")
+                    iconPath = ":/QTalk/image1/file_type/ppt.png";
+                else if(suffix == "doc" || suffix == "docx")
+                    iconPath = ":/QTalk/image1/file_type/word.png";
+                else if(suffix == "xls" || suffix == "xlsx")
+                    iconPath = ":/QTalk/image1/file_type/excel.png";
+                else if(suffix == "rar" || suffix == "zip" || suffix == "7z")
+                    iconPath = ":/QTalk/image1/file_type/zip.png";
+                else
+                    iconPath = ":/QTalk/image1/file_type/unknown.png";
+
+                QPixmap pixmap = QTalk::qimage::instance().loadPixmap(iconPath, true, true, HEAD_WIDTH * dpi);
+                int w = pixmap.width() / dpi;
+                int h = pixmap.height() / dpi;
+                painter->drawPixmap((HEAD_WIDTH - w) / 2 + headRect.x(),
+                                    (HEAD_WIDTH - h) / 2 + headRect.y(), w, h, pixmap);
+            }
+            else
+            {
+                QString icon = index.data(EM_ITEMROLE_ICON).toString();
+                QFileInfo iconInfo(icon);
+                if(!iconInfo.exists() || iconInfo.isDir() )
+                {
+#ifdef _STARTALK
+                    icon =  ":/QTalk/image1/StarTalk_defaultHead.png";
+#else
+                    icon = ":/QTalk/image1/headPortrait.png";
+#endif
+                }
+                QPixmap pixmap = QTalk::qimage::instance().loadPixmap(icon, true, true, HEAD_WIDTH * dpi);
+                QPainterPath path;
+                painter->setBrush(QColor(240, 240, 240, 200));
+                painter->drawEllipse(headRect);
+                path.addEllipse(headRect);
+                painter->setClipPath(path);
+                int w = pixmap.width() / dpi;
+                int h = pixmap.height() / dpi;
+                painter->drawPixmap((HEAD_WIDTH - w) / 2 + headRect.x(),
+                                    (HEAD_WIDTH - h) / 2 + headRect.y(), w, h, pixmap);
+            }
             //
             painter->restore();
             painter->save();
@@ -164,7 +197,7 @@ void SearchItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
             QFontMetricsF itemNameF(itemNameFont);
             QRect nameRect;
             int x = rect.x() + 16 + HEAD_WIDTH + 8;
-            h = rect.height() / 2;
+            int h = rect.height() / 2;
             int maxW = rect.width() - x - 16;
             if(showCenter)
             {
@@ -193,7 +226,7 @@ void SearchItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
             painter->setFont(moreFont);
             QFontMetricsF moreF(moreFont);
             painter->setPen(QTalk::StyleDefine::instance().getNavContentFontColor());
-            painter->drawText(rect, Qt::AlignCenter, "查看更多");
+            painter->drawText(rect, Qt::AlignCenter, tr("查看更多"));
             break;
         }
         default:

@@ -58,7 +58,7 @@ void LocalEmoticon::initUi()
 	_pLocalEmoLst->setContextMenuPolicy(Qt::CustomContextMenu);
 	_pMenu = new QMenu(_pLocalEmoLst);
 	_pMenu->setAttribute(Qt::WA_TranslucentBackground, true);
-    QAction *act = new QAction(QStringLiteral("移除表情"), this);
+    QAction *act = new QAction(tr("移除表情"), this);
 	_pMenu->addAction(act);
 	//
 	auto* layout = new QHBoxLayout(this);
@@ -171,7 +171,7 @@ void LocalEmoticon::initCollection(const StEmoticon& emo) {
     // 右键菜单
     auto *menu = new QMenu(this);
     menu->setAttribute(Qt::WA_TranslucentBackground, true);
-    auto *act = new QAction(QStringLiteral("移除"), menu);
+    auto *act = new QAction(tr("移除"), menu);
     menu->addAction(act);
     _mapEmoView[DEM_COLLECTION]->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(_mapEmoView[DEM_COLLECTION], &QTableWidget::customContextMenuRequested, [menu, this](const QPoint &pos){

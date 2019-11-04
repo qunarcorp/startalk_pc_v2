@@ -95,6 +95,8 @@ public:
 
     long long getClientNumVerison() const;
 
+    std::string get_build_date_time() const;
+
     // 历史打开文件夹的路径 全部都是主线程调用
     std::string getHistoryDir() const;
 
@@ -192,6 +194,8 @@ namespace QTalk {
     std::string PLATFORMSHARED_EXPORT GetImagePathByUrl(const std::string &url);
 
     std::string PLATFORMSHARED_EXPORT GetSrcImagePathByUrl(const std::string &url);
+
+    std::string PLATFORMSHARED_EXPORT getMedalPath(const std::string& link);
     //
     std::string PLATFORMSHARED_EXPORT getCollectionPath(const std::string &netPath);
 

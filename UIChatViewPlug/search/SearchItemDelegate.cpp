@@ -3,6 +3,7 @@
 //
 
 #include "SearchItemDelegate.h"
+#include "../../UICom/qimage/qimage.h"
 #include <QPainter>
 #include <QListView>
 
@@ -95,7 +96,12 @@ void MessageALlDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
                 painter->setPen(QColor(237,238,237));
                 painter->drawRoundedRect(fileContentRect, 2, 2);
                 //
-                painter->drawPixmap(fileContentRect.x() + 10, fileContentRect.y() + 10, 40, 40, QPixmap(fileIcon));
+                int dpi = QTalk::qimage::instance().dpi();
+                QPixmap pixmap = QTalk::qimage::instance().loadPixmap(fileIcon, true, true, 40 * dpi);
+                int w = pixmap.width() / dpi;
+                int h = pixmap.height() / dpi;
+                painter->drawPixmap((40 - w) / 2 + conRect.x() + 10,
+                                    (40 - h) / 2 + conRect.y() + 10, w, h, pixmap);
                 //
                 painter->setPen(QColor(153,153,153));
                 painter->drawText(fileContentRect.x() + 10 + 40 + 10, fileContentRect.bottom() - 10, fileSize);
@@ -171,7 +177,12 @@ void FileMessageDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
                 if(isHover)
                     painter->fillRect(conRect, QColor(242,242,242));
                 //
-                painter->drawPixmap(conRect.x() + 10, conRect.y() + 10, 40, 40, QPixmap(fileIcon));
+                int dpi = QTalk::qimage::instance().dpi();
+                QPixmap pixmap = QTalk::qimage::instance().loadPixmap(fileIcon, true, true, 40 * dpi);
+                int w = pixmap.width() / dpi;
+                int h = pixmap.height() / dpi;
+                painter->drawPixmap((40 - w) / 2 + conRect.x() + 10,
+                                    (40 - h) / 2 + conRect.y() + 10, w, h, pixmap);
                 //
                 painter->setPen(QColor(153,153,153));
                 painter->drawText(conRect.x() + 10 + 40 + 10, conRect.bottom() - 10, fileSize);

@@ -212,6 +212,14 @@ std::string NavigationManager::getShareUrl() {
     return shareUrl;
 }
 
+void NavigationManager::setVideoUrl(const std::string &videoUrl) {
+    this->videoUrl = videoUrl;
+}
+
+std::string NavigationManager::getVideoUrl() {
+    return videoUrl;
+}
+
 void NavigationManager::setQcadminHost(const std::string &adminHost) {
     this->qcadminHost = adminHost;
 }
@@ -234,5 +242,13 @@ void NavigationManager::setQcGrabOrder(const std::string qcGrabOrder) {
 
 std::string NavigationManager::getQcGrabOrder() {
     return qcGrabOrder;
+}
+
+void NavigationManager::setLoginType(const std::string &lt) {
+    this->loginType = lt;
+}
+
+std::string NavigationManager::getLoginType() {
+    return loginType;
 }
 

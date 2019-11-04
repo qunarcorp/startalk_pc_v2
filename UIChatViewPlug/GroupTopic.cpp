@@ -36,7 +36,7 @@ void GroupTopic::setTopic(const QString& topic)
 {
 	if (topic.isEmpty())
 	{
-		_pTopicEdit->setText(QStringLiteral("\n\n  "
+		_pTopicEdit->setText(tr("\n\n  "
                                       "            暂无公告"));
 		_pTopicEdit->setAlignment(Qt::AlignCenter);
 	}
@@ -56,7 +56,7 @@ void GroupTopic::setTopic(const QString& topic)
   */
 void GroupTopic::initUi()
 {
-	QLabel *pLabelTitle = new QLabel(QStringLiteral("群公告"));
+	QLabel *pLabelTitle = new QLabel(tr("群公告"));
 	_pTopicEdit = new QTextEdit(this); //
     _pTopicEdit->installEventFilter(this);
     _pTopicEdit->setAcceptRichText(false);

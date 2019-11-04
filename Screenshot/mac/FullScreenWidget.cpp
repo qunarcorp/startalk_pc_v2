@@ -930,6 +930,6 @@ bool FullScreenWidget::JietuCancel(QMouseEvent *event) {
 }
 
 void FullScreenWidget::showModel() {
-    this->setWindowModality(Qt::ApplicationModal);
+//    this->setWindowModality(Qt::ApplicationModal);
     this->show();
 }

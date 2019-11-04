@@ -45,7 +45,7 @@ void UserCard::initUi()
     QFrame* titleFrame = new QFrame(this);
     titleFrame->setObjectName("UserCard_titleFrame");
     titleFrame->setFixedHeight(50);
-    LinkButton* findFriend = new LinkButton("查找并添加好友");
+    LinkButton* findFriend = new LinkButton(tr("查找并添加好友"));
     findFriend->setAlignment(Qt::AlignBottom);
     QHBoxLayout* titleLayout = new QHBoxLayout(titleFrame);
     titleLayout->addSpacerItem(new QSpacerItem(10, 10, QSizePolicy::Expanding));
@@ -78,11 +78,11 @@ void UserCard::initUi()
 
     _pBtnStar->setCheckable(true);
 
-    _pMailBtn->setToolTip("发送邮件");
-    btnSendCard->setToolTip("转发名片");
-    _pAddFriendBtn->setToolTip("添加好友");
-    _pBtnStar->setToolTip("星标联系人");
-    btnMore->setToolTip("更多");
+    _pMailBtn->setToolTip(tr("发送邮件"));
+    btnSendCard->setToolTip(tr("转发名片"));
+    _pAddFriendBtn->setToolTip(tr("添加好友"));
+    _pBtnStar->setToolTip(tr("星标联系人"));
+    btnMore->setToolTip(tr("更多"));
 
     _pMailBtn->setFixedSize(30, 30);
     btnSendCard->setFixedSize(30, 30);
@@ -127,7 +127,7 @@ void UserCard::initUi()
     _pDepartmentEdit = new QLabel(this);
     _pLeaderEdit     = new LinkButton();
     _pMailEdit       = new QLineEdit(this);
-    _pPhoneNoEdit    = new LinkButton("点击查看", this);
+    _pPhoneNoEdit    = new LinkButton(tr("点击查看"), this);
 
     _pUserMarks->setReadOnly(true);
     _pUserNoEdit->setReadOnly(true);
@@ -135,7 +135,7 @@ void UserCard::initUi()
     _pMailEdit->setReadOnly(true);
     _pPhoneNoEdit->setFixedHeight(25);
     _pLeaderEdit->setFixedHeight(25);
-    _pUserMarks->setPlaceholderText("备注");
+    _pUserMarks->setPlaceholderText(tr("备注"));
 
     _pUserMarks->setContextMenuPolicy (Qt::NoContextMenu);
     _pUserNoEdit->setContextMenuPolicy (Qt::NoContextMenu);
@@ -148,9 +148,9 @@ void UserCard::initUi()
     bottomLayout = new QGridLayout;
     bottomLayout->setHorizontalSpacing(20);
     bottomLayout->setVerticalSpacing(15);
-    _pUserMaskLabel = new QLabel("备注");
+    _pUserMaskLabel = new QLabel(tr("备注"));
     bottomLayout->addWidget(_pUserMaskLabel, EM_MASK, 0);
-    QLabel* tmpLabel = new QLabel("员工 ID");
+    QLabel* tmpLabel = new QLabel(tr("员工 ID"));
     bottomLayout->addWidget(tmpLabel, EM_USERID, 0);
     if(NavigationManager::instance().getLeaderUrl().empty())
     {
@@ -165,23 +165,23 @@ void UserCard::initUi()
     tmpLabel = new QLabel(tr("Qunar ID"));
 #endif
     bottomLayout->addWidget(tmpLabel, EM_QUNARID, 0);
-    tmpLabel = new QLabel("所在部门");
+    tmpLabel = new QLabel(tr("所在部门"));
     bottomLayout->addWidget(tmpLabel, EM_DEPARTMENT, 0);
-    tmpLabel = new QLabel("直属领导");
+    tmpLabel = new QLabel(tr("直属领导"));
     bottomLayout->addWidget(tmpLabel, EM_LEADER, 0);
     if(NavigationManager::instance().getLeaderUrl().empty())
     {
         tmpLabel->setVisible(false);
         _pLeaderEdit->setVisible(false);
     }
-    tmpLabel = new QLabel("工作邮箱");
+    tmpLabel = new QLabel(tr("工作邮箱"));
     bottomLayout->addWidget(tmpLabel, EM_EMAIL, 0);
     if(NavigationManager::instance().getMailSuffix().empty())
     {
         tmpLabel->setVisible(false);
         _pMailEdit->setVisible(false);
     }
-    tmpLabel = new QLabel("手机号");
+    tmpLabel = new QLabel(tr("手机号"));
     bottomLayout->addWidget(tmpLabel, EM_PHONENNO, 0);
     if(NavigationManager::instance().getPhoneNumAddr().empty())
     {
@@ -198,7 +198,7 @@ void UserCard::initUi()
     bottomLayout->addWidget(_pPhoneNoEdit, EM_PHONENNO, 1);
 
     // buttons
-    _pSendMessageBtn = new QPushButton("发消息");
+    _pSendMessageBtn = new QPushButton(tr("发消息"));
     _pSendMessageBtn->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     _pSendMessageBtn->setObjectName("UserCard_SendMessage");
     //
@@ -234,8 +234,8 @@ void UserCard::initUi()
     // add action
     _pMenu = new QMenu(this);
     _pMenu->setAttribute(Qt::WA_TranslucentBackground, true);
-    _pRemoveAct = new QAction("解除好友", _pMenu);
-    _pAddBlackListAct = new QAction("加入黑名单", _pMenu);
+    _pRemoveAct = new QAction(tr("解除好友"), _pMenu);
+    _pAddBlackListAct = new QAction(tr("加入黑名单"), _pMenu);
     _pMenu->addAction(_pRemoveAct);
     _pMenu->addAction(_pAddBlackListAct);
 
@@ -296,10 +296,10 @@ bool UserCard::showUserCard(std::shared_ptr<QTalk::Entity::ImUserSupplement> imu
         switch (info->Gender)
         {
             case 1:
-                _pHeadlabel->setToolTip("小哥哥");
+                _pHeadlabel->setToolTip(tr("小哥哥"));
                 break;
             case 2:
-                _pHeadlabel->setToolTip("小姐姐");
+                _pHeadlabel->setToolTip(tr("小姐姐"));
                 break;
             default:
                 _pHeadlabel->setToolTip("");
@@ -318,7 +318,7 @@ bool UserCard::showUserCard(std::shared_ptr<QTalk::Entity::ImUserSupplement> imu
             _pLeaderEdit->setLinkText(QString("%1(%2)").arg(imuserSup->LeaderName.c_str()).arg(imuserSup->LeaderId.c_str()));
         else
             _pLeaderEdit->setNormalText("");
-        _pPhoneNoEdit->setLinkText("点击查看");
+        _pPhoneNoEdit->setLinkText(tr("点击查看"));
         _pMailEdit->setText(QString::fromStdString(imuserSup->MailAddr));
 
         //
@@ -378,7 +378,7 @@ void UserCard::setFlags(int flags)
 //    _pAddFriendBtn->setVisible(!isFriend);
     _pRemoveAct->setEnabled(isFriend);
     _pBtnStar->setChecked(flags & EM_IS_START);
-    _pAddBlackListAct->setText(isBlack ? "移除黑名单" : "加入黑名单");
+    _pAddBlackListAct->setText(isBlack ? tr("移除黑名单") : tr("加入黑名单"));
 }
 
 /**

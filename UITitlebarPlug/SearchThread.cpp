@@ -54,7 +54,6 @@ SearchThread::~SearchThread() {
 //}
 
 void SearchThread::addSearchReq(const QString &req) {
-    QMutexLocker locker(&_mutex);
     _searchSts = true;
     _lastReq = req;
     _searchQueue->push(req.toStdString());

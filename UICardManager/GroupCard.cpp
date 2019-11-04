@@ -37,7 +37,9 @@ GroupCard::~GroupCard()
 void GroupCard::initUi()
 {
     setObjectName("GroupCard");
-
+#ifdef _MACOS
+    macAdjustWindows();
+#endif
     setMinimumWidth(360);
 
     // title
@@ -62,25 +64,21 @@ void GroupCard::initUi()
     _pHeadLabel = new HeadPhotoLab;
     _pSendMailBtn = new QPushButton(this);
     _pExitGroupBtn = new QPushButton(this);
-    _pMoreBtn = new QPushButton(this);
+    _pDestroyGroupBtn = new QPushButton(this);
     //
-    _pSendMailBtn->setToolTip("发邮件");
-    _pExitGroupBtn->setToolTip("退出群组");
-    _pMoreBtn->setToolTip("更多");
-    _pMoreBtn->setObjectName("btn_More");
-    _pMoreMenu = new QMenu(this);
-    _pMoreMenu->setAttribute(Qt::WA_TranslucentBackground, true);
-    QAction* destoryGroupAct = new QAction("销毁群组");
-    _pMoreMenu->addAction(destoryGroupAct);
+    _pSendMailBtn->setToolTip(tr("发邮件"));
+    _pExitGroupBtn->setToolTip(tr("退出群组"));
+    _pDestroyGroupBtn->setToolTip(tr("销毁群"));
+    _pDestroyGroupBtn->setObjectName("btn_destroy_group");
     //
     auto* btnLay = new QHBoxLayout;
     btnLay->addWidget(_pSendMailBtn);
     btnLay->addWidget(_pExitGroupBtn);
-    btnLay->addWidget(_pMoreBtn);
+    btnLay->addWidget(_pDestroyGroupBtn);
 	btnLay->addItem(new QSpacerItem(10, 10, QSizePolicy::Expanding));
 	//
 	_pSendMailBtn->setVisible(false);
-    _pMoreBtn->setVisible(false);
+    _pDestroyGroupBtn->setVisible(false);
     //
     auto* topMainLay = new QGridLayout;
     topMainLay->setContentsMargins(20, 5, 20, 20);
@@ -110,7 +108,7 @@ void GroupCard::initUi()
     _modGroupName = new ModButton;
     _pGroupNameEdit = new QLineEdit;
 	_pGroupNameEdit->setReadOnly(true);
-    _pGroupNameEdit->setPlaceholderText("修改群名称");
+    _pGroupNameEdit->setPlaceholderText(tr("修改群名称"));
 	_pGroupNameEdit->setObjectName("GroupNameEdit");
 	//
 	auto *groupNameLay = new QHBoxLayout;
@@ -119,20 +117,20 @@ void GroupCard::initUi()
     groupNameLay->addWidget(_pGroupNameEdit);
     groupNameLay->addWidget(_modGroupName);
 	//
-    bodyLay->addWidget(new QLabel("群名称"), 0, 0);
+    bodyLay->addWidget(new QLabel(tr("群名称")), 0, 0);
     bodyLay->addLayout(groupNameLay, 0, 1, 1, 3);
     bodyLay->setAlignment(groupNameLay, Qt::AlignLeft);
 //    bodyLay->addWidget(_modGroupName, 0, 3);
     // row 1
     _pGroupIdEdit = new QTextEdit(this);
     _pGroupIdEdit->setAcceptRichText(false);
-    bodyLay->addWidget(new QLabel("群ID"), 1, 0, Qt::AlignTop);
+    bodyLay->addWidget(new QLabel(tr("群ID")), 1, 0, Qt::AlignTop);
     bodyLay->addWidget(_pGroupIdEdit, 1, 1, 1, 3);
     // line
     bodyLay->addWidget(new Line, 2, 0, 1, 4);
     // row 3
     _modGroupTopic = new ModButton(this);
-    bodyLay->addWidget(new QLabel("群公告"), 3, 0);
+    bodyLay->addWidget(new QLabel(tr("群公告")), 3, 0);
     bodyLay->addWidget(_modGroupTopic, 3, 1);
     // row 4
     _pGroupTopicEdit = new QTextEdit(this);
@@ -142,9 +140,9 @@ void GroupCard::initUi()
     // row 5
     bodyLay->addWidget(new Line, 5, 0, 1, 4);
     // row 6
-    QLabel *memberLabel = new QLabel("群成员");
+    QLabel *memberLabel = new QLabel(tr("群成员"));
     _pGroupMemberLabel = new QLabel;
-    LinkButton* showMemberBtn = new LinkButton("查看");
+    LinkButton* showMemberBtn = new LinkButton(tr("查看"));
     bodyLay->addWidget(memberLabel, 6, 0);
     bodyLay->addWidget(_pGroupMemberLabel, 6, 1);
     bodyLay->addItem(new QSpacerItem(10, 10, QSizePolicy::Expanding), 6, 2);
@@ -153,7 +151,7 @@ void GroupCard::initUi()
     bodyLay->addWidget(new Line, 7, 0, 1, 4);
     // row 8
     _modGroupJJ = new ModButton(this);
-    bodyLay->addWidget(new QLabel("群简介"), 8, 0);
+    bodyLay->addWidget(new QLabel(tr("群简介")), 8, 0);
     bodyLay->addWidget(_modGroupJJ, 8, 1);
     // row 9
     _pGroupIntroduce = new QTextEdit(this);
@@ -161,7 +159,7 @@ void GroupCard::initUi()
 	_pGroupIntroduce->setObjectName("GroupIntroduceEdit");
     bodyLay->addWidget(_pGroupIntroduce, 9, 0, 1, 4);
     //
-    _pSendMsgBtn = new QPushButton("发消息");
+    _pSendMsgBtn = new QPushButton(tr("发消息"));
     _pSendMsgBtn->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     _pSendMsgBtn->setObjectName("SendMessage");
     _pSendMsgBtn->setFixedHeight(32);
@@ -179,7 +177,7 @@ void GroupCard::initUi()
     //
     _pSendMailBtn->setFixedSize(30, 30);
     _pExitGroupBtn->setFixedSize(30, 30);
-    _pMoreBtn->setFixedSize(30, 30);
+    _pDestroyGroupBtn->setFixedSize(30, 30);
     _pHeadLabel->setFixedSize(60, 60);
     _pSendMailBtn->setObjectName("SendMail");
     _pExitGroupBtn->setObjectName("QuitGroup");
@@ -254,7 +252,7 @@ void GroupCard::initUi()
     });
 
     connect(_pExitGroupBtn, &QPushButton::clicked, [this](){
-        int ret = QtMessageBox::warning(this, "警告", "即将退出本群, 是否继续?",
+        int ret = QtMessageBox::warning(this, tr("警告"), tr("即将退出本群, 是否继续?"),
                 QtMessageBox::EM_BUTTON_YES | QtMessageBox::EM_BUTTON_NO);
         if(ret == QtMessageBox::EM_BUTTON_YES)
         {
@@ -267,12 +265,8 @@ void GroupCard::initUi()
         }
     });
 
-    connect(_pMoreBtn, &QPushButton::clicked, [this](){
-        _pMoreMenu->exec(QCursor::pos());
-    });
-
-    connect(destoryGroupAct, &QAction::triggered, [this](){
-        int ret = QtMessageBox::warning(this, "警告", "群即将被销毁, 是否继续?", QtMessageBox::EM_BUTTON_YES | QtMessageBox::EM_BUTTON_NO);
+    connect(_pDestroyGroupBtn, &QPushButton::clicked, [this](){
+        int ret = QtMessageBox::warning(this, tr("警告"), tr("群即将被销毁, 是否继续?"), QtMessageBox::EM_BUTTON_YES | QtMessageBox::EM_BUTTON_NO);
         if(ret == QtMessageBox::EM_BUTTON_YES)
         {
             if(_pCardManager)
@@ -343,7 +337,7 @@ void GroupCard::showGroupMember(const std::map<std::string, QTalk::StUserCard>& 
         {
             std::string userId = QTalk::Entity::JID(it->first.c_str()).username();
             std::string selfId = Platform::instance().getSelfUserId();
-            _pMoreBtn->setVisible(userId == selfId);
+            _pDestroyGroupBtn->setVisible(userId == selfId);
         }
 
         _pGroupMemberPopWnd->addItem(xmppId, userName, headSrc, role, isOnline, searchKey);

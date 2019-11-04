@@ -17,10 +17,10 @@ EmoticonView::EmoticonView(QWidget* parent)
                              | Qt::WindowFullscreenButtonHint | Qt::WindowCloseButtonHint | Qt::WindowTitleHint |
                              Qt::X11BypassWindowManagerHint | Qt::WindowStaysOnTopHint;
 
-#if defined(_WINDOWS)
-    flags |= Qt::Tool;
-#else
+#if defined(_LINUX)
     flags |= Qt::Window;
+#else
+    flags |= Qt::Tool;
 #endif
     setWindowFlags(flags);
     // 设置不抢主窗口焦点

@@ -94,6 +94,13 @@ void NavigationMsgManager::addEmptyMessage(const QTalk::Entity::ImMessageInfo &i
     EventBus::FireEvent(evt);
 }
 
+//
+void NavigationMsgManager::quitGroupById(const std::string& groupId) {
+    QuitGroupMsg e;
+    e.groupId = groupId;
+    EventBus::FireEvent(e);
+}
+
 /**
   * @函数名 MessageListener
   * @功能描述 构造监听器 并注册到eventbus中
@@ -121,6 +128,8 @@ NavigationMsgListener::NavigationMsgListener(NavigationMianPanel *navigationMian
 	EventBus::AddHandler<ChangeHeadRetMessage>(*this);
 	EventBus::AddHandler<UserCardMessgae>(*this);
 	EventBus::AddHandler<IncrementConfig>(*this);
+	EventBus::AddHandler<RecvVideoMessage>(*this);
+	EventBus::AddHandler<MStateEvt>(*this);
 }
 
 NavigationMsgListener::~NavigationMsgListener() {
@@ -344,5 +353,17 @@ void NavigationMsgListener::onEvent(IncrementConfig &e) {
 
     if (nullptr != _pNavigationMianPanel) {
         _pNavigationMianPanel->onUpdateUserConfig(e.deleteData, e.arImConfig);
+    }
+}
+
+void NavigationMsgListener::onEvent(RecvVideoMessage &e) {
+    if (nullptr != _pNavigationMianPanel) {
+
+    }
+}
+
+void NavigationMsgListener::onEvent(MStateEvt &e) {
+    if (nullptr != _pNavigationMianPanel) {
+        _pNavigationMianPanel->onGotMState(QTalk::Entity::UID(e.userId, e.realJid), e.messageId.data(), e.time);
     }
 }

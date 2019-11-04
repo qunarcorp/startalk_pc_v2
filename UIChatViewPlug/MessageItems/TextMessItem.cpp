@@ -24,9 +24,8 @@
 #include "../ChatUtil.h"
 #include "../../UICom/StyleDefine.h"
 
-#define DEM_LINK_HTML "<a href=\"%1\" style=\"text-decoration:none; color:rgba(%2);\">%1</a>"
+#define DEM_LINK_HTML "<a href=\"%1\" style=\"text-decoration:none; color:rgba(%2);\">%3</a>"
 #define DEM_AT_HTML "<span style=\"color:#FF4E3F;\">%1</span>"
-#define DEM_IMAGE_STR " [图片] "
 extern ChatViewMainPanel *g_pMainPanel;
 
 TextMessItem::TextMessItem(QVector<StTextMessage> msgs, const QTalk::Entity::ImMessageInfo &msgInfo,
@@ -160,7 +159,7 @@ void TextMessItem::setMessageContent() {
     f.setFontWordSpacing(0);
     f.setFontLetterSpacing(0);
     _textBrowser->setCurrentCharFormat(f);
-    _textBrowser->clear();
+    _textBrowser->setText("");
     //
     deleteMovies(_mapMovies);
     _mapMovies.clear();
@@ -265,13 +264,21 @@ void TextMessItem::setMessageContent() {
                 }
                 case StTextMessage::EM_LINK: {
                     QString content = msg.content;
-                    content.replace("&",  "&amp;");
-                    content.replace("\"", "&quot;");
-                    content.replace("'", "&apos;");
-                    content.replace("<",  "&lt;");
-                    content.replace(">",  "&gt;");
-                    content = QString(DEM_LINK_HTML).arg(content).arg(QTalk::StyleDefine::instance().getLinkUrl());
-                    _textBrowser->insertHtml(content);
+//                    content.replace("<",  "&lt;");
+//                    content.replace(">",  "&gt;");
+//                    content.replace("&",  "&amp;");
+//                    content.replace("\"", "&quot;");
+//                    content.replace("'", "&apos;");
+//                    content = QString(DEM_LINK_HTML).arg(content).arg(QTalk::StyleDefine::instance().getLinkUrl());
+
+                    QTextCharFormat linkFormat = _textBrowser->textCursor().charFormat();
+                    linkFormat.setForeground(QBrush(QTalk::StyleDefine::instance().getLinkUrl()));
+                    linkFormat.setAnchor(true);
+                    linkFormat.setAnchorHref(msg.content);
+                    linkFormat.setAnchorName(msg.content);
+                    _textBrowser->textCursor().insertText(msg.content, linkFormat);
+
+//                    _textBrowser->insertHtml(content);
                     _textBrowser->setCurrentCharFormat(f);
                     break;
                 }
@@ -395,7 +402,7 @@ void TextMessItem::initSendLayout() {
     }
 
     if (nullptr == _textBrowser) {
-        _textBrowser = new TextBrowser(this);
+        _textBrowser = new TextBrowser(parentWidget());
     }
     contentLay->addWidget(_textBrowser);
     contentLay->setSpacing(_contentSpacing);
@@ -437,7 +444,12 @@ void TextMessItem::initReceiveLayout() {
     mainLay->addLayout(rightLay);
     if (QTalk::Enum::ChatType::GroupChat == _msgInfo.ChatType
         && QTalk::Entity::MessageDirectionReceive == _msgInfo.Direction ) {
-        rightLay->addWidget(_nameLab);
+        auto* nameLay = new QHBoxLayout;
+        nameLay->setMargin(0);
+        nameLay->setSpacing(5);
+        nameLay->addWidget(_nameLab);
+        nameLay->addWidget(_medalWgt);
+        rightLay->addLayout(nameLay);
     }
     if (!_contentFrm) {
         _contentFrm = new QFrame(this);
@@ -493,9 +505,9 @@ void TextMessItem::copyText() {
     if (_textBrowser) {
         auto cursor = _textBrowser->textCursor();
         //
+        auto *mimeData = new QMimeData;
         QString mimeDataText;
         cJSON* objs = cJSON_CreateArray();
-        auto *mimeData = new QMimeData;
         if(cursor.hasSelection())
         {
             int start = cursor.selectionStart();
@@ -539,7 +551,7 @@ void TextMessItem::copyText() {
                         {
                             break;
                         }
-                        mimeDataText.append(DEM_IMAGE_STR);
+                        mimeDataText.append(tr(" [图片] "));
                         // todo send message image link
                         cJSON* obj = cJSON_CreateObject();
                         cJSON_AddNumberToObject(obj, "type", 2); // 1  文字 2 图片 ...
@@ -556,6 +568,27 @@ void TextMessItem::copyText() {
         }
         else
         {
+            if(isImageContext())
+            {
+                auto link = getImageLink();
+                std::string tmpImgPath = QTalk::GetImagePathByUrl(link.toStdString());
+                std::string srcImgPath = QTalk::GetSrcImagePathByUrl(link.toStdString());
+                QFileInfo srcInfo(srcImgPath.data());
+                QString imagePath = "";
+                if(srcInfo.exists() && srcInfo.isFile())
+                    imagePath = srcImgPath.data();
+                else
+                    imagePath = tmpImgPath.data();
+
+                QPixmap pixmap = QTalk::qimage::instance().loadPixmap(imagePath, false);
+                if(!pixmap.isNull())
+                {
+                    mimeData->setImageData(pixmap.toImage());
+                    QApplication::clipboard()->setMimeData(mimeData);
+                    return;
+                }
+            }
+
             for(const auto& msg : _msgs)
             {
                 switch (msg.type)
@@ -575,7 +608,7 @@ void TextMessItem::copyText() {
                     case StTextMessage::EM_IMAGE:
                     case StTextMessage::EM_EMOTICON:
                     {
-                        mimeDataText.append(DEM_IMAGE_STR);
+                        mimeDataText.append(tr(" [图片] "));
 
                         cJSON* obj = cJSON_CreateObject();
                         cJSON_AddNumberToObject(obj, "type", 2); // 1  文字 2 图片 ...
@@ -593,7 +626,7 @@ void TextMessItem::copyText() {
 
         std::string userData = QTalk::JSON::cJSON_to_string(objs);
         cJSON_Delete(objs);
-        if(mimeDataText == DEM_IMAGE_STR && _msgs.size() == 1 && !_msgs[0].content.isEmpty())
+        if(mimeDataText == tr(" [图片] ") && _msgs.size() == 1 && !_msgs[0].content.isEmpty())
         {
             std::string tmpImgPath = _msgs[0].content.toStdString();
             std::string srcImgPath = QTalk::GetSrcImagePathByUrl(_msgs[0].imageLink.toStdString());

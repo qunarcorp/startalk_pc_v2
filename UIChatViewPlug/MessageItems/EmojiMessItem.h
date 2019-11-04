@@ -34,7 +34,7 @@ private:
 private slots:
     void onMoveTimer();
 
-signals:
+Q_SIGNALS:
     void sgItemChanged();
 
 private:

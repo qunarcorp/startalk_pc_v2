@@ -37,7 +37,7 @@ public:
     explicit TreeItemDelegate(QWidget *parent);
     ~TreeItemDelegate() override;
 
-signals:
+Q_SIGNALS:
     void itemChanged(const QModelIndex&);
     void sgItemDbClicked(const QModelIndex&);
 

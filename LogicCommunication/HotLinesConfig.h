@@ -15,7 +15,7 @@ class Communication;
 class HotLinesConfig
 {
 public:
-    HotLinesConfig(Communication* comm);
+    explicit HotLinesConfig(Communication* comm);
     ~HotLinesConfig();
 
 public:
@@ -44,6 +44,9 @@ public:
 
 public:
     void sendWechat(const QTalk::Entity::UID uid);
+
+public:
+    void getHotLineMessageList(const std::string& xmppId);
 
 private:
     Communication* _pComm;

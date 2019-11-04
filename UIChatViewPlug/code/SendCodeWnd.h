@@ -20,6 +20,7 @@
 **/
 class ChatViewItem;
 class SendCodeWnd : public UShadowDialog{
+	Q_OBJECT
 public:
     explicit SendCodeWnd(QWidget* parent = nullptr);
     ~SendCodeWnd() override;

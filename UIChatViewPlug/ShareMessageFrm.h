@@ -40,7 +40,7 @@ public:
     }
     ~FunctionButton() override = default;
 
-signals:
+Q_SIGNALS:
     void clicked();
 
 };
@@ -54,7 +54,7 @@ public:
 public:
     void setSelectCount(unsigned int count);
 
-signals:
+Q_SIGNALS:
     void sgSetShareMessageState(bool);
     void sgShareMessage();
 

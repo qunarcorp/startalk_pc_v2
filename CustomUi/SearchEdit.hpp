@@ -37,7 +37,7 @@ public:
         _pSearchBtn->setObjectName("searchBtn");
         _pSearchBtn->setFixedSize(20, 20);
         _pEdit->setObjectName("searchEdt");
-        _pEdit->setPlaceholderText("搜索");
+        _pEdit->setPlaceholderText(tr("搜索"));
 
         connect(_pEdit, &QLineEdit::textChanged, this, &Search_Edit::textChanged);
         connect(_pEdit, &QLineEdit::textEdited, this, &Search_Edit::textEdited);
@@ -51,7 +51,7 @@ public:
             _pEdit->clear();
     }
 
-signals:
+Q_SIGNALS:
     void textChanged(const QString &);
     void textEdited(const QString &);
     void returnPressed();

@@ -44,18 +44,33 @@ QTalkApp::QTalkApp(int argc, char *argv[])
 	// 崩溃处理 获取dump 暂时处理以后用breakpad替代
     initDump();
 
-    // 加载翻译文件
-    QTranslator qtGloble;
-    qtGloble.load(":/QTalk/config/qt_zh_CN.qm");
-    QApplication::installTranslator(&qtGloble);
-    //
-    QTranslator wgtQm;
-    wgtQm.load(":/QTalk/config/widgets.qm");
-    QApplication::installTranslator(&wgtQm);
+    QLocale locale;
+    qInfo() << locale.system().language();
+    switch (locale.system().language())
+    {
 
-//    QTranslator wgtQm;
-//    wgtQm.load(":/QTalk/config/english.qm");
-//    QApplication::installTranslator(&wgtQm);
+        case QLocale::English:
+        {
+            // 加载翻译文件
+            static QTranslator wgtQm;
+            wgtQm.load(":/QTalk/config/qtalk_en.qm");
+            qApp->installTranslator(&wgtQm);
+            break;
+        }
+        case QLocale::Chinese:
+        default:
+        {
+            // 加载翻译文件
+            static QTranslator qtGloble;
+            qtGloble.load(":/QTalk/config/qt_zh_CN.qm");
+            qApp->installTranslator(&qtGloble);
+            //
+            static QTranslator wgtQm;
+            wgtQm.load(":/QTalk/config/widgets_zh_CN.qm");
+            qApp->installTranslator(&wgtQm);
+            break;
+        }
+    }
 
 #ifdef _MACOS
     MacApp::initApp();
@@ -87,9 +102,7 @@ QTalkApp::QTalkApp(int argc, char *argv[])
     // 业务管理单例
     _pLogicManager = LogicManager::instance();
     //
-#if  defined(_ATALK)
-    setWindowIcon(QIcon(":/QTalk/image1/atalk_50.png"));
-#elif defined(_STARTALK)
+#if defined(_STARTALK)
     setWindowIcon(QIcon(":/QTalk/image1/StarTalk.png"));
 #elif defined(_QCHAT)
     setWindowIcon(QIcon(":/QTalk/image1/Qchat.png"));
@@ -107,23 +120,84 @@ QTalkApp::QTalkApp(int argc, char *argv[])
     _pMainWnd = new MainWindow;
 #ifdef _MACOS
     MacApp::AllowMinimizeForFramelessWindow(_pMainWnd);
+    MacApp::checkValidToVisitMicroPhone();
     connect(_pMainWnd, &MainWindow::sgRunNewInstance, [](){
         QStringList params;
 #if defined(_STARTALK)
         params << "-n" << "/Applications/StarTalk.app";
 #else
-        params << "-n" << "/Applications/QTalk.app";
+        params << "-n" << QString("/Applications/%1.app").arg(qApp->applicationName());
 #endif
         QProcess::execute("/usr/bin/open", params);
     });
 #endif
     bool enableAutoLogin = true;
-    if(argc > 1)
+    QString loginMsg;
+    //
     {
-        QString param(argv[1]);
-        enableAutoLogin = (param.contains("AUTO_LOGIN=") && param.section("=", 1, 1) == "ON");
+        int index = 0;
+        QMap<QString, QString> params;
+        while (index < argc)
+        {
+            QString tmpParam(argv[index++]);
+            if(tmpParam.contains("=") && tmpParam.count("=") == 1)
+            {
+                params.insert(tmpParam.section("=", 0, 0),
+                        tmpParam.section("=", 1, 1));
+            }
+        }
+
+        if(params.contains("AUTO_LOGIN"))
+            enableAutoLogin = params["AUTO_LOGIN"] == "ON";
+        if(params.contains("MSG"))
+            loginMsg = params["MSG"];
+
+#ifndef _DEBUG
+//#ifdef ooo
+#if defined(_MACOS) || defined(_WINDOWS)
+        bool startByStarter = params.contains("START_BY_STARTER");
+        if(_pUiManager->_check_updater)
+        {
+            if(!startByStarter && _pUiManager->_updater_version > 0)
+            {
+#if defined(_MACOS)
+                QString updater_path = QString("/Applications/%1.app/Contents/MacOS/%1").arg(qApp->applicationName());
+                error_log(updater_path.toStdString());
+                error_log(QApplication::applicationFilePath().toStdString());
+                if(QApplication::applicationFilePath() != updater_path)
+                {
+                    QProcess::startDetached(updater_path, QStringList());
+                    return;
+                }
+#else
+				auto path = QStandardPaths::writableLocation(QStandardPaths::ApplicationsLocation);
+				path = QString("%1/%2/%2.lnk").arg(path).arg(qApp->applicationName());
+				QFileInfo linkFileInfo(path);
+				if (linkFileInfo.exists() && !linkFileInfo.symLinkTarget().isEmpty())
+				{
+					path = linkFileInfo.symLinkTarget();
+					if(QApplication::applicationFilePath() != path)
+                    {
+                        QProcess::startDetached(path, QStringList());
+					    return;
+                    }
+				}
+#endif
+            }
+        }
+        else
+        {
+//            if(startByStarter)
+//            {
+//                _pUiManager->_check_updater = true;
+//                _pUiManager->saveSysConfig();
+//            }
+        }
+#endif
+#endif
     }
-    _pMainWnd->InitLogin(enableAutoLogin);
+
+    _pMainWnd->InitLogin(enableAutoLogin, loginMsg);
     _pMainWnd->initSystemTray();
 	// deal dump file
 //	dealDumpFile();
@@ -179,13 +253,7 @@ QString strlogPath;
 QString strqLogPath;
 
 void LogMsgOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg) {
-    static QTalk::util::spin_mutex sm;
-    std::lock_guard<QTalk::util::spin_mutex> lock(sm);
-
     QString log;
-
-    std::stringstream tid;
-    tid << std::this_thread::get_id();
 
     QString localMsg(msg);
     localMsg.replace("\"", "");
@@ -198,6 +266,7 @@ void LogMsgOutput(QtMsgType type, const QMessageLogContext &context, const QStri
     switch (type) {
         case QtDebugMsg:
             log.append(QString("[Debug] "));
+//            return;
             break;
         case QtInfoMsg:
             log.append(QString("[Info] "));
@@ -212,18 +281,23 @@ void LogMsgOutput(QtMsgType type, const QMessageLogContext &context, const QStri
             log.append(QString("[Fatal] "));
             break;
     }
+#ifdef _DEBUG
+    std::cout
+#ifndef _WINDOWS
+    << "\033[31m"
+#endif
+    << localMsg.toStdString() << std::endl;
+#endif
     //
-    log.append(QString("[file: %2] [line: %3] [thread: %4] \n[message: %1]\n\n").arg(localMsg).arg(localPath).arg(
-            context.line).arg(tid.str().c_str()));
-
-    std::cout << log.toStdString() << std::endl;
+    log.append(QString("%2 %1\n").arg(localMsg).arg(context.function));
 
     QFile file(strqLogPath);
-    if (!file.open(QIODevice::ReadWrite | QIODevice::Append)) {
+    if (!file.isOpen() && !file.open(QIODevice::ReadWrite | QIODevice::Append)) {
         QString erinfo = file.errorString();
     } else {
-        QTextStream out(&file);
-        out << log;
+        static QTalk::util::spin_mutex sm;
+        std::lock_guard<QTalk::util::spin_mutex> lock(sm);
+        file.write(log.toUtf8());
         file.flush();
     }
 }
@@ -241,7 +315,7 @@ void QTalkApp::initLogSys() {
     strlogPath = QString("%1/logs/%2/")
             .arg(appdata)
             .arg(curDateTime.toString("yyyy-MM-dd"));
-    strqLogPath = QString("%1/%2_qdebug.log").arg(strlogPath).arg(curDateTime.toString("yyyy-MM-dd"));
+    strqLogPath = QString("/%1/%2_qdebug.log").arg(strlogPath).arg(curDateTime.toString("yyyy-MM-dd hh-mm-dd"));
 
     QDir logDir(strlogPath);
     if (!logDir.exists()) {
@@ -258,10 +332,10 @@ void QTalkApp::initLogSys() {
 #endif
     );
     //
-    //qInstallMessageHandler(LogMsgOutput);
+    qInstallMessageHandler(LogMsgOutput);
     //
-    info_log("系统启动 当前版本号:{0}", Platform::instance().getClientVersion());
-    qDebug() << QStringLiteral("系统启动");
+//    info_log("系统启动 当前版本号:{0}", Platform::instance().getClientVersion());
+//    qDebug() << QStringLiteral("系统启动");
 }
 
 /**
@@ -272,8 +346,8 @@ void QTalkApp::initLogSys() {
   * @date     2018/10/11
   */
 bool QTalkApp::notify(QObject *receiver, QEvent *e) {
-    QEvent::Type t = e->type();
     try {
+        auto t = QDateTime::currentMSecsSinceEpoch();
         if (e->type() == QEvent::MouseButtonPress) {
             auto *mouseEvent = dynamic_cast<QMouseEvent *>(e);
             if (_pUiManager)
@@ -282,19 +356,28 @@ bool QTalkApp::notify(QObject *receiver, QEvent *e) {
             if(_pMainWnd)
                 emit _pMainWnd->sgResetOperator();
 
-        } else if (t == QEvent::ApplicationActivate) {
+        } else if (e->type() == QEvent::ApplicationActivate) {
             if (nullptr != _pMainWnd) {
                 _pMainWnd->onAppActive();
             }
-        } else if (t == QEvent::ApplicationDeactivate) {
+        } else if (e->type()  == QEvent::ApplicationDeactivate) {
             if (nullptr != _pMainWnd) {
                 _pMainWnd->onAppDeactivate();
             }
         }
-        return QApplication::notify(receiver, e);
+        auto ret = QApplication::notify(receiver, e);
+
+        t = QDateTime::currentMSecsSinceEpoch() - t;
+        if(t > 1000)
+        {
+            qWarning() << "hang hang hang!!! use time:" << t
+            << " type:" << e->type()
+            << " class:" << (receiver ? receiver->metaObject()->className() : "");
+        }
+        return ret;
     }
     catch (const std::bad_alloc &) {
-        qDebug() << "std::bad_alloc" << t << receiver;
+//        qDebug() << "std::bad_alloc" << t << receiver;
         return false;
     }
     catch (const std::exception &e) {

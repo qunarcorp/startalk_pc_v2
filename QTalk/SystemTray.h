@@ -9,6 +9,7 @@
 #include <QObject>
 #include <QSystemTrayIcon>
 #include <QTimer>
+#include "../include/CommonStrcut.h"
 
 class MainWindow;
 class SystemTray : public QObject
@@ -20,6 +21,7 @@ public:
 
 public slots:
     void onRecvMessage();
+    void onShowNotify(const QTalk::StNotificationParam&);
 
 public:
     void onWndActived();
@@ -27,6 +29,7 @@ public:
 protected:
     void activeTray(QSystemTrayIcon::ActivationReason reason);
     void onSendLog();
+    void onMessageClicked();
 
 private:
     void onTimer();

@@ -209,15 +209,11 @@ bool AtMessageView::eventFilter(QObject *o, QEvent *e) {
 
 	if(e->type() == QEvent::KeyPress)
 	{
-		QKeyEvent* keyEvt = static_cast<QKeyEvent*>(e);
+		auto* keyEvt = static_cast<QKeyEvent*>(e);
 
 		if(nullptr != keyEvt)
 		{
-			if(keyEvt == QKeySequence::Backspace || keyEvt->key() == Qt::Key_Backspace)
-			{
-				_count -= 2;
-			}
-			else if(keyEvt == QKeySequence::Cut)
+			if(keyEvt == QKeySequence::Cut)
 			{
 				this->setVisible(false);
 			}
@@ -258,9 +254,12 @@ bool AtMessageView::eventFilter(QObject *o, QEvent *e) {
 	}
 	else if (e->type() == QEvent::Show)
     {
-        _pos = _pInputWgt->textCursor().position() - 1;
-        _count = 0;
-        _atModel->setFilterRegExp("");
+	    if(!_matched)
+        {
+            _pos = _pInputWgt->textCursor().position() - 1;
+            _atModel->setFilterRegExp("");
+        } else
+            _matched = false;
 		_atView->setCurrentIndex(_atModel->index(0, 0));
     }
 
@@ -272,7 +271,9 @@ void AtMessageView::updateFilter() {
     {
         this->setVisible(false);
     }
-    QString text = _pInputWgt->toPlainText().mid(_pos + 1, ++_count);
+//    _count += changedSize;
+    auto now_pos = _pInputWgt->textCursor().position();
+    QString text = _pInputWgt->toPlainText().mid(_pos + 1, now_pos - 1);
 
     _atModel->filterCount = 0;
     _atModel->setFilterRegExp(text);
@@ -328,6 +329,23 @@ void AtMessageView::updateGroupMemberInfo(const std::vector<QTalk::StUserCard> &
             QString headSrc = QString::fromStdString(QTalk::GetHeadPathByUrl(it.headerSrc));
             item->setData(headSrc, ITEM_DATA_ICON);
         }
+    }
+}
+
+bool AtMessageView::match(const QString &str) {
+    _atModel->filterCount = 0;
+    _atModel->setFilterRegExp(str);
+    if(_atModel->filterCount == 0)
+    {
+        _atModel->setFilterRegExp("");
+        _matched = false;
+        return false;
+    }
+    else
+    {
+        _matched = true;
+        _pos = _pInputWgt->textCursor().position() - str.size() - 1;
+        return true;
     }
 }
 

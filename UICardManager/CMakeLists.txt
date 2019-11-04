@@ -7,6 +7,7 @@ set(CMAKE_AUTORCC ON)
 
 include_directories(.)
 find_package(Qt5Widgets)
+find_package(Qt5Concurrent)
 
 #
 set(SOURCE_FILES
@@ -21,7 +22,17 @@ set(SOURCE_FILES
         CardManagerPlug.h
         CardManagerPlug.cpp
         UserCardMsgManager.cpp
-        UserCardMsgManager.h)
+        UserCardMsgManager.h
+        medal/UserMedalWnd.cpp
+        medal/UserMedalWnd.h
+        medal/UserMedalItem.cpp
+        medal/UserMedalItem.h
+        medal/MedalDetailWnd.cpp
+        medal/MedalDetailWnd.h
+        medal/UserHeadWgt.cpp
+        medal/UserHeadWgt.h
+        medal/UserListWnd.cpp
+        medal/UserListWnd.h)
 
 if(APPLE)
     ADD_DEFINITIONS(-D_MACOS)
@@ -44,6 +55,7 @@ ADD_LIBRARY(${PROJECT_NAME} SHARED ${SOURCE_FILES})
 #添加链接库
 target_link_libraries(${PROJECT_NAME}
         Qt5::Widgets
+        Qt5::Concurrent
         CustomUi
         EventBus
         Platform

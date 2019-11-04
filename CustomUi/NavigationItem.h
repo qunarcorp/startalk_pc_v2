@@ -1,4 +1,6 @@
-﻿
+﻿#if _MSC_VER >= 1600
+#pragma execution_character_set("utf-8")
+#endif
 #ifndef NAVIGATIONITEM_H
 #define NAVIGATIONITEM_H
 
@@ -38,7 +40,7 @@ public:
 		return _itemType;
 	}
 
-signals:
+Q_SIGNALS:
 	void itemClicked(QUInt8);
 
 protected:

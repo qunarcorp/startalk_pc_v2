@@ -5,7 +5,7 @@
 #include "../QtUtil/lib/cjson/cJSON_inc.h"
 
 QuickReplyDao::QuickReplyDao(qtalk::sqlite::database *sqlDb) :
-    _pSqlDb(sqlDb){
+    DaoInterface(sqlDb){
 
 }
 
@@ -37,6 +37,25 @@ bool QuickReplyDao::creatTable() {
         return result && query2.executeStep();
     } else{
         return result;
+    }
+}
+
+bool QuickReplyDao::clearData() {
+    if (!_pSqlDb) {
+        return false;
+    }
+
+    std::string sql1 = "DELETE FROM `IM_QUICK_REPLY_GROUP`;";
+    qtalk::sqlite::statement query1(*_pSqlDb, sql1);
+    std::string sql2 = "DELETE FROM `IM_QUICK_REPLY_CONTENT`;";
+    qtalk::sqlite::statement query2(*_pSqlDb, sql2);
+    try {
+        query1.executeStep();
+        query2.executeStep();
+    }
+    catch (const std::exception &e) {
+        error_log("Clear Data IM_Group_Member error {0}", e.what());
+        return false;
     }
 }
 

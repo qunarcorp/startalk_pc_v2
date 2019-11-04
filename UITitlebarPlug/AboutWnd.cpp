@@ -56,21 +56,26 @@ void AboutWnd::initUi()
     this->setStyleSheet("background:url(:/title/image1/aboutQchat.png);");
 #else
     mainFrm->setObjectName("AboutMainFrm");
-    this->setStyleSheet("background:url(:/title/image1/aboutQtalk.png);");
+    mainFrm->setStyleSheet("background:url(:/title/image1/aboutQtalk.png);");
 #endif
     auto * mainLay = new QVBoxLayout(mainFrm);
     mainLay->setContentsMargins(0, 0, 0, 20);
     //
     std::string version = Platform::instance().getGlobalVersion();
+    std::string build = Platform::instance().get_build_date_time();
     _pVersionLabel = new QLabel(QString("Version: (%1)").arg(version.data()), this);
     _pCopyrightLabel = new QLabel(" Copyright @2017 Qunar.com", this);
+    _pBuildDateTimeLabel = new QLabel(QString("build At: %1").arg(build.data()), this);
     _pVersionLabel->setObjectName("AboutVersionLabel");
+    _pBuildDateTimeLabel->setObjectName("AboutVersionLabel");
     _pCopyrightLabel->setObjectName("AboutCopyrightLabel");
     mainLay->addWidget(titleFrm);
     mainLay->addItem(new QSpacerItem(10, 10, QSizePolicy::Fixed, QSizePolicy::Expanding));
     mainLay->addWidget(_pVersionLabel);
+    mainLay->addWidget(_pBuildDateTimeLabel);
     mainLay->addWidget(_pCopyrightLabel);
     mainLay->setAlignment(_pVersionLabel, Qt::AlignHCenter);
+    mainLay->setAlignment(_pBuildDateTimeLabel, Qt::AlignHCenter);
     mainLay->setAlignment(_pCopyrightLabel, Qt::AlignHCenter);
     auto* lay = new QVBoxLayout(_pCenternWgt);
     lay->setMargin(0);

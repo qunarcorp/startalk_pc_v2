@@ -98,9 +98,3 @@ QSize GroupItemDelegate::sizeHint(const QStyleOptionViewItem &option, const QMod
     const QSize& size = QStyledItemDelegate::sizeHint(option, index);
     return {size.width(), 40};
 }
-
-bool GroupItemDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option,
-                                    const QModelIndex &index)
-{
-    return QStyledItemDelegate::editorEvent(event, model, option, index);
-}

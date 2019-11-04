@@ -78,7 +78,53 @@ void MeetingRemindItem::initLayout() {
 }
 
 void MeetingRemindItem::initSendLayout() {
+    auto *mainLay = new QHBoxLayout(this);
+    mainLay->setContentsMargins(_mainMargin);
+    mainLay->setSpacing(_mainSpacing);
+    mainLay->addWidget(_btnShareCheck);
+    auto *horizontalSpacer = new QSpacerItem(40, 1, QSizePolicy::Expanding, QSizePolicy::Fixed);
+    mainLay->addItem(horizontalSpacer);
+    auto *rightLay = new QVBoxLayout;
+    rightLay->setContentsMargins(_rightMargin);
+    mainLay->addLayout(rightLay);
+    if (!_contentFrm) {
+        _contentFrm = new QFrame(this);
+    }
+    _contentFrm->setObjectName("MeetingRemindItem");
+    _contentFrm->setFixedWidth(_contentSize.width());
+//
+    auto* tmpLay = new QHBoxLayout;
+    tmpLay->setMargin(0);
+    tmpLay->setSpacing(5);
+    if(nullptr == _sending)
+    {
+        _sending = new HeadPhotoLab(":/chatview/image1/messageItem/loading.gif", 10, false, false, true, this);
+        tmpLay->addItem(new QSpacerItem(10, 10, QSizePolicy::Expanding));
+        tmpLay->addWidget(_sending);
+        bool startMovie = (0 == _msgInfo.ReadedTag && 0 == _msgInfo.State);
+        _sending->setVisible(startMovie);
+        if(startMovie)
+            _sending->startMovie();
+    }
+    if(nullptr != _resending)
+    {
+        tmpLay->addWidget(_resending);
+        _resending->setVisible(false);
+    }
+    tmpLay->addWidget(_contentFrm);
+    tmpLay->setAlignment(_contentFrm, Qt::AlignRight);
+    rightLay->addLayout(tmpLay);
+    if (nullptr != _readStateLabel) {
+        auto *rsLay = new QHBoxLayout;
+        rsLay->addItem(new QSpacerItem(10, 10, QSizePolicy::Expanding));
+        rsLay->setMargin(0);
+        rsLay->addWidget(_readStateLabel);
+        rightLay->addLayout(rsLay);
+    }
+    mainLay->setStretch(0, 1);
+    mainLay->setStretch(1, 0);
 
+    initContentLayout();
 }
 
 void MeetingRemindItem::initReceiveLayout() {
@@ -109,7 +155,12 @@ void MeetingRemindItem::initReceiveLayout() {
     mainLay->addLayout(rightLay);
     if (QTalk::Enum::ChatType::GroupChat == _msgInfo.ChatType
         && QTalk::Entity::MessageDirectionReceive == _msgInfo.Direction ) {
-        rightLay->addWidget(_nameLab);
+        auto* nameLay = new QHBoxLayout;
+        nameLay->setMargin(0);
+        nameLay->setSpacing(5);
+        nameLay->addWidget(_nameLab);
+        nameLay->addWidget(_medalWgt);
+        rightLay->addLayout(nameLay);
     }
     if (!_contentFrm) {
         _contentFrm = new QFrame(this);
@@ -154,10 +205,10 @@ void MeetingRemindItem::initContentLayout() {
         QJsonObject jsonObject = jsonDocument.object();
         if(!jsonObject.empty()){
             QJsonArray contents = jsonObject.value("keyValues").toArray();
-            QString ctext = "您收到一个行程邀请";
+            QString ctext = tr("您收到一个行程邀请");
             ctext.append("\n\n");
-            for(int i = 0;i<contents.size();i++){
-                QJsonObject content = contents.at(i).toObject();
+            for(auto && i : contents){
+                QJsonObject content = i.toObject();
                 QStringList keys = content.keys();
                 QStringListIterator strIterator(keys);
                 while (strIterator.hasNext()){
@@ -173,10 +224,9 @@ void MeetingRemindItem::initContentLayout() {
         }
 
         clickLabel = new QLabel;
-        clickLabel->setObjectName("clickLabel");
+        clickLabel->setObjectName("MessageItemTipLabel");
         clickLabel->setFixedWidth(_contentSize.width() - 20);
-        clickLabel->setStyleSheet("QLabel{font-size:14px;color:#15b0f9;}");
-        clickLabel->setText("点击查看详情>>");
+        clickLabel->setText(tr("点击查看详情>>"));
 
         vBox->addWidget(contentLabel);
         vBox->addWidget(clickLabel);

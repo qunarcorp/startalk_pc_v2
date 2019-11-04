@@ -7,11 +7,13 @@
 #include <QDebug>
 #include <iostream>
 #include <QJsonObject>
-#include <QJsonDocument>
 #include <thread>
 #include <QTimer>
 #include <QScrollBar>
 #include <set>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QtConcurrent>
 #include "../CustomUi/HeadPhotoLab.h"
 #include "../UICom/UIEntity.h"
 #include "../Message/ChatMessage.h"
@@ -23,6 +25,7 @@
 #include "NavigationMianPanel.h"
 #include "../Platform/dbPlatForm.h"
 #include "../include/perfcounter.h"
+#include "../CustomUi/QtMessageBox.h"
 
 #define SYSTEM_XMPPID "SystemMessage"
 #define RBT_SYSTEM "rbt-system"
@@ -30,7 +33,7 @@
 #define RBT_QIANGDAN "rbt-qiangdan"
 #define RBT_NOTICE_NAME "公告消息"
 #define RBT_QIANGDAN_NAME "抢单消息"
-#define SYSTEM_NAME   "系统消息"
+#define SYSTEM_NAME  "系统消息"
 
 using namespace QTalk::Entity;
 
@@ -64,6 +67,7 @@ void SessionFrm::connects() {
     connect(_starAct, &QAction::triggered, this, &SessionFrm::onStarAct);
     connect(_blackAct, &QAction::triggered, this, &SessionFrm::onBlackAct);
     connect(_clearUnreadAct, &QAction::triggered, this, &SessionFrm::onClearUnreadAct);
+    connect(_quitGroupAct, &QAction::triggered, this, &SessionFrm::onQuitGroupAct);
 }
 
 /**
@@ -87,13 +91,11 @@ void SessionFrm::setMessageManager(NavigationMsgManager *messageManager) {
 void SessionFrm::onReceiveSession(const ReceiveSession &mess, bool isSend) {
     perf_counter_warning(100, "onReceiveSession:{0}", mess.xmppId.toStdString());
 
-    ////info_log("onReceiveSession id:{0}", mess.messageId);
-    if (_historyMessageId.contains(mess.messageId)) {
-        ////info_log("重复消息: {0}", mess.messageId);
-        return;
-    } else {
-        _historyMessageId.push_back(mess.messageId);
-    }
+//    if (_historyMessageId.contains(mess.messageId)) {
+//        return;
+//    } else {
+//        _historyMessageId.push_back(mess.messageId);
+//    }
 
     QString userId = mess.xmppId;
     QString realJid = (mess.realJid.isNull() || mess.realJid.isEmpty()) ? mess.xmppId : mess.realJid;
@@ -213,17 +215,17 @@ void SessionFrm::onReceiveSession(const ReceiveSession &mess, bool isSend) {
         std::string id = jid.barename();
         if (SYSTEM_XMPPID == jid.username() || RBT_SYSTEM == jid.username()) {
             QString syshead = ":/UINavigationPlug/image1/system.png";
-            item->setData(SYSTEM_NAME, ITEM_DATATYPE_USERNAME);
+            item->setData(tr(SYSTEM_NAME), ITEM_DATATYPE_USERNAME);
             item->setData(syshead, ITEM_DATATYPE_HEADPATH);
             item->setData(true, ITEM_DATATYPE_ISONLINE);
         } else if (RBT_NOTICE == jid.username()) {
             QString noticehead = ":/UINavigationPlug/image1/atom_ui_rbt_notice.png";
-            item->setData(RBT_NOTICE_NAME, ITEM_DATATYPE_USERNAME);
+            item->setData(tr(RBT_NOTICE_NAME), ITEM_DATATYPE_USERNAME);
             item->setData(noticehead, ITEM_DATATYPE_HEADPATH);
             item->setData(true, ITEM_DATATYPE_ISONLINE);
         } else if(RBT_QIANGDAN == jid.username()){
             QString qdhead = ":/UINavigationPlug/image1/atom_ui_robot_qiangdan.png";
-            item->setData(RBT_QIANGDAN_NAME, ITEM_DATATYPE_USERNAME);
+            item->setData(tr(RBT_QIANGDAN_NAME), ITEM_DATATYPE_USERNAME);
             item->setData(qdhead, ITEM_DATATYPE_HEADPATH);
             item->setData(true, ITEM_DATATYPE_ISONLINE);
         } else {
@@ -424,17 +426,17 @@ void SessionFrm::onloadSessionData() {
             if (SYSTEM_XMPPID == QTalk::Entity::JID(sessionInfo->XmppId.c_str()).username() ||
                 RBT_SYSTEM == QTalk::Entity::JID(sessionInfo->XmppId.c_str()).username()) {
                 QString syshead = ":/UINavigationPlug/image1/system.png";
-                item->setData(SYSTEM_NAME, ITEM_DATATYPE_USERNAME);
+                item->setData(tr(SYSTEM_NAME), ITEM_DATATYPE_USERNAME);
                 item->setData(syshead, ITEM_DATATYPE_HEADPATH);
                 item->setData(true, ITEM_DATATYPE_ISONLINE);
             } else if (RBT_NOTICE == QTalk::Entity::JID(sessionInfo->XmppId.c_str()).username()) {
                 QString noticehead = ":/UINavigationPlug/image1/atom_ui_rbt_notice.png";
-                item->setData(RBT_NOTICE_NAME, ITEM_DATATYPE_USERNAME);
+                item->setData(tr(RBT_NOTICE_NAME), ITEM_DATATYPE_USERNAME);
                 item->setData(noticehead, ITEM_DATATYPE_HEADPATH);
                 item->setData(true, ITEM_DATATYPE_ISONLINE);
             } else if(RBT_QIANGDAN == QTalk::Entity::JID(sessionInfo->XmppId.c_str()).username()){
                 QString qhead = ":/UINavigationPlug/image1/atom_ui_robot_qiangdan.png";
-                item->setData(RBT_QIANGDAN_NAME, ITEM_DATATYPE_USERNAME);
+                item->setData(tr(RBT_QIANGDAN_NAME), ITEM_DATATYPE_USERNAME);
                 item->setData(qhead, ITEM_DATATYPE_HEADPATH);
                 item->setData(true, ITEM_DATATYPE_ISONLINE);
             } else {
@@ -488,8 +490,9 @@ void SessionFrm::onItemSelectChanged(const QModelIndex &index) {
     sessionInfo.realJid = index.data(ITEM_DATATYPE_REALJID).toString();
     sessionInfo.userName = index.data(ITEM_DATATYPE_USERNAME).toString();
     sessionInfo.headPhoto = index.data(ITEM_DATATYPE_HEADPATH).toString();
+
     {
-        QMutexLocker locker(&_mutex);
+//        QMutexLocker locker(&_mutex);
         _curUserId = UID(sessionInfo.userId, sessionInfo.realJid);
     }
     UID uid(sessionInfo.userId, sessionInfo.realJid);
@@ -503,7 +506,8 @@ void SessionFrm::onItemSelectChanged(const QModelIndex &index) {
                 _sessionMap[uid]->setData(sessionInfo.userName, ITEM_DATATYPE_USERNAME);
         }
     }
-
+    // draft
+    _sessionMap[uid]->setData("", ITEM_DATATYPE_DRAFT);
     //if (sessionInfo.chatType != QTalk::Enum::GroupChat) {
     unsigned int count = _sessionMap[uid]->data(ITEM_DATATYPE_UNREADCOUNT).toUInt();
     _sessionMap[uid]->setData(0, ITEM_DATATYPE_UNREADCOUNT);
@@ -650,8 +654,14 @@ void SessionFrm::onUpdateOnlineUsers(std::map<std::string, std::string> userstat
   */
 void SessionFrm::onNewSession(const StSessionInfo &info) {
     ReceiveSession mess;
-    mess.chatType = (QTalk::Enum::ChatType) info.chatType;
+
     mess.xmppId = info.userId;
+    if(dbPlatForm::instance().isHotLine(mess.xmppId.toStdString()))
+    {
+        mess.chatType = QTalk::Enum::Consult;
+    }
+    else
+        mess.chatType = (QTalk::Enum::ChatType) info.chatType;
     mess.realJid = info.realJid.isEmpty() ? info.userId : info.realJid;
     mess.headSrc = info.headPhoto;
 
@@ -756,14 +766,15 @@ void SessionFrm::initLayout() {
 
     _pContextMenu = new QMenu(_pSessionView);
     _pContextMenu->setAttribute(Qt::WA_TranslucentBackground, true);
-    _showCardAct = new QAction("资料卡片", _pContextMenu);
-    _closeSessionAct = new QAction("移除会话", _pContextMenu);
-    _clearUnreadAct = new QAction("一键清除未读", _pContextMenu);
+    _showCardAct = new QAction(tr("资料卡片"), _pContextMenu);
+    _closeSessionAct = new QAction(tr("移除会话"), _pContextMenu);
+    _clearUnreadAct = new QAction(tr("一键清除未读"), _pContextMenu);
     _toTopOrCancelTopAct = new QAction(_pContextMenu);
     _noticeAct = new QAction(_pContextMenu);
     _addFriendAct = new QAction(_pContextMenu);
     _starAct = new QAction(_pContextMenu);
     _blackAct = new QAction(_pContextMenu);
+    _quitGroupAct = new QAction(tr("退出群聊"), _pContextMenu);
 
     _pContextMenu->addAction(_toTopOrCancelTopAct);
     _pContextMenu->addAction(_noticeAct);
@@ -775,6 +786,8 @@ void SessionFrm::initLayout() {
     _pContextMenu->addSeparator();
     _pContextMenu->addAction(_clearUnreadAct);
     _pContextMenu->addAction(_closeSessionAct);
+    _pContextMenu->addSeparator();
+    _pContextMenu->addAction(_quitGroupAct);
 }
 
 /**
@@ -874,8 +887,9 @@ bool SessionFrm::eventFilter(QObject *o, QEvent *e) {
             std::string id = _pSessionView->currentIndex().data(ITEM_DATATYPE_USERID).toString().toStdString();
             bool isTop = _pSessionView->currentIndex().data(ITEM_DATATYPE_ISTOP).toBool();
             bool unNotice = _pSessionView->currentIndex().data(ITEM_DATATYPE_UNNOTICE).toBool();
-            _toTopOrCancelTopAct->setText(isTop ? "取消置顶" : "会话置顶");
-            _noticeAct->setText(unNotice ? "取消免打扰" : "消息免打扰");
+            _toTopOrCancelTopAct->setText(isTop ? tr("取消置顶") : tr("会话置顶"));
+            _noticeAct->setText(unNotice ? tr("取消免打扰") : tr("消息免打扰"));
+            _quitGroupAct->setVisible(chatType == QTalk::Enum::GroupChat);
             if (chatType == QTalk::Enum::GroupChat) {
                 _addFriendAct->setVisible(false);
                 _starAct->setVisible(false);
@@ -886,8 +900,8 @@ bool SessionFrm::eventFilter(QObject *o, QEvent *e) {
                 //
                 bool isStar = std::find(_arSatr.begin(), _arSatr.end(), id) != _arSatr.end();
                 bool isBlack = std::find(_arBlackList.begin(), _arBlackList.end(), id) != _arBlackList.end();
-                _starAct->setText(isStar ? "取消星标" : "星标联系人");
-                _blackAct->setText(isBlack ? "移出黑名单" : "加入黑名单");
+                _starAct->setText(isStar ? tr("取消星标") : tr("星标联系人"));
+                _blackAct->setText(isBlack ? tr("移出黑名单") : tr("加入黑名单"));
             }
             _pContextMenu->exec(QCursor::pos());
 
@@ -940,43 +954,53 @@ QString SessionFrm::GenerateContent(const QString &content, const QUInt8 &chatTy
 
     switch (msgType) {
         case QTalk::Entity::MessageTypePhoto:
-            ret += "[图片]";
+            ret += tr("[图片]");
             break;
         case QTalk::Entity::MessageTypeImageNew:
-            ret += "[表情]";
+            ret += tr("[表情]");
             break;
         case QTalk::Entity::MessageTypeFile:
-            ret += "[文件]";
+            ret += tr("[文件]");
             break;
         case QTalk::Entity::MessageTypeCommonTrdInfo:
         case QTalk::Entity::MessageTypeCommonTrdInfoV2:
-            ret += "[链接卡片]";
+            ret += tr("[链接卡片]");
             break;
         case QTalk::Entity::MessageTypeSourceCode:
-            ret += "[代码块]";
+            ret += tr("[代码块]");
             break;
         case QTalk::Entity::MessageTypeSmallVideo:
-            ret += "[视频]";
+            ret += tr("[视频]");
             break;
-        case QTalk::Entity::WebRTC_MsgType_Video:
-            ret += "[语音视频]";
+        case QTalk::Entity::WebRTC_MsgType_VideoCall:
+            ret += tr("[实时视频]");
+            break;
+        case QTalk::Entity::WebRTC_MsgType_AudioCall:
+            ret += tr("[实时音频]");
+            break;
+        case QTalk::Entity::WebRTC_MsgType_Video_Group:
+            ret += tr("[群组视频]");
             break;
         case QTalk::Entity::MessageTypeVoice:
-            ret += "[语音]";
+            ret += tr("[语音]");
             break;
         case QTalk::Entity::MessageTypeProduct:
         case QTalk::Entity::MessageTypeNote:
-            ret += "[产品详情]";
+            ret += tr("[产品详情]");
             break;
         case QTalk::Entity::MessageTypeSystem:
-            ret += "[系统消息]";
+            ret += tr("[系统消息]");
             break;
         case QTalk::Entity::MessageTypeNotice:
-            ret += "[公告消息]";
+            ret += tr("[公告消息]");
             break;
         case QTalk::Entity::MessageTypeGrabMenuVcard:
         case QTalk::Entity::MessageTypeGrabMenuResult:
-            ret += "[抢单消息]";
+            ret += tr("[抢单消息]");
+            break;
+        case 65537:
+        case 65538:
+            ret += tr("[热线提示信息]");
             break;
         default: {
             QString tmpContent = content.split("\n").first();
@@ -990,13 +1014,13 @@ QString SessionFrm::GenerateContent(const QString &content, const QUInt8 &chatTy
                 QString type = regExp.cap(1); // 多媒体类型
 
                 if ("url" == type) {
-                    tmpContent.replace(pos, item.size(), "[链接]");
+                    tmpContent.replace(pos, item.size(), tr("[链接]"));
                 } else if ("image" == type) {
-                    tmpContent.replace(pos, item.size(), "[图片]");
+                    tmpContent.replace(pos, item.size(), tr("[图片]"));
                 } else if ("emoticon" == type) {
-                    return ret += "[表情]";
+                    return ret += tr("[表情]");
                 } else {
-                    tmpContent.replace(pos, item.size(), "[未知]");
+                    tmpContent.replace(pos, item.size(), tr("[未知]"));
                 }
             }
 
@@ -1037,7 +1061,7 @@ void SessionFrm::onUpdateReadedCount(const QTalk::Entity::UID &uid, const int &c
 
 void SessionFrm::recvRevikeMessage(const QTalk::Entity::UID &uid, const QString &fromId) {
     if (_sessionMap.contains(uid) && nullptr != _sessionMap[uid]) {
-        QString userName = "你";
+        QString userName = tr("你");
 
         if (fromId != _strSelfId) {
             std::shared_ptr<QTalk::Entity::ImUserInfo> info =
@@ -1174,7 +1198,7 @@ void SessionFrm::onAddFriendAct(bool) {
  */
 void SessionFrm::onStarAct(bool) {
 
-    emit _mainPanel->sgOperator("星标联系人");
+    emit _mainPanel->sgOperator(tr("星标联系人"));
 
     QModelIndex index = _pSessionView->currentIndex();
     QString peerId = index.data(ITEM_DATATYPE_USERID).toString();
@@ -1197,7 +1221,7 @@ void SessionFrm::onStarAct(bool) {
  */
 void SessionFrm::onBlackAct(bool) {
 
-    emit _mainPanel->sgOperator("加入黑名单");
+    emit _mainPanel->sgOperator(tr("加入黑名单"));
 
     QModelIndex index = _pSessionView->currentIndex();
     QString peerId = index.data(ITEM_DATATYPE_USERID).toString();
@@ -1242,7 +1266,7 @@ QString SessionFrm::getUserName(const std::string &id, bool isGroup) {
     if (SYSTEM_XMPPID == userId ||
         RBT_SYSTEM == userId)
     {
-        return SYSTEM_NAME;
+        return tr(SYSTEM_NAME);
     }
 
     if (!id.empty()) {
@@ -1354,5 +1378,118 @@ void SessionFrm::onUserConfigChanged(const QTalk::Entity::UID& uid)
         // sort
         _pSessionView->update();
         _pModel->sort(0);
+    }
+}
+
+void SessionFrm::onShowDraft(const QTalk::Entity::UID& uid, const QString &draft) {
+
+    enum {
+        Type_Invalid,
+        Type_Text,
+        Type_Image,
+        Type_At,
+        Type_Url,
+    };
+    if(!_sessionMap.contains(uid))
+        return;
+    //
+    QString a_data;
+    auto document = QJsonDocument::fromJson(draft.toUtf8());
+    if(document.isNull()){
+
+    }
+    else
+    {
+        QJsonArray array = document.array();
+        for(auto && i : array)
+        {
+            QJsonObject obj = i.toObject();
+            int key = obj.value("key").toInt();
+            QString value = obj.value("value").toString();
+            switch (key)
+            {
+                case Type_Text:
+                {
+                    a_data.append(value);
+                    break;
+                }
+                case Type_Url:
+                {
+                    a_data.append(tr("[链接]"));
+                    break;
+                }
+                case Type_Image:
+                {
+                    a_data.append(tr("[图片]"));
+                    break;
+                }
+                case Type_At:
+                {
+                    a_data.append(QString("@%1").arg(value));
+                    break;
+                }
+                case Type_Invalid:
+                default:
+                    break;
+            }
+        }
+    }
+
+    a_data.replace("\n", " ");
+
+    if(_sessionMap.contains(uid) && !a_data.trimmed().isEmpty())
+    {
+        _sessionMap[uid]->setData(a_data, ITEM_DATATYPE_DRAFT);
+    }
+}
+
+void SessionFrm::onAppDeactivated() {
+    _curUserId = UID();
+}
+
+void SessionFrm::onAppActive() {
+    auto index = _pSessionView->currentIndex();
+    if(index.isValid())
+    {
+//        auto userId = index.data(ITEM_DATATYPE_USERID).toString();
+//        auto readJid = index.data(ITEM_DATATYPE_REALJID).toString();
+//        _curUserId = UID(userId, readJid);
+        onItemSelectChanged(index);
+    }
+}
+
+/**
+ *
+ * @param messageId
+ * @param time
+ */
+void SessionFrm::onGotMState(const QTalk::Entity::UID &uid, const QString &messageId, const long long &time) {
+
+    if(_sessionMap.contains(uid) && _sessionMap[uid])
+    {
+        auto itemMsgId = _sessionMap[uid]->data(ITEM_DATATYPE_LAST_MESSAGE_ID).toString();
+        if(messageId == itemMsgId)
+            _sessionMap[uid]->setData(GenerateTimeText(time), ITEM_DATATYPE_LASTSTRTIME);
+    }
+}
+
+//
+void SessionFrm::onQuitGroupAct(bool) {
+
+    QModelIndex index = _pSessionView->currentIndex();
+    if (index.isValid()) {
+        QString xmppId = index.data(ITEM_DATATYPE_USERID).toString();
+        int chatType = index.data(ITEM_DATATYPE_CHATTYPE).toInt();
+        QString name = index.data(ITEM_DATATYPE_USERNAME).toString();
+
+        int ret = QtMessageBox::warning(this, tr("警告"), tr("即将退出群聊%1 (%2), 是否继续?").arg(name, xmppId),
+                                        QtMessageBox::EM_BUTTON_YES | QtMessageBox::EM_BUTTON_NO);
+        if(ret == QtMessageBox::EM_BUTTON_YES) {
+            QtConcurrent::run([this, xmppId, chatType](){
+                if (_messageManager && chatType == QTalk::Enum::GroupChat) {
+                    _messageManager->quitGroupById(xmppId.toStdString());
+                }
+            });
+        }
     }
 }

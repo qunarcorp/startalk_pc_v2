@@ -1,4 +1,7 @@
-﻿#ifndef NAVIGATIONMIANPANEL_H
+﻿#if _MSC_VER >= 1600
+#pragma execution_character_set("utf-8")
+#endif
+#ifndef NAVIGATIONMIANPANEL_H
 #define NAVIGATIONMIANPANEL_H
 
 #include <QFrame>
@@ -64,12 +67,15 @@ public:
 	void onDestroyGroup(const std::string& groupId);
 	void onChangeHeadRet(bool ret, const std::string& xmppId, const std::string& localHead);
 	void updateTatalReadCount();
+	void onGotMState(const QTalk::Entity::UID& uid, const QString& messageId, const long long& time);
 
 public slots:
 	void retryToConnect();
     void onNewSession(const StSessionInfo &into);
 	void jumpToNewMessage();
     void onShortCutSwitchSession(int);
+    void onAppDeactivated();
+    void onAppActive();
 
 private:
     void init();
@@ -83,7 +89,7 @@ private slots:
 
 	void removeSessionAction(const QTalk::Entity::UID&);
 
-signals:
+Q_SIGNALS:
     void sgSessionInfo(const StSessionInfo &into);
     void sgReceiveSession(ReceiveSession mess, bool isSend);
     void sgDownLoadHeadPhotosFinish();
@@ -105,6 +111,8 @@ signals:
     void sgChangeUserHead(const QString& userId, const QString& userHead);
     void sgOperator(const QString& desc);
     void sgUserConfigChanged(const QTalk::Entity::UID& );
+    void sgShowDraft(const QTalk::Entity::UID&, const QString&);
+    void sgGotMState(const QTalk::Entity::UID& , const QString&, const long long&);
 
 private:
     QVBoxLayout * _mainLayout;

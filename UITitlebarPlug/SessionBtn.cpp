@@ -49,7 +49,7 @@ void SessionBtn::paintEvent(QPaintEvent *e) {
     QRect rect =  e->rect();
     QPainter painter(this);
     bool isClicked = this->isChecked();
-    isClicked |= _isPressed;
+//    isClicked |= _isPressed;
 	painter.setRenderHints(QPainter::Antialiasing, true);
 	painter.setRenderHints(QPainter::SmoothPixmapTransform, true);
 	QString iconPath = QString(isClicked ?

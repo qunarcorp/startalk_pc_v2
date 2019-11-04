@@ -10,6 +10,7 @@
 #include "../NativeChatStruct.h"
 #include "../../entity/im_message.h"
 #include "../../Platform/dbPlatForm.h"
+#include "../../CustomUi/MedalWgt.h"
 
 #define HEAD_RADIUS 14
 
@@ -57,16 +58,19 @@ public:
     //
     void onDisconnected();
 
-signals:
+    void updateUserMedal();
+
+Q_SIGNALS:
     void sgSelectItem(bool);
     void sgChangeUserMood(const std::string&);
     void sgDisconnected();
+    void sgUpdateUserMedal();
 
 protected:
     bool eventFilter(QObject *o, QEvent *e) override;
 
 protected:
-    ushort _type;
+    int _type;
     ushort _msgDirection;
     QTalk::Entity::ImMessageInfo _msgInfo;
     QInt32 _readSts;
@@ -74,6 +78,7 @@ protected:
 protected:
     HeadPhotoLab *_headLab;
     QLabel *_nameLab;
+    MedalWgt* _medalWgt;
     QFrame *_contentFrm;
     QLabel *_readStateLabel;
     QString _strUserId;

@@ -3,15 +3,14 @@
 
 #include <vector>
 #include <set>
-#include "sqlite/database.h"
+#include "DaoInterface.h"
 #include "../include/CommonDefine.h"
 #include "../include/CommonStrcut.h"
 
-class GroupMemberDao
+class GroupMemberDao : public DaoInterface
 {
 public:
 	explicit GroupMemberDao(qtalk::sqlite::database *sqlDb);
-
 	bool creatTable();
 	bool clearData();
 
@@ -26,8 +25,7 @@ public:
 
     void getAllGroupMembers(std::map<std::string, std::set<std::string>> &members);
 
-private:
-	qtalk::sqlite::database *_pSqlDb;
+
 };
 
 #endif//_GROUPMEMBER_H_

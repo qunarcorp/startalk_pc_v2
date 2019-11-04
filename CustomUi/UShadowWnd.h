@@ -55,7 +55,7 @@ protected:
     void macAdjustWindows();
 #endif
 
-signals:
+Q_SIGNALS:
     void closeSignal();
 
 public slots:

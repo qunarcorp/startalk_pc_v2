@@ -109,6 +109,26 @@ std::string UserCardMsgManager::getSourceImage(const std::string& netPath)
     return e.localFilePath;
 }
 
+void UserCardMsgManager::getUserMedal(const std::string& xmppId, std::set<QTalk::StUserMedal>& medal) {
+    UserMedalEvt e(xmppId, medal);
+    EventBus::FireEvent(e);
+}
+
+void UserCardMsgManager::getMedalUser(int medalId, std::vector<QTalk::StMedalUser> &metalUsers) {
+    GetMedalUserEvt e;
+    e.medalId = medalId;
+    EventBus::FireEvent(e);
+    metalUsers = e.metalUsers;
+}
+
+bool UserCardMsgManager::modifyUserMedal(int medalId, bool wear) {
+    ModifyUserMedalStatusEvt e;
+    e.medalId = medalId;
+    e.isWear = wear;
+    EventBus::FireEvent(e);
+    return e.result;
+}
+
 /***/
 UserCardMessageListener::UserCardMessageListener(CardManager *mainPanel)
         : _pMainPanel(mainPanel) {

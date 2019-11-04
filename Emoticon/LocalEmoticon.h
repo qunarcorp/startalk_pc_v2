@@ -1,4 +1,7 @@
-﻿#ifndef _LOCALEMOTICON_H_
+﻿#if _MSC_VER >= 1600
+#pragma execution_character_set("utf-8")
+#endif
+#ifndef _LOCALEMOTICON_H_
 #define _LOCALEMOTICON_H_
 
 #include <QFrame>
@@ -21,7 +24,7 @@ public:
 	LocalEmoticon(QMap<QString, StEmoticon>& mapEmo, QWidget *parent);
 	~LocalEmoticon() override;
 
-signals:
+Q_SIGNALS:
 	void removeLocalEmoSignal(const QString&, const QString&);
 	void removeCollection(const QString& collectionPath);
 

@@ -1,7 +1,7 @@
 ﻿#ifndef SESSIONLISTDAO_H
 #define SESSIONLISTDAO_H
 
-#include "sqlite/database.h"
+#include "DaoInterface.h"
 #include "../include/CommonStrcut.h"
 #include <vector>
 
@@ -14,14 +14,13 @@ namespace QTalk {
         struct ImSessionInfo;
     }
 }
-class SessionListDao {
+class SessionListDao : public DaoInterface{
 public:
-    SessionListDao(qtalk::sqlite::database *sqlDb = nullptr);
+    explicit SessionListDao(qtalk::sqlite::database *sqlDb = nullptr);
+    bool creatTable() override;
+    bool clearData() override;
 
-    bool creatTable();
-
-    bool clearData();
-
+public:
     bool insertSessionInfo(const QTalk::Entity::ImSessionInfo &imSessionInfo);
 
     bool bulkInsertSessionInfo(const std::vector<QTalk::Entity::ImSessionInfo> &sessionList);
@@ -49,10 +48,6 @@ public:
     bool initConfigSessions();
 
     bool initSessionInfo(std::vector<std::string> *userList);
-
-private:
-    qtalk::sqlite::database *_sqlDb;
-
 };
 
 #endif // SESSIONLISTDAO_H

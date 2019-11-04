@@ -1,16 +1,17 @@
 ﻿#ifndef _CONFIGDAO_H_
 #define _CONFIGDAO_H_
 
-#include "sqlite/database.h"
-#include <vector>
+#include "DaoInterface.h"
 #include "../entity/im_config.h"
+#include <vector>
 
-class ConfigDao
+class ConfigDao : public DaoInterface
 {
 public:
-	ConfigDao(qtalk::sqlite::database *sqlDb);
-	bool creatTable();
-	bool clearData();
+	explicit ConfigDao(qtalk::sqlite::database *sqlDb);
+	bool creatTable() override;
+	bool clearData() override;
+
 public:
     bool getConfigVersion(int& version);
     bool bulkInsertConfig(const std::vector<QTalk::Entity::ImConfig>& config);
@@ -20,8 +21,6 @@ public:
 	bool getConfig(const std::string& key, std::map<std::string, std::string>& mapConf);
     bool getAllConfig(std::vector<QTalk::Entity::ImConfig>& configs);
 
-private:
-	qtalk::sqlite::database *_pSqlDb;
 };
 
 #endif//_CONFIGDAO_H_

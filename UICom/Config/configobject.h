@@ -19,7 +19,7 @@ public:
 protected:
     void SetRaw(const QString &key, const QJsonValue &jsonvalue);
     QJsonValue GetRaw(const QString &key);
-signals:
+Q_SIGNALS:
     void ValueChanged(const QString &key, const QJsonValue &value);
 
 public slots:

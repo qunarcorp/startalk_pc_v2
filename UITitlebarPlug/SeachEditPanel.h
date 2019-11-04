@@ -43,7 +43,7 @@ protected:
     bool eventFilter(QObject* o, QEvent* e) override;
     bool event(QEvent* e) override ;
 
-signals:
+Q_SIGNALS:
     void sgStartSearch(const QString &value);
     void sgIsOpenSearch(const bool &isOpenSearch);
     void sgSelectUp();

@@ -19,6 +19,7 @@
 #define ISTOP_TEXT "[置顶] "
 #define AT_TEXT_SELF "[有人@我]"
 #define AT_TEXT_ALL "[@all]"
+#define DRAFT_TIP "[草稿]:"
 
 using namespace QTalk;
 
@@ -105,6 +106,8 @@ void SessionitemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
     QString content = index.data(ITEM_DATATYPE_MESSAGECONTENT).toString();
     QString time = index.data(ITEM_DATATYPE_LASTSTRTIME).toString();
     QString realJid = index.data(ITEM_DATATYPE_REALJID).toString();
+    QString draft = index.data(ITEM_DATATYPE_DRAFT).toString();
+
     int chattype = index.data(ITEM_DATATYPE_CHATTYPE).toInt();
     if(chattype == QTalk::Enum::ConsultServer && !realJid.isNull()){//自己是客服 需要拼接显示name
         std::shared_ptr<QTalk::Entity::ImUserInfo> userInfo  =
@@ -165,28 +168,49 @@ void SessionitemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
             content = QString("[%1条] %2").arg(unreadCount).arg(content);
         }
     }
-    if (unreadCount > 0 && atCount > 0)
-    {
-        QString strAtCount = (bool) (atCount & 0xF0) ? AT_TEXT_SELF : AT_TEXT_ALL;
 
-        atMsgWidth = contentF.width(strAtCount) + 2;
-        painter->setPen(QPen(StyleDefine::instance().getNavAtFontColor()));
+    // 最近消息内容
+    if(!draft.isEmpty()) {
+
         painter->setFont(_contentFont);
-        QRectF atRect(rect.x() + 65, rect.y() + rect.height() / 2 + 7, atMsgWidth, contentF.height() + 5);
-        painter->drawText(atRect, Qt::AlignTop, strAtCount);
+        painter->setPen(QPen(StyleDefine::instance().getNavAtFontColor()));
+        qreal draftTipWidth = contentF.width(DRAFT_TIP) + 1;
+        QRectF tipRect(rect.x() + 65, rect.y() + rect.height() / 2 + 7, draftTipWidth, contentF.height() + 5);
+        painter->drawText(tipRect, Qt::AlignTop, DRAFT_TIP);
+
+        painter->setPen(QPen(StyleDefine::instance().getNavContentFontColor()));
+        qreal contentWidth = rect.width() - 80 - draftTipWidth - 20;
+        content = QFontMetricsF(_contentFont).elidedText(content, Qt::ElideRight, contentWidth);
+        QRectF contentRect(rect.x() + 65 + draftTipWidth, rect.y() + rect.height()/2 + 7,
+                           contentWidth + 5 , contentF.height() + 5);
+        painter->drawText(contentRect, Qt::AlignTop, QString("%1").arg(draft));
         painter->restore();
         painter->save();
     }
-    // 最近消息内容
-    painter->setPen(QPen(select ? StyleDefine::instance().getNavContentSelectFontColor() : StyleDefine::instance().getNavContentFontColor()));
-    painter->setFont(_contentFont);
-    qreal contentWidth = rect.width() - 80 - atMsgWidth - 20;
-    content = QFontMetricsF(_contentFont).elidedText(content, Qt::ElideRight, contentWidth);
-    QRectF contentRect(rect.x() + 70 + atMsgWidth, rect.y() + rect.height()/2 + 7,
-                       contentWidth + 5 , contentF.height() + 5);
-    painter->drawText(contentRect, Qt::AlignTop, content);
-    painter->restore();
-    painter->save();
+    else {
+
+        if (unreadCount > 0 && atCount > 0)
+        {
+            QString strAtCount = (bool) (atCount & 0xF0) ? AT_TEXT_SELF : AT_TEXT_ALL;
+
+            atMsgWidth = contentF.width(strAtCount) + 2;
+            painter->setPen(QPen(StyleDefine::instance().getNavAtFontColor()));
+            painter->setFont(_contentFont);
+            QRectF atRect(rect.x() + 65, rect.y() + rect.height() / 2 + 7, atMsgWidth, contentF.height() + 5);
+            painter->drawText(atRect, Qt::AlignTop, strAtCount);
+        }
+
+        painter->setPen(QPen(select ? StyleDefine::instance().getNavContentSelectFontColor() : StyleDefine::instance().getNavContentFontColor()));
+        painter->setFont(_contentFont);
+        qreal contentWidth = rect.width() - 80 - atMsgWidth - 20;
+        content = QFontMetricsF(_contentFont).elidedText(content, Qt::ElideRight, contentWidth);
+        QRectF contentRect(rect.x() + 70 + atMsgWidth, rect.y() + rect.height()/2 + 7,
+                           contentWidth + 5 , contentF.height() + 5);
+        painter->drawText(contentRect, Qt::AlignTop, content);
+        painter->restore();
+        painter->save();
+    }
+
     // 时间戳
     painter->setPen(QPen(select ? StyleDefine::instance().getNavTimeSelectFontColor() : StyleDefine::instance().getNavTimeFontColor()));
     painter->setFont(_timeFont);

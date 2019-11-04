@@ -28,7 +28,7 @@ public:
     explicit SearchItemDelegate(QWidget *parent);
     ~SearchItemDelegate() override;
 
-signals:
+Q_SIGNALS:
     void itemChanged(const QModelIndex&);
     void sgItemDbClicked(const QModelIndex&);
 

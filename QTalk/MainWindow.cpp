@@ -13,6 +13,7 @@
 #include <QtNetwork/QHostInfo>
 #include <QPropertyAnimation>
 #include <QMenuBar>
+#include <QtConcurrent>
 #include "../UICom/uicom.h"
 #include "../interface/view/IUITitleBarPlug.h"
 #include "../interface/view/IUINavigationPlug.h"
@@ -34,6 +35,11 @@
 #include "../Platform/AppSetting.h"
 #include "../entity/UID.h"
 #include "../CustomUi/QtMessageBox.h"
+#include "MacApp.h"
+#ifdef _WINDOWS
+#include <windows.h>
+#include <windowsx.h>
+#endif
 
 #define WIN_STATE "WIN_STATE"
 #define WIN_WIDTH "WIN_WIDTH"
@@ -95,6 +101,7 @@ MainWindow::MainWindow(QWidget *parent) :
     _timr->setInterval(90 * 1000);
     connect(_timr, &QTimer::timeout, this, &MainWindow::sendHeartBeat);
     connect(this, &MainWindow::LoginSuccess, this, &MainWindow::LoginResult);
+    connect(this, &MainWindow::sgRestartWithMessage, this, &MainWindow::restartWithMessage, Qt::QueuedConnection);
     //
     QHostInfo info = QHostInfo::fromName(QHostInfo::localHostName());
     for(const QHostAddress &address : info.addresses())
@@ -124,6 +131,43 @@ MainWindow::~MainWindow()
     UIGolbalManager::GetUIGolbalManager()->UnloadPluginQt("UIChatViewPlug");
 }
 
+
+bool MainWindow::nativeEvent(const QByteArray &eventType, void *message, long *result)
+{
+#ifdef _WINDOWS
+	MSG* msg = (MSG*)message;
+	auto pixelRatio = this->devicePixelRatio();
+	pixelRatio = qMax(pixelRatio, 1);
+	int tempBorderWidth = boundaryWidth * pixelRatio;
+	switch (msg->message)
+	{
+	case WM_NCHITTEST:
+		int xPos = (GET_X_LPARAM(msg->lParam) - this->frameGeometry().x()) / pixelRatio;
+		int yPos = (GET_Y_LPARAM(msg->lParam) - this->frameGeometry().y()) / pixelRatio;
+
+		if (xPos < tempBorderWidth && yPos < tempBorderWidth)
+			*result = HTTOPLEFT;
+		else if (xPos >= width() - tempBorderWidth && yPos < tempBorderWidth)
+			*result = HTTOPRIGHT;
+		else if (xPos < tempBorderWidth&&yPos >= height() - tempBorderWidth)
+			*result = HTBOTTOMLEFT;
+		else if (xPos >= width() - tempBorderWidth && yPos >= height() - tempBorderWidth)
+			*result = HTBOTTOMRIGHT;
+		else if (xPos < tempBorderWidth)
+			*result = HTLEFT;
+		else if (xPos >= width() - tempBorderWidth)
+			*result = HTRIGHT;
+		else if (yPos < tempBorderWidth)
+			*result = HTTOP;
+		else if (yPos >= height() - tempBorderWidth)
+			*result = HTBOTTOM;
+		else
+			return false;
+		return true;
+	}
+#endif // _WINDOWS
+	return false;
+}
 
 /**
   * @函数名
@@ -344,10 +388,13 @@ void MainWindow::connectPlugs()
     connect(_titleBar, SIGNAL(sgJumpToNewMessage()), _navigationPanel, SLOT(jumpToNewMessage()));
     connect(this, SIGNAL(appDeactivated()), _titleBar, SLOT(onAppDeactivated()));
     connect(this, SIGNAL(appDeactivated()), _chatViewPanel, SLOT(onAppDeactivated()));
+    connect(this, SIGNAL(appDeactivated()), _navigationPanel, SLOT(onAppDeactivated()));
 
     connect(_navigationPanel, SIGNAL(sgSessionInfo(const StSessionInfo&)),
-            _chatViewPanel, SLOT(onChatUserChanged(const StSessionInfo&)));
+            _chatViewPanel, SLOT(onChatUserChanged(const StSessionInfo&)), Qt::QueuedConnection);
     connect(_titleBar, SIGNAL(showSelfUserCard(const QString&)),
+            _pCardManager, SLOT(shwoUserCard(const QString&)));
+    connect(_chatViewPanel, SIGNAL(sgShowUserCard(const QString&)),
             _pCardManager, SLOT(shwoUserCard(const QString&)));
     connect(_chatViewPanel, SIGNAL(showUserCardSignal(const QString&)),
             _pCardManager, SLOT(shwoUserCard(const QString&)));
@@ -385,7 +432,9 @@ void MainWindow::connectPlugs()
             _pGroupManager, SLOT(onAddGroupMember(const QString&)));
     connect(_chatViewPanel, SIGNAL(showChatPicture(const QString&, const QString&, int)),
             _pPictureBrowser, SLOT(onShowChatPicture(const QString&, const QString&, int)));
-    connect(_pGroupManager, SIGNAL(setTreeDataFinised()), _pAddressBook, SLOT(updateStaffUi()));
+    connect(_chatViewPanel, SIGNAL(sgShowPicture(const QString&, const QString&)),
+            _pPictureBrowser, SLOT(showPicture(const QString&, const QString&)));
+//    connect(_pGroupManager, SIGNAL(setTreeDataFinised()), _pAddressBook, SLOT(updateStaffUi()));
     connect(_navigationPanel, SIGNAL(updateTotalUnreadCount(int)), _titleBar, SLOT(updateUnreadCount(int)));
 	connect(_titleBar, SIGNAL(feedbackLog(const QString&)), _chatViewPanel, SLOT(packAndSendLog(const QString&)));
 	connect(this, SIGNAL(systemShortCut()), _chatViewPanel, SLOT(systemShortCut()));
@@ -407,7 +456,12 @@ void MainWindow::connectPlugs()
 
     connect(_chatViewPanel, SIGNAL(sgWakeUpWindow()), this, SLOT(wakeUpWindow()));
     connect(this, SIGNAL(sgAppActive()), _chatViewPanel, SLOT(onAppActive()));
+    connect(this, SIGNAL(sgAppActive()), _navigationPanel, SLOT(onAppActive()));
     connect(_titleBar, SIGNAL(sgActiveWnd()), this, SLOT(wakeUpWindow()));
+#ifdef _MACOS
+    connect(this, SIGNAL(sgAppActive()), this, SLOT(wakeUpWindow()));
+//    connect(_titleBar, SIGNAL(sgShowMinWnd()), this, SLOT(onShowMinWnd()));
+#endif
 
     //
     connect(_chatViewPanel, SIGNAL(sgShockWnd()), this, SLOT(onShockWnd()));
@@ -415,6 +469,13 @@ void MainWindow::connectPlugs()
             this, SLOT(onUserSendMessage()));
     connect(UIGolbalManager::GetUIGolbalManager(), SIGNAL(sgMousePressGlobalPos(QPoint)), _titleBar,
             SLOT(onMousePressGolbalPos(QPoint)));
+    // show draft
+    connect(_chatViewPanel, SIGNAL(sgShowDraft(const QTalk::Entity::UID&, const QString&)),
+            _navigationPanel, SIGNAL(sgShowDraft(const QTalk::Entity::UID&, const QString&)));
+    // sgShowNotify
+    qRegisterMetaType<QTalk::StNotificationParam>("QTalk::StNotificationParam");
+    connect(_chatViewPanel, SIGNAL(sgShowNotify(const QTalk::StNotificationParam&)),
+            _pSysTrayIcon, SLOT(onShowNotify(const QTalk::StNotificationParam&)));
     // 自动回复
     connect(_titleBar, SIGNAL(sgAutoReply(bool)), _chatViewPanel, SLOT(setAutoReplyFlag(bool)));
 
@@ -493,7 +554,7 @@ void MainWindow::initGroupManager()
 	assert(_pGroupManager);
 }
 
-void MainWindow::InitLogin(bool _enable)
+void MainWindow::InitLogin(bool _enable, const QString& loginMsg)
 {
     QObject* plugin = UIGolbalManager::GetUIGolbalManager()->GetPluginInstanceQt("UILoginPlug");
     if (plugin)
@@ -504,6 +565,8 @@ void MainWindow::InitLogin(bool _enable)
             _pLoginPlug->init();
             _pLoginPlug->enableAutoLogin(_enable);
             _pLoginPlug->initConf();
+            if(!loginMsg.isEmpty())
+                _pLoginPlug->setLoginMessage(loginMsg);
             _logindlg = (QDialog *)_pLoginPlug->widget();
         }
         if (_logindlg)
@@ -575,7 +638,7 @@ void MainWindow::openMainwindow()
                 _pConfigLoader->setInteger(WIN_Y, wndY);
                 _pConfigLoader->saveConfig();
             }
-            // 判断是否超出屏幕范围
+
             setGeometry(wndX, wndY, wndWidth, wndHeight);
             switch (wndstate)
             {
@@ -586,6 +649,7 @@ void MainWindow::openMainwindow()
                 default:
                 {
                     showNormal();
+                    // 判断是否超出屏幕范围
                     adjustWndRect();
                     break;
                 }
@@ -626,6 +690,9 @@ void MainWindow::openMainwindow()
         connect(_noOperatorThread, SIGNAL(sgUserLeave(bool)), _chatViewPanel, SLOT(setAutoReplyFlag(bool)));
         connect(_noOperatorThread, SIGNAL(sgUserLeave(bool)), this, SLOT(setUserStatus(bool)));
         connect(_titleBar, SIGNAL(sgAutoReply(bool)), _noOperatorThread, SLOT(setAutoReplyFlag(bool)));
+
+        //
+        checkUpdater();
 	}
 
 	synSeverFinish();
@@ -835,15 +902,16 @@ void MainWindow::adjustWndRect() {
     QRect deskRect = deskTop->screenGeometry(curMonitor);
     if(!deskRect.contains(thisGeo, true))
     {
-		thisGeo.setTopLeft(deskRect.topLeft());
+
         if(thisGeo.width() > deskRect.width())
         {
-            thisGeo.setWidth(deskRect.width());
+            thisGeo.setWidth(deskRect.width() - 100);
         }
         if(thisGeo.height() > deskRect.height())
         {
-            thisGeo.setHeight(deskRect.height());
+            thisGeo.setHeight(deskRect.height() - 100);
         }
+        thisGeo.setTopLeft(deskRect.topLeft());
 
         setGeometry(thisGeo);
     }
@@ -914,7 +982,7 @@ void MainWindow::wakeUpWindow()
 
     if(wakeUpWgt->isMinimized())
         wakeUpWgt->setWindowState((wakeUpWgt->windowState() & ~Qt::WindowMinimized) | Qt::WindowActive);
-	
+
 	wakeUpWgt->setVisible(true);
     QApplication::setActiveWindow(wakeUpWgt);
     wakeUpWgt->raise();
@@ -941,7 +1009,7 @@ void MainWindow::onShockWnd()
     if(!this->isMaximized() && !this->isFullScreen())
     {
         QRect now = this->geometry();
-        QPropertyAnimation* animation = new QPropertyAnimation(this, "pos");
+        auto* animation = new QPropertyAnimation(this, "pos");
         animation->setDuration(500);
         animation->setStartValue(QPoint(now.x(), now.y() + 20));
         animation->setEndValue(QPoint(now.x(), now.y() - 20));
@@ -976,4 +1044,103 @@ void MainWindow::onUserSendMessage()
     _noOperatorThread->resetUnOperatorTime();
     if(_pMessageManager)
         _pMessageManager->chanegUserStatus("online");
+}
+
+void MainWindow::checkUpdater() {
+
+    auto version = UIGolbalManager::GetUIGolbalManager()->_updater_version;
+    QFuture<std::string> future = QtConcurrent::run(_pMessageManager, &QTalkMsgManager::checkUpdater, version);
+    while(!future.isFinished())
+        QApplication::processEvents(QEventLoop::AllEvents, 100);
+
+    std::string ret = future.result();
+    if(!ret.empty())
+    {
+#if defined(_LINUX) || defined(_STARTALK) || defined(_QCHAT)
+        return;
+#endif
+//        std::ostringstream src;
+//        src << Platform::instance().getAppdataRoamingPath()
+//            << "/updater/updater."
+//            #if defined(_WINDOWS)
+//            << "exe";
+//            #elif defined(_MACOS)
+//            << "dmg";
+//            #endif
+//
+//        QString updaterPath = QString(src.str().data());
+//        QFileInfo exec_info(updaterPath);
+//        if(exec_info.exists() && exec_info.isFile())
+//        {
+//            int _ret = QtMessageBox::question(this, "更新器有更新，是否打开更新？",
+//#if defined(_WINDOWS)
+//                    "更新后请在桌面或者开始菜单中启动程序"
+//#elif defined(_MACOS)
+//                    "更新后请在Applications中启动程序"
+//#else
+//
+//#endif
+//                    );
+//            if(_ret == QtMessageBox::EM_BUTTON_YES)
+//            {
+//#if defined(_WINDOWS)
+//                QProcess::startDetached(updaterPath, QStringList());
+//#elif defined(_MACOS)
+//                QStringList params;
+//                params << updaterPath;
+//                QProcess::execute("open", params);
+//#else
+//
+//#endif
+//                exit(0);
+//            }
+//        }
+
+        int btn_ret = QtMessageBox::information(this,
+                tr("更新提示"),
+                QString(tr("更新器有更新，您可以点击 <a href=%1>%1</a> 下载更新").arg(ret.data())), QtMessageBox::EM_BUTTON_CANCEL_UPDATE);
+
+//        if(btn_ret == QtMessageBox::EM_BUTTON_YES)
+//        {
+//
+//        }
+    }
+}
+
+#ifdef _MACOS
+void MainWindow::onShowMinWnd() {
+    MacApp::showMinWnd(this);
+}
+
+
+#endif
+
+void MainWindow::changeEvent(QEvent *event) {
+	if (event->type() == QEvent::LanguageChange)
+	{
+
+	}
+	UShadowDialog::changeEvent(event);
+}
+
+void MainWindow::onGetHistoryError() {
+    emit sgRestartWithMessage(tr("获取历史记录失败, 请重新登录!"));
+}
+
+void MainWindow::restartWithMessage(const QString &msg) {
+
+//    if (!_initUi) {
+        QString program = QApplication::applicationFilePath();
+        QStringList arguments;
+        arguments << "AUTO_LOGIN=OFF"
+                  << QString("MSG=%1").arg(msg);
+        QProcess::startDetached(program, arguments);
+        exit(0);
+//    }
+//    else
+//    {
+//        if(_logindlg)
+//            qInfo() << QMetaObject::invokeMethod(_logindlg, "AuthFailedSignal",
+//                    Qt::QueuedConnection, Q_ARG(QString, msg));
+//    }
 }

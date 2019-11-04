@@ -170,6 +170,16 @@ QPushButton#AddGroup:hover
 	border-image:url(:/chatview/image1/StatusBar/AddGroup_hover.png);
 }
 
+QPushButton#CO_Edit
+{
+	border-image:url(:/chatview/image1/coedit_normal.png);
+}
+
+QPushButton#CO_Edit:hover
+{
+	border-image:url(:/chatview/image1/coedit_hover.png);
+}
+
 QPushButton#Lock
 {
 	border-image:url(:/chatview/image1/StatusBar/Lock_normal.png);
@@ -922,4 +932,62 @@ QFrame#MeetingRemindItem{
 QTextEdit#InputWgt
 {
     margin-left: 15px;
+}
+
+QLabel#hotLineTipLabel {
+    font-size:13px;
+    font-weight:normal;
+    color:rgba(153,153,153,1);
+    line-height:15px;
+}
+
+QFrame#HotLineTipFrm {
+    background:rgba(242,242,242,1);
+    border-top-left-radius:0px;
+    border-top-right-radius:4px;
+    border-bottom-right-radius:4px;
+    border-bottom-left-radius:4px;
+}
+
+QFrame#HotLineContentFrm {
+    background:rgba(241,251,252,1);
+
+    border-top-left-radius:0px;
+    border-top-right-radius:4px;
+    border-bottom-right-radius:0px;
+    border-bottom-left-radius:0px;
+}
+
+QFrame#HotLineContentFrmNoBottom {
+    background:rgba(241,251,252,1);
+
+    border-top-left-radius:0px;
+    border-top-right-radius:4px;
+    border-bottom-right-radius:4px;
+    border-bottom-left-radius:4px;
+}
+
+QToolButton#YesBtn {
+    border-image: url(:/chatview/image1/messageItem/yes_unchose.png);
+}
+
+QToolButton#NoBtn {
+    border-image: url(:/chatview/image1/messageItem/no_unchose.png);
+}
+
+QToolButton#YesBtn:checked {
+    border-image: url(:/chatview/image1/messageItem/yes_chose.png);
+}
+
+QToolButton#NoBtn:checked {
+    border-image: url(:/chatview/image1/messageItem/no_chose.png);
+}
+
+QListWidget::item {
+    color:rgba(0,0,0,0);
+}
+
+QLabel#MessageItemTipLabel {
+    font-size:13px;
+    color:rgba(0,202,190,1);
 }

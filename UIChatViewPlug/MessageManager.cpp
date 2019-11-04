@@ -6,20 +6,10 @@
 #include <thread>
 #include "../Message/GroupMessage.h"
 #include "../QtUtil/Utils/Log.h"
+#include "../Message/LogicBaseMessage.h"
 
 //
 extern ChatViewMainPanel* g_pMainPanel;
-ChatMsgManager::ChatMsgManager()
-{
-
-}
-
-
-ChatMsgManager::~ChatMsgManager()
-{
-
-}
-
 /**
   * @函数名   getNetFilePath
   * @功能描述 获取文件网络地址
@@ -171,9 +161,9 @@ void ChatMsgManager::sendDownLoadFile(const std::string &strLocalPath, const std
 }
 
 //
-void ChatMsgManager::sendRevokeMessage(const QTalk::Entity::UID& uid, const std::string& from, const std::string& messageId)
+void ChatMsgManager::sendRevokeMessage(const QTalk::Entity::UID& uid, const std::string& from, const std::string& messageId,const QInt8& chatType)
 {
-    S_RevokeMessage e( uid, from, messageId);
+    S_RevokeMessage e( uid, from, messageId,chatType);
     EventBus::FireEvent(e);
 }
 
@@ -342,6 +332,76 @@ ChatMsgManager::getAfterMessage(const QInt64 &time, const QTalk::Entity::UID &ui
     return e.msgList;
 }
 
+void ChatMsgManager::hotLineMessageList(const std::string& xmppId) {
+    HotLineMessageListEvt e;
+    e.xmppId = xmppId;
+    EventBus::FireEvent(e);
+}
+
+void ChatMsgManager::postInterface(const std::string &url, const std::string &params)
+{
+    S_AddHttpQeq req;
+    req.request.url = url;
+    req.request.method = 1;
+    req.request.body = params;
+    req.request.header["Content-Type"] = "application/json;";
+
+    req.callback = [](int code, const std::string &responseData) {
+        if (code == 200) {
+
+        } else
+            error_log(responseData);
+    };
+
+    EventBus::FireEvent(req);
+}
+
+std::string ChatMsgManager::sendGetRequest(const std::string &url) {
+    S_AddHttpQeq req;
+    req.request.url = url;
+    req.request.method = 2;
+
+    int c = 0;
+    std::string d ;
+    req.callback = [&c, &d](int code, const std::string &responseData) {
+        c = code;
+        d = responseData;
+        if (code == 200) {
+
+        } else
+            error_log(responseData);
+    };
+
+    EventBus::FireEvent(req);
+    if(c == 200)
+        return d;
+    else
+        return "";
+}
+
+void ChatMsgManager::updateMessageExtendInfo(const std::string &msgId, const std::string &info) {
+
+    UpdateMsgExtendInfo evt;
+    evt.msgId = msgId;
+    evt.extendInfo = info;
+    EventBus::FireEvent(evt);
+
+}
+
+void ChatMsgManager::sendWebRtcCommand(int msgType, const std::string& json, const std::string& id) {
+
+    SWebRtcCommand e;
+    e.msgType = msgType;
+    e.cmd = json;
+    e.jid = id;
+    EventBus::FireEvent(e);
+}
+
+void ChatMsgManager::getUserMedal(const std::string &xmppId, std::set<QTalk::StUserMedal> &medal) {
+    UserMedalEvt e(xmppId, medal);
+    EventBus::FireEvent(e);
+}
+
 /*******************************/
 ChatMsgListener::ChatMsgListener()
 {
@@ -371,6 +431,9 @@ ChatMsgListener::ChatMsgListener()
 	EventBus::AddHandler<GetSeatListRet>(*this);
 	EventBus::AddHandler<IncrementConfig>(*this);
 	EventBus::AddHandler<GroupReadMState>(*this);
+	EventBus::AddHandler<MStateEvt>(*this);
+	EventBus::AddHandler<WebRtcCommand>(*this);
+	EventBus::AddHandler<UserMedalChangedEvt>(*this);
 }
 
 ChatMsgListener::~ChatMsgListener()
@@ -542,13 +605,20 @@ void ChatMsgListener::onEvent(SignalReadState &e) {
     }
 }
 
+void ChatMsgListener::onEvent(MStateEvt &e) {
+    if(nullptr != g_pMainPanel)
+    {
+        g_pMainPanel->gotMState(QTalk::Entity::UID(e.userId,e.realJid), e.messageId, e.time);
+    }
+}
+
 void ChatMsgListener::onEvent(RevokeMessage& e)
 {
     if(e.getCanceled()) return;
 
     if(nullptr != g_pMainPanel)
     {
-        g_pMainPanel->updateRevokeMessage(e.uid, e.messageFrom, e.messageId);
+        g_pMainPanel->updateRevokeMessage(e.uid, e.messageFrom, e.messageId, e.time);
     }
 }
 
@@ -627,10 +697,10 @@ void ChatMsgListener::onEvent(GetUsersOnlineSucessEvent & e)
  */
 void ChatMsgListener::onEvent(RecvVideoMessage &e)
 {
-    if (e.getCanceled()) return;;
-    if (g_pMainPanel) {
-        g_pMainPanel->onRecvVideo(e._userId);
-    }
+    if (e.getCanceled()) return;
+//    if (g_pMainPanel) {
+//        g_pMainPanel->onRecvVideo(e._userId);
+//    }
 }
 
 void ChatMsgListener::onEvent(GroupMemberChangeRet& e) {
@@ -703,4 +773,14 @@ void ChatMsgListener::onEvent(GroupReadMState &e) {
     {
         g_pMainPanel->updateGroupReadMState(e.groupId, e.msgIds);
     }
+}
+
+void ChatMsgListener::onEvent(WebRtcCommand &e) {
+    if(g_pMainPanel)
+        g_pMainPanel->onRecvWebRtcCommand(e.msgType, e.jid, e.cmd, e.isCarbon);
+}
+
+void ChatMsgListener::onEvent(UserMedalChangedEvt &e) {
+    if(g_pMainPanel)
+        g_pMainPanel->onUserMadelChanged(e.userMedals);
 }

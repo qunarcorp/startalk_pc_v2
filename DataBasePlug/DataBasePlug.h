@@ -94,6 +94,8 @@ public: //message
     bool getUserMessage(const long long &time, const std::string &userName,const std::string &realJid,
                         std::vector<QTalk::Entity::ImMessageInfo> &msgList) override;
 
+    void updateMessageExtendInfo(const std::string& msgId, const std::string& info) override ;
+
     // get image or "photo-text"
     void getBeforeImageMessage(const std::string& messageId,
                                        std::vector<std::pair<std::string, std::string>> & msgs) override ;
@@ -180,13 +182,13 @@ public: // friends
 public://Im_Cache_Data
     bool insertUserId(std::string value) override;
     bool insertHotLine(std::string value) override;
-    bool isHotLine(std::string xmppid) override;
+    void getHotLines(std::string &hotLines) override;
     bool isHotlineMerchant(std::string xmppid) override;
     std::string getGroupReadMarkTime() override;
     bool updateGroupReadMarkTime(std::string time) override;
 
     std::string getLoginBeforeGroupReadMarkTime() override;
-    bool saveLoginBeforeGroupReadMarkTime(std::string time) override;
+    bool saveLoginBeforeGroupReadMarkTime(const std::string &time) override;
 
 public://快捷回复
     void batchInsertQuickReply(const std::string &data) override;
@@ -196,6 +198,14 @@ public://快捷回复
 
 public:
     void getCareUsers(std::set<std::string>& users) override ;
+
+public:
+    void insertMedalList(const std::vector<QTalk::Entity::ImMedalList>& medals) override;
+    void insertMedals(const std::vector<QTalk::Entity::ImUserStatusMedal>& medals) override ;
+    void getUserMedal(const std::string& xmppId, std::set<QTalk::StUserMedal>& stMedal) override ;
+    void getMedalList(std::vector<QTalk::Entity::ImMedalList>& medals) override ;
+    void getMedalUsers(int medalId, std::vector<QTalk::StMedalUser>& metalUsers) override;
+    void modifyUserMedalStatus(const std::string& userId, int medalId, int status) override ;
 
 private:
     qtalk::sqlite::database *_dataBass;

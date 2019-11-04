@@ -1,4 +1,7 @@
-﻿#ifndef _NETEMOTICON_H_
+﻿#if _MSC_VER >= 1600
+#pragma execution_character_set("utf-8")
+#endif
+#ifndef _NETEMOTICON_H_
 #define _NETEMOTICON_H_
 
 #include <QWidget>
@@ -25,7 +28,7 @@ public:
 	void onInstallError(const QString& pkgid);
 	void onRemoveLocalEmotion(const QString& pkgId);
 
-signals:
+Q_SIGNALS:
 	void downloadEmoticon(const QString&);
 
 public:

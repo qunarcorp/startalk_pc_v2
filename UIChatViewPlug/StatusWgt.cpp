@@ -10,6 +10,8 @@
 #include "ChatViewMainPanel.h"
 #include "../QtUtil/Utils/Log.h"
 #include "../Platform/Platform.h"
+#include "../Platform/NavigationManager.h"
+#include "../WebService/WebService.h"
 
 #define DEM_BTN_ICON_LEN  30
 
@@ -37,16 +39,16 @@ void StautsLabel::setStatus(Status sts)
 	switch (sts)
 	{
 	case EM_STS_ONLINE:
-		setToolTip("在线");
+		setToolTip(tr("在线"));
 		break;
 	case EM_STS_BUSY:
-		setToolTip("繁忙");
+		setToolTip(tr("繁忙"));
 		break;
 	case EM_STS_AWAY:
-		setToolTip("离开");
+		setToolTip(tr("离开"));
 		break;
 	case EM_STS_OFFLINE:
-		setToolTip("离线");
+		setToolTip(tr("离线"));
 		break;
 	default:
 	case EM_STS_INVALID:
@@ -115,11 +117,16 @@ void StatusWgt::switchUser(QUInt8 t, const QTalk::Entity::UID &uid, const QStrin
     _isGroupChat = (t == QTalk::Enum::ChatType::GroupChat);
     _isConsultServer = (t == QTalk::Enum::ChatType::ConsultServer);
     _uid = uid;
+
+    _pEdit->setVisible(false);
 	if (_isGroupChat)
 	{
 		_pStsLabel->setVisible(false);
 		_pLabelPlat->setVisible(false);
         _pmood->setVisible(false);
+
+        std::string coEdit = AppSetting::instance().getCoEdit();
+        _pEdit->setVisible(true);
 	}
 	else
     {
@@ -152,7 +159,9 @@ void StatusWgt::switchUser(QUInt8 t, const QTalk::Entity::UID &uid, const QStrin
                 _pBtnStructure->setToolTip(QString::fromStdString(userInfo->DescInfo));
                 QString mood = QString::fromStdString(userInfo->Mood);
                 _pmood->setToolTip(mood);
-                _pmood->setText(mf.elidedText(mood, Qt::ElideRight, 500));
+                mood = mf.elidedText(mood, Qt::ElideRight, 500);
+                mood = mood.replace("\n", " ");
+                _pmood->setText(mood);
             }else{
                 std::shared_ptr<QTalk::Entity::ImUserInfo> pImUserInfo(new QTalk::Entity::ImUserInfo);
                 pImUserInfo->XmppId = uid.realId();
@@ -260,6 +269,7 @@ void StatusWgt::initUi() {
     _pBtnStructure = new QPushButton(this);
     _pBtnAddGroup = new QPushButton(this);
     _pBtnLock = new QPushButton(this);
+    _pEdit = new QPushButton(this);
 
     _pLabelChatUser->setObjectName("ChatUser");
     _pLabelPlat->setObjectName("UserDept");
@@ -267,19 +277,21 @@ void StatusWgt::initUi() {
     _pBtnStructure->setObjectName("Structure");
     _pBtnAddGroup->setObjectName("AddGroup");
     _pBtnLock->setObjectName("Lock");
+    _pEdit->setObjectName("CO_Edit");
     _pLabelChatUser->installEventFilter(this);
 	_pStsLabel->setFixedWidth(12);
     _pLabelPlat->setFixedSize(20, 20);
 
     _pmood->setTextFormat(Qt::PlainText);
     //
-    _pBtnStructure->setToolTip("组织架构");
+    _pBtnStructure->setToolTip(tr("组织架构"));
     if (_isGroupChat)
-        _pBtnAddGroup->setToolTip("邀请群成员");
+        _pBtnAddGroup->setToolTip(tr("邀请群成员"));
     else
-        _pBtnAddGroup->setToolTip("创建群组");
+        _pBtnAddGroup->setToolTip(tr("创建群组"));
     //
     _pBtnStructure->setFixedSize(DEM_BTN_ICON_LEN, DEM_BTN_ICON_LEN);
+    _pEdit->setFixedSize(DEM_BTN_ICON_LEN, DEM_BTN_ICON_LEN);
     _pBtnAddGroup->setFixedSize(DEM_BTN_ICON_LEN, DEM_BTN_ICON_LEN);
     _pBtnLock->setFixedSize(DEM_BTN_ICON_LEN, DEM_BTN_ICON_LEN);
 
@@ -288,6 +300,8 @@ void StatusWgt::initUi() {
         _pBtnAddGroup->setVisible(false);
 //        _pBtnStructure->setVisible(false);
     }
+
+    std::string coEdit = AppSetting::instance().getCoEdit();
 
     auto *layout = new QHBoxLayout(this);
     layout->setContentsMargins(10, 10, 15, 10);
@@ -306,6 +320,7 @@ void StatusWgt::initUi() {
     layout->addLayout(vlayout);
     layout->addItem(new QSpacerItem(20, 20, QSizePolicy::Expanding, QSizePolicy::Fixed));
     layout->addWidget(_pBtnStructure);
+    layout->addWidget(_pEdit);
     layout->addWidget(_pBtnAddGroup);
     layout->addWidget(_pBtnLock);
     layout->setAlignment(vlayout, Qt::AlignVCenter);
@@ -317,12 +332,12 @@ void StatusWgt::initUi() {
         if (g_pMainPanel) {
             if (_isGroupChat)
             {
-                emit g_pMainPanel->sgOperator("加入群组");
+                emit g_pMainPanel->sgOperator(tr("加入群组"));
                 emit g_pMainPanel->addGroupMember(_uid.qUsrId());
             }
             else
             {
-                emit g_pMainPanel->sgOperator("创建群组");
+                emit g_pMainPanel->sgOperator(tr("创建群组"));
                 emit g_pMainPanel->creatGroup(_uid.qReadJid());
             }
         }
@@ -330,10 +345,24 @@ void StatusWgt::initUi() {
 
     connect(_pBtnStructure, &QPushButton::clicked, [this]() {
         if (g_pMainPanel) {
-            emit g_pMainPanel->sgOperator("组织架构");
+            emit g_pMainPanel->sgOperator(tr("组织架构"));
             emit g_pMainPanel->sgSwitchCurFun(1);
             emit g_pMainPanel->sgJumpToStructre(_uid.qReadJid());
         }
+    });
+
+    connect(_pEdit, &QPushButton::clicked, [this, coEdit]() {
+
+        const std::string groupId = _uid.usrId();
+        QString tmpUrl = coEdit.data();
+        QString url = coEdit.data();;
+
+        if(coEdit.empty())
+        {
+            url = QString("%1/qtalkpad/docs/").arg(NavigationManager::instance().getHttpHost().data());
+        }
+        url.append(tmpUrl.contains("?") ? "&" : "?").append("to=").append(groupId.data());
+        WebService::loadCoEdit(QUrl(url));
     });
 }
 

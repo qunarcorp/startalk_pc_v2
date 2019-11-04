@@ -72,7 +72,7 @@ bool OfflineMessageManager::updateChatOfflineMessage() {
 
         if(_pComm && _pComm->_pMsgManager)
         {
-            std::string msg = SFormat("正在获取第{0}波单人消息", ++index);
+            std::string msg = SFormat("getting user message: {0}", ++index);
             _pComm->_pMsgManager->sendLoginProcessMessage(msg);
         }
     }
@@ -165,6 +165,7 @@ void OfflineMessageManager::updateChatMasks()
         if(_ret) {
             // 更新阅读状态
             LogicManager::instance()->getDatabase()->updateMessageReadFlags(readFlags);
+            warn_log("-- got user message and read flag -> update timestamp");
             // 更新时间戳
             LogicManager::instance()->getDatabase()->insertConfig(DEM_MESSAGE_MAXTIMESTAMP, DEM_TWOPERSONCHAT,
                                                                   std::to_string(0));
@@ -173,7 +174,7 @@ void OfflineMessageManager::updateChatMasks()
 }
 
 
-void OfflineMessageManager::updateGroupOfflineMessage() {
+bool OfflineMessageManager::updateGroupOfflineMessage() {
 
     int pageCount = 500;
     int retryCount = 3;
@@ -210,18 +211,21 @@ void OfflineMessageManager::updateGroupOfflineMessage() {
 
         if(_pComm && _pComm->_pMsgManager)
         {
-            std::string msg = SFormat("正在获取第{0}波群消息", ++index);
+            std::string msg = SFormat("getting group message: {0}", ++index);
             _pComm->_pMsgManager->sendLoginProcessMessage(msg);
         }
     }
     // 成功才更新时间戳
     if(retryCount >= 0) {
+        warn_log("-- got group message -> update timestamp");
         LogicManager::instance()->getDatabase()->insertConfig(DEM_MESSAGE_MAXTIMESTAMP, DEM_GROUPCHAT,
                                                               std::to_string(0));
     }
+
+    return retryCount >= 0;
 }
 
-void OfflineMessageManager::updateNoticeOfflineMessage() {
+bool OfflineMessageManager::updateNoticeOfflineMessage() {
 
     int pageCount = 500;
     int retryCount = 3;
@@ -258,14 +262,16 @@ void OfflineMessageManager::updateNoticeOfflineMessage() {
 
         if(_pComm && _pComm->_pMsgManager)
         {
-            std::string msg = SFormat("正在获取第{0}波系统消息", ++index);
+            std::string msg = SFormat("getting system message: {0}", ++index);
             _pComm->_pMsgManager->sendLoginProcessMessage(msg);
         }
     }
     // 成功才更新时间戳
     if(retryCount >= 0) {
+        warn_log("-- got system message -> update timestamp");
         LogicManager::instance()->getDatabase()->insertConfig(DEM_MESSAGE_MAXTIMESTAMP, DEM_SYSTEM, std::to_string(0));
     }
+    return retryCount >= 0;
 }
 
 /**
@@ -575,6 +581,7 @@ void OfflineMessageManager::getGroupReadMark(std::map<std::string, QInt64> &read
                          + "&v=" + Platform::instance().getClientVersion();
 
     std::string timeStamp = LogicManager::instance()->getDatabase()->getLoginBeforeGroupReadMarkTime();
+    timeStamp = std::to_string(std::strtoll(timeStamp.data(), nullptr, 0));
     //
     std::string selfJid = Platform::instance().getSelfUserId() + "@" + Platform::instance().getSelfDomain();
     std::string url = httpHost + method + "?" + params;

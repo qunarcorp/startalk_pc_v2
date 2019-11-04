@@ -12,6 +12,7 @@ public:
 	virtual bool getAutoLoginFlag() = 0;
 	virtual void setAutoLoginFlag(bool flag) = 0;
 	virtual void saveHeadPath() = 0;
+	virtual void setLoginMessage(const QString&) = 0;
 };
 
 Q_DECLARE_INTERFACE(IUILoginPlug, "com.plugin.login.www/1.0")

@@ -56,7 +56,7 @@ protected slots:
     void onToolBarTypeChanged(unsigned char type);
 
     void onUndo();
-signals:
+Q_SIGNALS:
     void sgFinish(const QString&id);
     void sgCancel(const QString&id);
 

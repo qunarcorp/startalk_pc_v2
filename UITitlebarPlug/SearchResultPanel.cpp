@@ -45,7 +45,7 @@ SearchResultPanel::~SearchResultPanel() {
   * @date 2018.11.06
   */
 void SearchResultPanel::initPanel() {
-    this->setFixedWidth(260);
+    this->setFixedWidth(270);
     auto *gLay = new QVBoxLayout(_pCenternWgt);
     gLay->setMargin(0);
     auto *mainFrm = new QFrame(this);
@@ -58,32 +58,37 @@ void SearchResultPanel::initPanel() {
     mainLay->addWidget(btmsFrm);
 
     _tabGroup = new UCButtonGroup(this);
-    _allBtn = new UCButton("全部",this);
-    _contactBtn = new UCButton("联系人", this);
-    _groupChatBtn = new UCButton("群聊", this);
-    _chatRecordBtn = new UCButton("聊天记录", this);
+    _allBtn = new UCButton(tr("全部"),this);
+    _contactBtn = new UCButton(tr("联系人"), this);
+    _groupChatBtn = new UCButton(tr("群聊"), this);
+    _chatRecordBtn = new UCButton(tr("聊天记录"), this);
+    _fileBtn = new UCButton(tr("文件"), this);
     _chatRecordBtn->setVisible(false);
+    _fileBtn->setVisible(false);
+    _chatRecordBtn->setMinimumWidth(60);
     //
-    _tabGroup->addButton(_allBtn, 0);
-    _tabGroup->addButton(_contactBtn, 1);
-    _tabGroup->addButton(_groupChatBtn, 2);
-    _tabGroup->addButton(_chatRecordBtn, 3);
+    _tabGroup->addButton(_allBtn, REQ_TYPE_ALL);
+    _tabGroup->addButton(_contactBtn, REQ_TYPE_USER);
+    _tabGroup->addButton(_groupChatBtn, REQ_TYPE_GROUP);
+    _tabGroup->addButton(_chatRecordBtn, REQ_TYPE_HISTORY);
+    _tabGroup->addButton(_fileBtn, REQ_TYPE_FILE);
 
     auto *tabLay = new QHBoxLayout(btmsFrm);
     tabLay->addWidget(_allBtn);
     tabLay->addWidget(_contactBtn);
     tabLay->addWidget(_groupChatBtn);
     tabLay->addWidget(_chatRecordBtn);
+    tabLay->addWidget(_fileBtn);
 
     _pSearchView = new SearchView(this);
-    _pWnLabel = new QLabel("搜索联系人、群聊、共同群聊，\n 支持关键词、ID搜索");
+    _pWnLabel = new QLabel(tr("搜索联系人、群聊、共同群聊，\n 支持关键词、ID搜索"));
     _pWnLabel->setObjectName("SearchTipWnd");
     _pWnLabel->setContentsMargins(0, 80, 0, 0);
     _pWnLabel->setAlignment(Qt::AlignHCenter | Qt::AlignTop);
     mainLay->addWidget(new Line);
     mainLay->addWidget(_pSearchView);
     mainLay->addWidget(_pWnLabel);
-    _pWnLabel->setVisible(false);
+    _pSearchView->setVisible(false);
     mainLay->setStretch(0, 0);
     mainLay->setStretch(1, 0);
     mainLay->setStretch(2, 1);
@@ -174,7 +179,11 @@ void SearchResultPanel::onSearchStart(const QString &keywords) {
             break;
         case REQ_TYPE_HISTORY:
             _searchStart = 0;
-            _searchLength = 30;
+            _searchLength = 10;
+            break;
+        case REQ_TYPE_FILE:
+            _searchStart = 0;
+            _searchLength = 10;
             break;
         default:
             break;
@@ -192,7 +201,10 @@ void SearchResultPanel::onSearchStart(const QString &keywords) {
             onSearchGroup();
             break;
         case REQ_TYPE_HISTORY:
-            // todo
+            onSearchHistory();
+            break;
+        case REQ_TYPE_FILE:
+            onSearchFile();
             break;
         default:
             break;
@@ -215,7 +227,7 @@ void SearchResultPanel::onSearchAll() {
             searchInfo.start = _searchStart;
             searchInfo.length = _searchLength;
             searchInfo.key = _keywords.toStdString();
-            _action = searchInfo.action = EM_ACTION_USER | EM_ACTION_MUC | EM_ACTION_COMMON_MUC;
+            _action = searchInfo.action = EM_ACTION_USER | EM_ACTION_MUC | EM_ACTION_COMMON_MUC /*| EM_ACTION_HS_SINGLE | EM_ACTION_HS_MUC | EM_ACTION_HS_FILE*/;
             _pMessageManager->sendSearch(searchInfo);
 
             emit sgGotSearchResult(searchInfo.key.data(), searchInfo.searchRet);
@@ -260,6 +272,38 @@ void SearchResultPanel::onSearchGroup() {
             searchInfo.key = _keywords.toStdString();
             _action = searchInfo.action = EM_ACTION_MUC | EM_ACTION_COMMON_MUC;
             _pMessageManager->sendSearch(searchInfo);
+            emit sgGotSearchResult(searchInfo.key.data(), searchInfo.searchRet);
+        }).detach();
+    }
+}
+
+void SearchResultPanel::onSearchHistory() {
+    if (_pMessageManager) {
+        //
+        std::thread([this](){
+            SearchInfoEvent searchInfo;
+            searchInfo.start = _searchStart;
+            searchInfo.length = _searchLength;
+            searchInfo.key = _keywords.toStdString();
+            _action = searchInfo.action = EM_ACTION_HS_SINGLE | EM_ACTION_HS_MUC;
+            _pMessageManager->sendSearch(searchInfo);
+
+            emit sgGotSearchResult(searchInfo.key.data(), searchInfo.searchRet);
+        }).detach();
+    }
+}
+
+void SearchResultPanel::onSearchFile() {
+    if (_pMessageManager) {
+        //
+        std::thread([this](){
+            SearchInfoEvent searchInfo;
+            searchInfo.start = _searchStart;
+            searchInfo.length = _searchLength;
+            searchInfo.key = _keywords.toStdString();
+            _action = searchInfo.action = EM_ACTION_HS_FILE;
+            _pMessageManager->sendSearch(searchInfo);
+
             emit sgGotSearchResult(searchInfo.key.data(), searchInfo.searchRet);
         }).detach();
     }
@@ -324,6 +368,7 @@ void SearchResultPanel::onGetMore(int req)
             case REQ_TYPE_USER:
             case REQ_TYPE_GROUP:
             case REQ_TYPE_HISTORY:
+            case REQ_TYPE_FILE:
                 _searchStart = _searchLength;
                 _searchLength += 10;
                 break;
@@ -344,7 +389,10 @@ void SearchResultPanel::onGetMore(int req)
                 onSearchGroup();
                 break;
             case REQ_TYPE_HISTORY:
-                // todo
+                onSearchHistory();
+                break;
+            case REQ_TYPE_FILE:
+                onSearchFile();
                 break;
             default:
                 break;

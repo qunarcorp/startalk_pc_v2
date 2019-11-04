@@ -69,6 +69,9 @@ public:
     void setShowMoodFlag(bool flag);
     bool getShowMoodFlag();
 
+    void setAutoDeleteSession(bool autoDelete);
+    bool getAutoDeleteSession();
+
     bool getSessionShowTopAndUnread(); //会话列表紧显示未读和置顶
     void setSessionShowTopAndUnread(bool flag);
     bool getSessionListLimitEnable();  //是否开启会话列表加载的会话数
@@ -153,6 +156,17 @@ public:
     int getTestchannel() { return _channel;};
     void setTestchannel(int channel) {_channel = channel;};
 
+    void setNativeMessagePromptEnable(bool flag) { _supportNativeMessagePrompt = flag; };
+    bool getNativeMessagePromptEnable() { return _supportNativeMessagePrompt; };
+    void setUseNativeMessagePrompt(bool flag) { _useNativeMessagePrompt = flag; };
+    bool getUseNativeMessagePrompt() { return _supportNativeMessagePrompt && _useNativeMessagePrompt; };
+
+    void setShowQuanTool(bool show);
+    bool getShowQuanTool();
+
+    void setCoEdit(const std::string& coEdit);
+    std::string getCoEdit();
+
 private:
 
     // 消息通知
@@ -173,6 +187,7 @@ private:
     // 会话设置
     std::string _sendMessageKey;
     bool _showMoodFlag;
+    bool _autoDeleteSession;
 
     bool _sessionShowTopAndUnread; //会话列表紧显示未读和置顶
     bool _sessionListLimitEnable;  //是否开启会话列表加载的会话数
@@ -220,6 +235,13 @@ private:
     bool _showSendMessageBtn;
     int _channel;
     int _logLevel;
+    //
+    bool _supportNativeMessagePrompt;
+    bool _useNativeMessagePrompt;
+    //
+    bool _showQuanWnd = false;
+
+    std::string _coEditor;
 
 private:
 	static AppSetting* _appSetting;

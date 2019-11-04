@@ -42,6 +42,9 @@ public:
     void onUserHeadChange(const QString& userId, const QString& localHead);
     int getAllCount();
 
+    void onAppDeactivated();
+    void onAppActive();
+
 public slots:
     void onloadSessionData();
     void onReceiveSession(const ReceiveSession &mess, bool isSend);
@@ -60,6 +63,8 @@ public slots:
     void onDestroyGroup(const QString &groupId);
     void onShortCutSwitchSession(int key);
     void onUserConfigChanged(const QTalk::Entity::UID&);
+    void onShowDraft(const QTalk::Entity::UID&, const QString& draft);
+    void onGotMState(const QTalk::Entity::UID&, const QString& messageId, const long long& time);
 
 private:
     void onShowCardAct(bool);
@@ -68,6 +73,7 @@ private:
     void onStarAct(bool);
     void onBlackAct(bool);
     void onClearUnreadAct(bool);
+    void onQuitGroupAct(bool);
 
 protected:
     bool eventFilter(QObject *o, QEvent *e) override;
@@ -84,7 +90,7 @@ private:
     void setUserStatus(const QTalk::Entity::UID&, bool check = false);
     QString getUserName(const std::string &xmppId, bool isGroup);
 
-signals:
+Q_SIGNALS:
 
     void sgSessionInfo(const StSessionInfo &into);
     void showUserCard(const QString &);
@@ -109,13 +115,14 @@ private:
     QAction *_starAct; // 星标联系人
     QAction *_blackAct; // 黑名单
     QAction *_clearUnreadAct; // 清除所有未读
+    QAction *_quitGroupAct; // 清除所有未读
     QMap<QTalk::Entity::UID, QStandardItem *> _sessionMap; //
     NavigationMsgManager *_messageManager;
 private:
     unsigned int _totalUnReadCount;
 
 private:
-    QVector<QString> _historyMessageId;
+//    QVector<QString> _historyMessageId;
     QString _strSelfId;
     QTalk::Entity::UID _curUserId;
     int _jumpIndex;

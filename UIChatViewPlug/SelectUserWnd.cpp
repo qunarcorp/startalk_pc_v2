@@ -215,9 +215,9 @@ void SelectUserWnd::initUi()
     searchLay->setContentsMargins(20, 10, 20, 10);
     searchLay->addWidget(_pSearchEdit);
     //
-    auto* recentBtn = new QPushButton("最近",this);
-    auto* ContactsBtn = new QPushButton("联系人",this);
-    auto* groupChatBtn = new QPushButton("群聊",this);
+    auto* recentBtn = new QPushButton(tr("最近"),this);
+    auto* ContactsBtn = new QPushButton(tr("联系人"),this);
+    auto* groupChatBtn = new QPushButton(tr("群聊"),this);
     recentBtn->setFixedHeight(32);
     ContactsBtn->setFixedHeight(32);
     groupChatBtn->setFixedHeight(32);
@@ -256,8 +256,8 @@ void SelectUserWnd::initUi()
     QFrame* bottomFrm = new QFrame(this);
     bottomFrm->setFixedHeight(60);
     bottomFrm->setObjectName("bottomFrm");
-    QPushButton* cancelBtn = new QPushButton("取消", this);
-    QPushButton* okBtn = new QPushButton("确定", this);
+    QPushButton* cancelBtn = new QPushButton(tr("取消"), this);
+    QPushButton* okBtn = new QPushButton(tr("确定"), this);
     cancelBtn->setObjectName("cancelBtn");
     okBtn->setObjectName("sendBtn");
     auto* bottomLay = new QHBoxLayout(bottomFrm);
@@ -319,7 +319,8 @@ void SelectUserWnd::reset()
     _type = EM_TYPE_RECENT;
     _pBtnGroup->buttonClicked(EM_TYPE_RECENT);
     //
-    std::thread([this](){
+    QPointer<SelectUserWnd> pThis(this);
+    std::thread([pThis](){
         if(g_pMainPanel)
         {
             // recent
@@ -327,7 +328,10 @@ void SelectUserWnd::reset()
             // group
             std::vector<QTalk::Entity::ImGroupInfo> groups;
             dbPlatForm::instance().getAllGroup(groups);
-            QMutexLocker locker(&_mutex);
+
+            if(!pThis) return;
+
+            QMutexLocker locker(&pThis->_mutex);
             for(const auto& group : groups)
             {
                 QTalk::StShareSession sess;
@@ -336,7 +340,8 @@ void SelectUserWnd::reset()
                 sess.name = group.Name;
                 sess.realJid = group.GroupId;
                 sess.chatType = QTalk::Enum::GroupChat;
-                groupSessions.push_back(sess);
+                if(pThis)
+                    pThis->groupSessions.push_back(sess);
             }
         }
     }).detach();

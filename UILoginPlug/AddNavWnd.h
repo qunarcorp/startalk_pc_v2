@@ -35,13 +35,12 @@ public:
 public:
     void resetWnd();
 
-signals:
+Q_SIGNALS:
     void addNavSinal(const QString &name, const QString &navAddr, const bool &isDebug);
 
 private:
     QLineEdit*  _pNameEdit;
     QTextEdit*  _pAddrEdit;
-    LinkButton* _pNavDetail;
 
     QPushButton* _pCancelBtn;
     QPushButton* _pAddBtn;

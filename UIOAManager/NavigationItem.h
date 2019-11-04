@@ -36,7 +36,7 @@ public:
 		return _id;
 	}
 
-signals:
+Q_SIGNALS:
 	void itemClicked(int);
 
 protected:

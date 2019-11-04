@@ -41,6 +41,7 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow() override;
 
+	
 public:
     void synSeverFinish();
 	void OnLoginSuccess(const std::string& strSessionId);
@@ -48,11 +49,14 @@ public:
     void onAppDeactivate();
     void saveWndState();
     void initSystemTray();
+    //
+    void checkUpdater();
+    void onGetHistoryError();
 
 public:
 	inline IUILoginPlug* getLoginPlug() { return _pLoginPlug; }
 
-signals:
+Q_SIGNALS:
 	void LoginSuccess(bool);
 	void synDataSuccees();
 	void appDeactivated();
@@ -60,9 +64,10 @@ signals:
 	void sgAppActive();
 	void sgRunNewInstance();
 	void sgResetOperator();
+	void sgRestartWithMessage(const QString&);
 
 public slots:
-	void InitLogin(bool);
+	void InitLogin(bool, const QString& loginMsg);
 	void LoginResult(bool result);
 	void openMainwindow();
 	void onCurFunChanged(int index);
@@ -79,12 +84,18 @@ private slots:
     void onShockWnd();
     void onSaveSysConfig();
     void onUserSendMessage();
+    void restartWithMessage(const QString& msg);
 
+#ifdef _MACOS
+    void onShowMinWnd();
+#endif
     // QWidget interface
 protected:
 	void closeEvent(QCloseEvent *e) override;
 	void hideEvent(QHideEvent* e) override;
 	void keyPressEvent(QKeyEvent* e) override;
+    void changeEvent(QEvent * event) override;
+	bool nativeEvent(const QByteArray & eventType, void * message, long * result) override;
 
 private:
     void init();
@@ -172,5 +183,7 @@ private:
     QMutex _logMutex;
     QTimer* _pLogTimer;
     std::vector<QTalk::StActLog> _operators;
+
+	int boundaryWidth = 5;
 };
 #endif // MAINWINDOW_H

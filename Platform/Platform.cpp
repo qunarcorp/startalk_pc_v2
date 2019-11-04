@@ -150,7 +150,7 @@ std::string Platform::getSelfName() {
     {
         std::shared_ptr<QTalk::Entity::ImUserInfo> info = dbPlatForm::instance().getUserInfo(_strUserId + "@" + _strDomain);
         if (nullptr != info)
-            _strSelfName = QTalk::getUserName(info);
+            _strSelfName = QTalk::getUserNameNoMask(info);
     }
     return _strSelfName;
 }
@@ -213,6 +213,12 @@ std::string Platform::getClientVersion() const {
 
 long long Platform::getClientNumVerison() const {
     return GLOBAL_INTERNAL_VERSION;
+}
+
+std::string Platform::get_build_date_time() const {
+    std::ostringstream src;
+    src << __DATE__;
+    return src.str();
 }
 
 /**
@@ -557,11 +563,11 @@ namespace QTalk {
     {
         std::string ret;
         if(groupInfo)
+        {
             ret = groupInfo->Name;
-
-        if(ret.empty())
-            ret = QTalk::Entity::JID(groupInfo->GroupId.data()).username();
-
+            if(ret.empty())
+                ret = QTalk::Entity::JID(groupInfo->GroupId.data()).username();
+        }
         return ret;
     }
 
@@ -574,5 +580,15 @@ namespace QTalk {
             ret = getGroupName(info);
         }
         return ret;
+    }
+
+    std::string getMedalPath(const std::string& link)
+    {
+        std::ostringstream src;
+        src << Platform::instance().getAppdataRoamingUserPath()
+            << "/image/medal/"
+            << GetFileNameByUrl(link);
+
+        return src.str();
     }
 }

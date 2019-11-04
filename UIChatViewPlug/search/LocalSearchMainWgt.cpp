@@ -22,16 +22,16 @@
 #include "../../QtUtil/lib/cjson/cJSON_inc.h"
 #include "../../Platform/Platform.h"
 
-#define FILE_ICON_AUDIO ":/chatview/image1/messageItem/filetype/audio.png"
-#define FILE_ICON_EXCEL ":/chatview/image1/messageItem/filetype/excel.png"
-#define FILE_ICON_PDF ":/chatview/image1/messageItem/filetype/pdf.png"
-#define FILE_ICON_PPT ":/chatview/image1/messageItem/filetype/ppt.png"
-#define FILE_ICON_PROCESS ":/chatview/image1/messageItem/filetype/process.png"
-#define FILE_ICON_TEXT ":/chatview/image1/messageItem/filetype/text.png"
-#define FILE_ICON_UNKNOWN ":/chatview/image1/messageItem/filetype/unknown.png"
-#define FILE_ICON_VIDEO ":/chatview/image1/messageItem/filetype/video.png"
-#define FILE_ICON_WORD ":/chatview/image1/messageItem/filetype/word.png"
-#define FILE_ICON_ZIP ":/chatview/image1/messageItem/filetype/zip.png"
+#define FILE_ICON_AUDIO ":/QTalk/image1/file_type/audio.png"
+#define FILE_ICON_EXCEL ":/QTalk/image1/file_type/excel.png"
+#define FILE_ICON_PDF ":/QTalk/image1/file_type/pdf.png"
+#define FILE_ICON_PPT ":/QTalk/image1/file_type/ppt.png"
+#define FILE_ICON_PROCESS ":/QTalk/image1/file_type/process.png"
+#define FILE_ICON_TEXT ":/QTalk/image1/file_type/text.png"
+#define FILE_ICON_UNKNOWN ":/QTalk/image1/file_type/unknown.png"
+#define FILE_ICON_VIDEO ":/QTalk/image1/file_type/video.png"
+#define FILE_ICON_WORD ":/QTalk/image1/file_type/word.png"
+#define FILE_ICON_ZIP ":/QTalk/image1/file_type/zip.png"
 
 extern ChatViewMainPanel *g_pMainPanel;
 
@@ -121,9 +121,9 @@ void LocalSearchMainWgt::initUi()
     toolLay->addWidget(_searEdit, 1);
     toolLay->addWidget(_pCalendarBtn, 0);
     //
-    auto* allBtn = new QPushButton("全部", this);
-    auto* imgBtn = new QPushButton("图片", this);
-    auto* fileBtn = new QPushButton("文件", this);
+    auto* allBtn = new QPushButton(tr("全部"), this);
+    auto* imgBtn = new QPushButton(tr("图片"), this);
+    auto* fileBtn = new QPushButton(tr("文件"), this);
     allBtn->setObjectName("SearchWgtBtn");
     imgBtn->setObjectName("SearchWgtBtn");
     fileBtn->setObjectName("SearchWgtBtn");
@@ -396,11 +396,11 @@ QString analysisMessage(const QString& content)
         if ("url" == type) {
             tmpContent.replace(pos, item.size(), val);
         } else if ("image" == type) {
-            tmpContent.replace(pos, item.size(), "[图片]");
+            tmpContent.replace(pos, item.size(), QObject::tr("[图片]"));
         } else if ("emoticon" == type) {
-            tmpContent.replace(pos, item.size(), "[表情]");
+            tmpContent.replace(pos, item.size(), QObject::tr("[表情]"));
         } else {
-            tmpContent.replace(pos, item.size(), "[未知类型]");
+            tmpContent.replace(pos, item.size(), QObject::tr("[未知类型]"));
         }
     }
 
@@ -558,7 +558,7 @@ void LocalSearchMainWgt::addMessageInfo(const QTalk::Entity::ImMessageInfo &msg)
                     data.fileData.fileName = fileName.data();
                     data.fileData.fileUrl = fileUrl.data();
                     data.fileData.fileMd5 = fileMd5.data();
-                    data.fileData.iconPath = getFileIcon(fileInfo.suffix());
+                    data.fileData.iconPath = getFileIcon(fileInfo.suffix().toLower());
                     QString localFilePath = getLocalFilePath(msg);
                     if(localFilePath.isEmpty())
                         data.fileData.status = EM_FILE_STATUS_UN_DOWNLOAD;
@@ -875,7 +875,7 @@ void LocalSearchMainWgt::onAddFileTimeItem(const QString& strTime, qint64 time)
 
 void setSearchLabel(QLabel* label, int count)
 {
-    label->setText(QString("共找到<span style='color:rgba(0,202,190,1)'> %1 </span>条相关消息").arg(count));
+    label->setText(QObject::tr("共找到<span style='color:rgba(0,202,190,1)'> %1 </span>条相关消息").arg(count));
 }
 
 /**

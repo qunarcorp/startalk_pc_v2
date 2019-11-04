@@ -22,11 +22,17 @@ public:
 
 Q_SIGNALS:
     void imageClicked(int index);
+    void sgImageClicked(const QString&, const QString&);
     void linkClicked(const QString& link);
 
 protected:
     void wheelEvent(QWheelEvent *event) override {};
     void mousePressEvent(QMouseEvent* e) override;
+    void mouseReleaseEvent(QMouseEvent* e) override;
+
+//private:
+//    bool _pressed = false;
+//    int  _scrollVal = 0;
 };
 
 #endif // TEXTBROWSER_H

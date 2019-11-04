@@ -13,7 +13,7 @@ StaffStructure::StaffStructure(QWidget *parent)
     _pParentLabel = new QLabel(this);
     _pCurrentLabel = new QLabel(this);
     _pCountLabel = new QLabel(this);
-    _pCreatGroupBtn = new QPushButton(QStringLiteral("创建群聊"), this);
+    _pCreatGroupBtn = new QPushButton(tr("创建群聊"), this);
 	_pCreatGroupBtn->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 	_pCreatGroupBtn->setFixedWidth(290);
 
@@ -77,12 +77,12 @@ void StaffStructure::setData(const QString &parentStr, const QString &name, int 
 	}
 	else
 	{
-		_structureStr = QStringLiteral("%1/%2").arg(parentStr, name);
+		_structureStr = QString("%1/%2").arg(parentStr, name);
 		_pParentLabel->setText(parentStr.mid(1));
 	}
 
     _pCurrentLabel->setText(name);
-    _pCountLabel->setText(QStringLiteral("- %1人 -").arg(num));
+    _pCountLabel->setText(QString("- %1人 -").arg(num));
     _pCreatGroupBtn->setEnabled(num < 1000);
 }
 

@@ -35,11 +35,13 @@ public slots:
     void onSearchAll();
     void onSearchContact();
     void onSearchGroup();
+    void onSearchHistory();
+    void onSearchFile();
     void addSearchReq(const QString &req);
     void onGotSearchResult(const QString& key, const SearchResult& ret);
     void onGetMore(int req);
 
-signals:
+Q_SIGNALS:
     void sgOpenNewSession(const StSessionInfo &into);
     void sgOpenSearch(bool);
     void sgSetEditFocus();
@@ -54,6 +56,7 @@ private:
     UCButton  *_contactBtn = nullptr;    // 联系人
     UCButton  *_groupChatBtn = nullptr;  // 群聊
     UCButton  *_chatRecordBtn = nullptr; // 聊天记录
+    UCButton  *_fileBtn = nullptr; // 文件
     UCButtonGroup *_tabGroup = nullptr;
     QLabel       *_pWnLabel = nullptr;
 

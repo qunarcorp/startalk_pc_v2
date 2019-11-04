@@ -189,7 +189,7 @@ public slots:
       */
     void setDecoder(const uint &hint);
 
-signals:
+Q_SIGNALS:
     void decodingStarted();
     void decodingFinished(bool succeeded);
     void enabledFormatsChanged();

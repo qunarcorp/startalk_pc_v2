@@ -1,4 +1,7 @@
-﻿#ifndef _EmoticonMainWgt_H_
+﻿#if _MSC_VER >= 1600
+#pragma execution_character_set("utf-8")
+#endif
+#ifndef _EmoticonMainWgt_H_
 #define _EmoticonMainWgt_H_
 
 #include "../CustomUi/UShadowWnd.h"
@@ -65,7 +68,7 @@ public:
     void updateCollectionConfig(const std::map<std::string, std::string> &deleteData,
                                 const std::vector<QTalk::Entity::ImConfig>& arImConfig);
 
-signals:
+Q_SIGNALS:
     void readLocalEmoticons();
 
     void sendEmoticon(const QString &, const QString &, bool, const std::string&);

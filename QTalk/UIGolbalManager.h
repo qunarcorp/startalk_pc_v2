@@ -38,7 +38,7 @@ public slots:
 private:
     UIGolbalManager();
 
-signals:
+Q_SIGNALS:
     void sgMousePressGlobalPos(const QPoint & pos);
 
 private:
@@ -57,6 +57,10 @@ private:
 
     int _theme = 1;
     std::string _font;
+
+public:
+    bool _check_updater = true;
+    int  _updater_version = 0;
 };
 
 #endif // UIGOLBALMANAGER_H

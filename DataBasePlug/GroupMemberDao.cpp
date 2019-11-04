@@ -3,7 +3,7 @@
 
 
 GroupMemberDao::GroupMemberDao(qtalk::sqlite::database *sqlDb)
-        : _pSqlDb(sqlDb) {
+        : DaoInterface(sqlDb) {
 
 }
 

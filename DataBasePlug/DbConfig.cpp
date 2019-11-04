@@ -6,7 +6,7 @@
 #include "../QtUtil/Utils/Log.h"
 
 DbConfig::DbConfig(qtalk::sqlite::database *sqlDb)
-        : _pSqlDb(sqlDb) {
+        : DaoInterface(sqlDb) {
 
 }
 

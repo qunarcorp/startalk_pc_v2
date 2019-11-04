@@ -27,7 +27,7 @@ protected:
 
 
 
-signals:
+Q_SIGNALS:
     void sgCloseDownLoadingClicked();
 
 private:

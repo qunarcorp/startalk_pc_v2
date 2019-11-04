@@ -185,6 +185,7 @@ QPushButton#SettingBtn {
     background:rgba(68,73,77,1);
     border-radius:2px;
     font-size:14px;
+    padding: 3px;
     border:1px solid rgba(0,0,0,0.3);
     color:rgba(225,236,239,1);
 }
@@ -211,7 +212,7 @@ QLineEdit#SettingLineEdit {
     border:1px solid rgba(221,221,221,1);
     font-size:12px;
     font-weight:400;
-    color:rgba(191,191,191);
+    color:rgb(191,191,191);
     height:28px;
     padding-left:5px;
     padding-right:5px;

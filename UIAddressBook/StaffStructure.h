@@ -1,6 +1,9 @@
 ﻿//
 // Created by cc on 18-12-21.
 //
+#if _MSC_VER >= 1600
+#pragma execution_character_set("utf-8")
+#endif
 
 #ifndef QTALK_V2_STAFFSTRUCTURE_H
 #define QTALK_V2_STAFFSTRUCTURE_H
@@ -23,7 +26,7 @@ public:
 public:
     void setData(const QString& parentStr, const QString& name, int num);
 
-signals:
+Q_SIGNALS:
     void creatGroupSignal(const QString&, const QString& );
 
 private:

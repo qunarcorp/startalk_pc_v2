@@ -26,7 +26,7 @@ void SearchWgt::init()
     _pSearchEdit = new QLineEdit(this);
     _pBtn->setFixedWidth(20);
 
-    _pSearchEdit->setPlaceholderText(QStringLiteral("搜索"));
+    _pSearchEdit->setPlaceholderText(tr("搜索"));
 
     _pBtn->setObjectName("SearchIcon");
     _pSearchEdit->setObjectName("SearchEdit");

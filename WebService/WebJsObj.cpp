@@ -2,8 +2,8 @@
 
 #include "WebJsObj.h"
 #include <QDateTime>
+#include <QDebug>
 #include "../Platform/Platform.h"
-#include "../QtUtil/Utils/utils.h"
 
 WebJsObj::WebJsObj(QObject *o)
         : QObject(o) {
@@ -34,8 +34,7 @@ void WebJsObj::getRoomID() {
 }
 
 void WebJsObj::getTopic() {
-    QString jsCommend = QString("sgsetTopic('%1')").arg("群视频必死");
-    emit runScript(jsCommend);
+
 }
 
 void WebJsObj::getStartTime() {
@@ -62,4 +61,25 @@ void WebJsObj::enableFullScreen(const QString &roomid) {
 
 void WebJsObj::cancelFullScreen(const QString &roomid) {
     emit sgFullScreen();
+}
+
+void WebJsObj::sendSignal(const QString &json, const QString &id) {
+    emit sgSendSignal(json, id);
+    qDebug() << "sendSignal" << json << id;
+}
+
+void WebJsObj::StartVideoSound(const QString &id) {
+    qDebug() << "sendSignal" << id;
+}
+
+void WebJsObj::StopVideoSound(const QString &id) {
+    qDebug() << "StopVideoSound" << id;
+}
+
+void WebJsObj::WriteLocalLog(const QString &id, const QString &log) {
+    qDebug() << "WriteLocalLog" << id << log;
+}
+
+void WebJsObj::closeRtcWindow(const QString &id, long long occupied_time) {
+    emit sgCloseRtcWindow(id, occupied_time);
 }

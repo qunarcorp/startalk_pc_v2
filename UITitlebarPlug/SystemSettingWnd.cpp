@@ -24,6 +24,7 @@
 #include <QJsonArray>
 #include <QButtonGroup>
 #include <QApplication>
+#include <QDate>
 #include "../include/Line.h"
 #include "DropMenu.h"
 #include "../Platform/Platform.h"
@@ -34,6 +35,7 @@
 #include <QProcess>
 #include <QFontDatabase>
 #include <QDebug>
+#include <QSettings>
 
 SystemSettingWnd::SystemSettingWnd(TitlebarMsgManager *messageManager,QWidget *parent)
         :_pMessageManager(messageManager),
@@ -60,7 +62,7 @@ void SystemSettingWnd::initUi()
     auto * titleLay = new QHBoxLayout(titleFrm);
     titleLay->setMargin(10);
     auto * closeBtn = new QToolButton();
-    QLabel *titleLbl = new QLabel("系统设置");
+    QLabel *titleLbl = new QLabel(tr("系统设置"));
     titleLbl->setObjectName("SettingTitleLabel");
     titleLbl->setAlignment(Qt::AlignmentFlag::AlignCenter);
 
@@ -146,7 +148,7 @@ void SystemSettingWnd::initSetting(int type)
     {
         case EM_SETTING_MESSAGE:
         {
-            text = "消息设置";
+            text = tr("消息设置");
             objName = "msgNotifyLbl";
 
             initMsgNotify(vlayout);
@@ -154,63 +156,63 @@ void SystemSettingWnd::initSetting(int type)
         }
         case EM_SETTING_HOTKEY:
         {
-            text = "热键设置";
+            text = tr("热键设置");
             objName = "hotCutLbl";
             initHotCut(vlayout);
             break;
         }
         case EM_SETTING_SESSION:
         {
-            text = "会话设置";
+            text = tr("会话设置");
             objName = "sessionLbl";
             initSession(vlayout);
             break;
         }
         case EM_SETTING_AUTOREPLY:
         {
-            text = "自动回复";
+            text = tr("自动回复");
             objName = "sessionLbl";
             initAutoReply(vlayout);
             break;
         }
         case EM_SETTING_FOLDER:
         {
-            text = "文件设置";
+            text = tr("文件设置");
             objName = "autoReplyLbl";
             initFolder(vlayout);
             break;
         }
         case EM_SETTING_FRIEND:
         {
-            text = "好友验证";
+            text = tr("好友验证");
             objName = "friendAuthorityLbl";
             initFriendAuthority(vlayout);
             break;
         }
         case EM_SETTING_FONT:
         {
-            text = "皮肤设置";
+            text = tr("外观设置");
             objName = "fontSettingLbl";
             initFontSetting(vlayout);
             break;
         }
         case EM_SETTING_OTHERSETTING:
         {
-            text = "其他设置";
+            text = tr("其他设置");
             objName = "otherSettingLbl";
             initOtherSetting(vlayout);
             break;
         }
         case EM_SETTING_VERSION:
         {
-            text = "版本信息";
+            text = tr("版本信息");
             objName = "versionInfoLbl";
             initVersionInfo(vlayout);
             break;
         }
         case EM_SETTING_SUGGESTION:
         {
-            text = "意见反馈";
+            text = tr("意见反馈");
             objName = "feedbackLbl";
             itemFrm->setFixedHeight(500);
             initFeedback(vlayout);
@@ -219,7 +221,7 @@ void SystemSettingWnd::initSetting(int type)
 #ifdef _QCHAT
         case EM_SETTING_SEAT:
         {
-            text = "服务状态";
+            text = tr("服务状态");
             objName = "seatInfoLbl";
             initSeat(vlayout);
             break;
@@ -286,19 +288,25 @@ void SystemSettingWnd::hideEvent(QHideEvent* e)
 void SystemSettingWnd::initMsgNotify(QVBoxLayout* vlayout) {
 
 	SettingCheckBox *msgAudioCK = new SettingCheckBox(tr("新消息声音提醒"), AppSetting::instance().getNewMsgAudioNotify(), this);
+	SettingCheckBox *nativeNotify = new SettingCheckBox(tr("使用系统提示窗"), AppSetting::instance().getUseNativeMessagePrompt(), this);
 	SettingCheckBox *msgNotifyCK = new SettingCheckBox(tr("显示新消息提示窗"), AppSetting::instance().getNewMsgTipWindowNotify(), this);
 	SettingCheckBox *msgPhonePushCK = new SettingCheckBox(tr("手机端随时接收推送"), AppSetting::instance().getPhoneAnyReceive(), this);
 	SettingCheckBox *strongWarn = new SettingCheckBox(tr("消息强提醒"), AppSetting::instance().getStrongWarnFlag(), this);
+    nativeNotify->setEnabled(AppSetting::instance().getNativeMessagePromptEnable());
+
+#ifdef _MACOS
+    nativeNotify->setVisible(false);
+#endif
 
 	auto* msgAudioLay = new QHBoxLayout(this);
 	auto* changeSoundBtn = new QPushButton(tr("更换提示音"));
 	changeSoundBtn->setObjectName("SettingBtn");
-    changeSoundBtn->setFixedWidth(100);
     msgAudioLay->addWidget(msgAudioCK);
     msgAudioLay->addWidget(changeSoundBtn);
     msgAudioLay->setAlignment(changeSoundBtn, Qt::AlignRight);
 
     vlayout->addLayout(msgAudioLay);
+    vlayout->addWidget(nativeNotify);
     vlayout->addWidget(msgNotifyCK);
     vlayout->addWidget(msgPhonePushCK);
     vlayout->addWidget(strongWarn);
@@ -319,13 +327,16 @@ void SystemSettingWnd::initMsgNotify(QVBoxLayout* vlayout) {
     connect(strongWarn, &QCheckBox::stateChanged,[](int state){
         AppSetting::instance().setStrongWarnFlag(state==Qt::Checked);
     });
+    connect(nativeNotify, &QCheckBox::stateChanged,[](int state){
+        AppSetting::instance().setUseNativeMessagePrompt(state==Qt::Checked);
+    });
 
     connect(changeSoundBtn, &QPushButton::clicked, this, &SystemSettingWnd::msgSoundChanged);
 }
 
 void SystemSettingWnd::initHotCut(QVBoxLayout* vlayout) {
 
-    auto *hotCutEnableCK = new SettingCheckBox("启用热键", AppSetting::instance().getHotCutEnable(), this);
+    auto *hotCutEnableCK = new SettingCheckBox(tr("启用热键"), AppSetting::instance().getHotCutEnable(), this);
     vlayout->addWidget(hotCutEnableCK);
 
 	QKeySequence screenShot;
@@ -352,12 +363,12 @@ void SystemSettingWnd::initHotCut(QVBoxLayout* vlayout) {
 	else 
 		wakeWnd = QKeySequence(QString::fromStdString(wakeUpHotKey), QKeySequence::NativeText);
 
-    SKRecorder* screenItem = addSortCutItem("屏幕捕捉", screenShot, vlayout, [this](const QKeySequence& keys){
+    SKRecorder* screenItem = addSortCutItem(tr("屏幕捕捉"), screenShot, vlayout, [this](const QKeySequence& keys){
         std::string hotKey = keys.toString(QKeySequence::NativeText).toStdString();
         AppSetting::instance().setScreenshotHotKey(hotKey);
         emit sgUpdateHotKey();
     });
-    SKRecorder* wakeUpItem = addSortCutItem("快速唤起", wakeWnd, vlayout,[this](const QKeySequence& keys){
+    SKRecorder* wakeUpItem = addSortCutItem(tr("快速唤起"), wakeWnd, vlayout,[this](const QKeySequence& keys){
         std::string hotKey = keys.toString(QKeySequence::NativeText).toStdString();
         AppSetting::instance().setWakeWndHotKey(hotKey);
         emit sgUpdateHotKey();
@@ -406,9 +417,9 @@ SKRecorder* SystemSettingWnd::addSortCutItem(const QString& text, const QKeySequ
 
 void SystemSettingWnd::initSession(QVBoxLayout* vlayout) {
 
-    QLabel* sendMessageLabel = new QLabel("发送消息", this);
+    QLabel* sendMessageLabel = new QLabel(tr("发送消息"), this);
     sendMessageLabel->setObjectName("sendMessageLabel");
-    auto* sendMessageBox = new QComboBox(this);
+    auto* sendMessageBox = new NoSlidingHandoverComboBox(this);
     sendMessageBox->addItem(QKeySequence(Qt::Key_Enter).toString(QKeySequence::NativeText));
     sendMessageBox->addItem(QKeySequence(Qt::Key_Enter | Qt::ShiftModifier).toString(QKeySequence::NativeText));
     sendMessageBox->addItem(QKeySequence(Qt::Key_Enter | Qt::AltModifier).toString(QKeySequence::NativeText));
@@ -420,9 +431,11 @@ void SystemSettingWnd::initSession(QVBoxLayout* vlayout) {
     sendMessageLabel->setFixedWidth(100);
     //
     SettingCheckBox *showMood = new SettingCheckBox(tr("群会话显示签名"), AppSetting::instance().getShowMoodFlag(), this);
+    SettingCheckBox *autoDeleteSession = new SettingCheckBox(tr("切换会话时自动销毁旧会话"), AppSetting::instance().getAutoDeleteSession(), this);
     //
     vlayout->addLayout(sendMessageLay);
     vlayout->addWidget(showMood);
+    vlayout->addWidget(autoDeleteSession);
     showMood->setVisible(false);
     vlayout->addItem(new QSpacerItem(10, 10, QSizePolicy::Minimum, QSizePolicy::Expanding));
     vlayout->addWidget(new Line(Qt::Horizontal, this));
@@ -439,6 +452,11 @@ void SystemSettingWnd::initSession(QVBoxLayout* vlayout) {
     connect(showMood, &QCheckBox::stateChanged,[](int state){
         bool isOk = state==Qt::Checked;
         AppSetting::instance().setShowMoodFlag(isOk);
+    });
+
+    connect(autoDeleteSession, &QCheckBox::stateChanged,[](int state){
+        bool isOk = state==Qt::Checked;
+        AppSetting::instance().setAutoDeleteSession(isOk);
     });
 }
 
@@ -462,14 +480,14 @@ void SystemSettingWnd::initAutoReply(QVBoxLayout* vlayout) {
             AppSetting::instance().setLeaveCheckEnable(state==Qt::Checked);
         });
 
-        QLabel *descLb = new QLabel("离开电脑", this);
+        QLabel *descLb = new QLabel(tr("离开电脑"), this);
         descLb->setObjectName("SettingDescLab");
         hLay->addWidget(descLb);
         auto *secondEdit = new QSpinBox(this);
         secondEdit->setMinimum(1);
         secondEdit->setMaximum(60 * 24);
         hLay->addWidget(secondEdit);
-        descLb = new QLabel("分钟 push消息到手机端，并自动回复");
+        descLb = new QLabel(tr("分钟 push消息到手机端，并自动回复"));
         descLb->setObjectName("SettingDescLab");
         hLay->addWidget(descLb);
 
@@ -485,16 +503,16 @@ void SystemSettingWnd::initAutoReply(QVBoxLayout* vlayout) {
         hLay->setAlignment(Qt::AlignmentFlag::AlignLeft);
         vlayout->addLayout(hLay);
 
-        auto * presetCK = new QRadioButton("预设", this);
+        auto * presetCK = new QRadioButton(tr("预设"), this);
         hLay->addWidget(presetCK);
 
-        _pAutoPeplyCombobox = new QComboBox(this);
-        _pAutoPeplyCombobox->addItem("不在办公室");
-        _pAutoPeplyCombobox->addItem("目前正忙");
+        _pAutoPeplyCombobox = new NoSlidingHandoverComboBox(this);
+        _pAutoPeplyCombobox->addItem(tr("不在办公室"));
+        _pAutoPeplyCombobox->addItem(tr("目前正忙"));
         _pAutoPeplyCombobox->setObjectName("SettingCBox");
         hLay->addWidget(_pAutoPeplyCombobox);
 
-        auto * customTextCK = new QRadioButton("自定义", this);
+        auto * customTextCK = new QRadioButton(tr("自定义"), this);
         vlayout->addWidget(customTextCK);
 
         hLay = new QHBoxLayout;
@@ -595,12 +613,12 @@ void SystemSettingWnd::initFolder(QVBoxLayout* vlayout) {
         vlayout->addLayout(userDirBtnLay);
 
         auto *changeSaveFileBtn = new QPushButton;
-        changeSaveFileBtn->setFixedSize(90,24);
-        changeSaveFileBtn->setText("变更文件夹");
+        changeSaveFileBtn->setFixedHeight(24);
+        changeSaveFileBtn->setText(tr("变更文件夹"));
         changeSaveFileBtn->setObjectName("SettingBtn");
 
-        auto *openFileDirBtn = new QPushButton("打开文件夹", this);
-        openFileDirBtn->setFixedSize(90,24);
+        auto *openFileDirBtn = new QPushButton(tr("打开文件夹"), this);
+        openFileDirBtn->setFixedHeight(24);
         openFileDirBtn->setObjectName("SettingBtn");
 
         userDirBtnLay->addItem(new QSpacerItem(10, 10, QSizePolicy::Expanding));
@@ -612,13 +630,13 @@ void SystemSettingWnd::initFolder(QVBoxLayout* vlayout) {
         {
             case EM_USER_FOLDER:
             {
-                tmpLab->setText("用户目录");
+                tmpLab->setText(tr("用户目录"));
                 editText = QString::fromStdString(AppSetting::instance().getUserDirectory());
                 break;
             }
             case EM_FILE_FOLDER:
             {
-                tmpLab->setText("文件目录");
+                tmpLab->setText(tr("文件目录"));
                 editText = QString::fromStdString(AppSetting::instance().getFileSaveDirectory());
                 break;
             }
@@ -636,7 +654,7 @@ void SystemSettingWnd::initFolder(QVBoxLayout* vlayout) {
             {
                 case EM_USER_FOLDER:
                 {
-                    int ret = QtMessageBox::question(this, "重要提示", "<font color=red>重新设置用户目录会丢失部分设置, 是否继续 ?</font>");
+                    int ret = QtMessageBox::question(this, tr("重要提示"), "<font color=red>重新设置用户目录会丢失部分设置, 是否继续 ?</font>");
                     if(ret != QtMessageBox::EM_BUTTON_YES)
                     {
                         return;
@@ -650,7 +668,7 @@ void SystemSettingWnd::initFolder(QVBoxLayout* vlayout) {
                 default:
                     break;
             }
-            QString folderPath = QFileDialog::getExistingDirectory(this, "请选择一个文件夹", QString::fromStdString(path));
+            QString folderPath = QFileDialog::getExistingDirectory(this, tr("请选择一个文件夹"), QString::fromStdString(path));
             if(!folderPath.isEmpty())
             {
                 QFontMetrics ff(fileDirEdit->font());
@@ -660,7 +678,7 @@ void SystemSettingWnd::initFolder(QVBoxLayout* vlayout) {
                     case EM_USER_FOLDER:
                     {
                         AppSetting::instance().setUserDirectory(folderPath.toStdString());
-                        QtMessageBox::information(this, "友情提示", "部分目录重启后生效");
+                        QtMessageBox::information(this, tr("友情提示"), tr("部分目录重启后生效"));
                         break;
                     }
                     case EM_FILE_FOLDER:
@@ -711,12 +729,12 @@ void SystemSettingWnd::initFriendAuthority(QVBoxLayout* vlayout) {
 
         QLabel *tLabel = new QLabel;
         tLabel->setFixedWidth(74);
-        tLabel->setText("权限类型");
+        tLabel->setText(tr("权限类型"));
         tLabel->setObjectName("SettingTLabel");
         friendModeLay->addWidget(tLabel);
 
-        auto *friendModeCB = new QComboBox(this);
-        friendModeCB->addItem("全部接受");
+        auto *friendModeCB = new NoSlidingHandoverComboBox(this);
+        friendModeCB->addItem(tr("全部接受"));
         friendModeCB->addItem("500");
         friendModeCB->addItem("1000");
         friendModeCB->addItem("2000");
@@ -736,7 +754,7 @@ void SystemSettingWnd::initFriendAuthority(QVBoxLayout* vlayout) {
         QLabel *titleLbl = new QLabel;
         titleLbl->setFixedWidth(74);
         titleLbl->setFixedHeight(13);
-        titleLbl->setText("问题");
+        titleLbl->setText(tr("问题"));
         titleLbl->setStyleSheet("font-size:13px;font-family:PingFang-SC-Regular;font-weight:400;color:#666666;");
         questionLay->addWidget(titleLbl);
 
@@ -756,13 +774,13 @@ void SystemSettingWnd::initFriendAuthority(QVBoxLayout* vlayout) {
         QLabel *titleLbl = new QLabel;
         titleLbl->setFixedWidth(74);
         titleLbl->setFixedHeight(13);
-        titleLbl->setText("答案");
+        titleLbl->setText(tr("答案"));
         titleLbl->setStyleSheet("font-size:13px;font-family:PingFang-SC-Regular;font-weight:400;color:#666666;");
         anwserLay->addWidget(titleLbl);
 
         auto *anwserEdit = new QLineEdit;
         anwserEdit->setFixedHeight(30);
-        anwserEdit->setPlaceholderText("请输入问题");
+        anwserEdit->setPlaceholderText(tr("请输入问题"));
         anwserEdit->setObjectName("SettingLineEdit");
         anwserLay->addWidget(anwserEdit);
     }
@@ -775,7 +793,7 @@ void SystemSettingWnd::initFriendAuthority(QVBoxLayout* vlayout) {
 
 void SystemSettingWnd::initFontSetting(QVBoxLayout* vlayout) {
 
-    blackTheme = new SettingCheckBox("暗黑模式", false, this);
+    blackTheme = new SettingCheckBox(tr("暗黑模式"), false, this);
     int mode = AppSetting::instance().getThemeMode();
     blackTheme->setChecked(2 == mode);
     vlayout->addWidget(blackTheme);
@@ -784,8 +802,8 @@ void SystemSettingWnd::initFontSetting(QVBoxLayout* vlayout) {
     QStringList families = fontDatabase.families();
     QString defaultFont = QApplication::font().family();
     //
-    QLabel* fontLabel = new QLabel("字体选择", this);
-    auto* fontCombox = new QComboBox(this);
+    auto* fontLabel = new QLabel(tr("字体选择"), this);
+    auto* fontCombox = new NoSlidingHandoverComboBox(this);
     fontCombox->addItems(families);
     //
     std::string sysFont = AppSetting::instance().getFont();
@@ -803,6 +821,53 @@ void SystemSettingWnd::initFontSetting(QVBoxLayout* vlayout) {
     fontLay->addItem(new QSpacerItem(10, 10, QSizePolicy::Expanding));
     vlayout->addLayout(fontLay);
     //
+    auto* scaleEnable = new SettingCheckBox(tr("高分屏适配(重启客户端生效)"), false, this);
+//    auto *scaleEdit = new QSpinBox(this);
+//    scaleEdit->setMinimum(50);
+//    scaleEdit->setMaximum(200);
+//    scaleEdit->setSingleStep(10);
+//    scaleEdit->setSuffix(" %");
+//    scaleEdit->setValue(100);
+//    auto* scaleLabel = new QLabel(tr("画面缩放"), this);
+//    auto* scaleLay = new QHBoxLayout();
+//    scaleLay->addWidget(scaleLabel);
+//    scaleLay->addWidget(scaleEdit);
+//    scaleLay->addItem(new QSpacerItem(10, 10, QSizePolicy::Expanding));
+//    vlayout->addWidget(new Line);
+    vlayout->addWidget(scaleEnable);
+//    vlayout->addLayout(scaleLay);
+
+    // 缩放因子
+    QSettings settings(QSettings::NativeFormat, QSettings::UserScope,
+#ifdef _STARTALK
+        "qunar.com", "startalk");
+#else
+        "qunar.com", "qtalk");
+#endif
+//    QString scale_factor = settings.value("QT_SCALE_FACTOR").toByteArray();
+//    if(!scale_factor.isEmpty())
+//    {
+//        int scale = scale_factor.toDouble();
+//        scaleEdit->setValue(scale);
+//    }
+
+    bool scale_enable = settings.value("QT_SCALE_ENABLE").toBool();
+    scaleEnable->setChecked(scale_enable);
+//    scaleEdit->setEnabled(scale_enable);
+
+    connect(scaleEnable, &QCheckBox::stateChanged, [this](int state) {
+        bool check = state == Qt::Checked;
+        QSettings settings(QSettings::NativeFormat, QSettings::UserScope,
+#ifdef _STARTALK
+                "qunar.com", "startalk");
+#else
+                           "qunar.com", "qtalk");
+#endif
+        settings.setValue("QT_SCALE_ENABLE", check);
+//        scaleEdit->setEnabled(check);
+    });
+//    connect(scaleEdit, SIGNAL(valueChanged(int)), this, SLOT(onScaleFactorChanged(int)));
+    //
     vlayout->addItem(new QSpacerItem(10, 10, QSizePolicy::Fixed, QSizePolicy::Expanding));
     vlayout->addWidget(new Line(Qt::Horizontal, this));
 
@@ -815,6 +880,17 @@ void SystemSettingWnd::initFontSetting(QVBoxLayout* vlayout) {
         if(!text.isEmpty())
             AppSetting::instance().setFont(text.toStdString());
     });
+
+}
+
+void SystemSettingWnd::onScaleFactorChanged(int value) {
+    QSettings settings(QSettings::NativeFormat, QSettings::UserScope,
+#ifdef _STARTALK
+            "qunar.com", "startalk");
+#else
+                       "qunar.com", "qtalk");
+#endif
+    settings.setValue("QT_SCALE_FACTOR", QString::number(value).toUtf8());
 }
 
 #ifdef _WINDOWS
@@ -838,11 +914,11 @@ void appAutoRun(bool bAutoRun)
 
 void SystemSettingWnd::initOtherSetting(QVBoxLayout* vlayout) {
 
-    auto *autoLoginCK = new SettingCheckBox("自动登录", AppSetting::instance().getAutoLoginEnable(), this);
+    auto *autoLoginCK = new SettingCheckBox(tr("自动登录"), AppSetting::instance().getAutoLoginEnable(), this);
     vlayout->addWidget(autoLoginCK);
 
 #ifdef _WINDOWS
-    auto *autoStartUp = new SettingCheckBox("开机自启动", AppSetting::instance().getSelfStart(), this);
+    auto *autoStartUp = new SettingCheckBox(tr("开机自启动"), AppSetting::instance().getSelfStart(), this);
     vlayout->addWidget(autoStartUp);
 
     connect(autoStartUp, &QCheckBox::stateChanged, [this](int state){
@@ -851,19 +927,19 @@ void SystemSettingWnd::initOtherSetting(QVBoxLayout* vlayout) {
     });
 #endif
 
-    auto *openLink = new SettingCheckBox("使用内置浏览器打开对话中的链接", AppSetting::instance().getOpenLinkWithAppBrowser(), this);
+    auto *openLink = new SettingCheckBox(tr("使用内置浏览器打开对话中的链接"), AppSetting::instance().getOpenLinkWithAppBrowser(), this);
     vlayout->addWidget(openLink);
 
-    auto *openOaLink = new SettingCheckBox("使用内置浏览器打开OA链接", AppSetting::instance().getOpenOaLinkWithAppBrowser(), this);
+    auto *openOaLink = new SettingCheckBox(tr("使用内置浏览器打开OA链接"), AppSetting::instance().getOpenOaLinkWithAppBrowser(), this);
     vlayout->addWidget(openOaLink);
 
-    auto *showSendMessageWnd = new SettingCheckBox("显示发送按钮", AppSetting::instance().getShowSendMessageBtnFlag(), this);
+    auto *showSendMessageWnd = new SettingCheckBox(tr("显示发送按钮"), AppSetting::instance().getShowSendMessageBtnFlag(), this);
     vlayout->addWidget(showSendMessageWnd);
 
-    auto *testChannel = new SettingCheckBox("内测通道", AppSetting::instance().getTestchannel() - 1, this);
+    auto *testChannel = new SettingCheckBox(tr("内测通道"), AppSetting::instance().getTestchannel() - 1, this);
     vlayout->addWidget(testChannel);
 
-    auto *logLevel = new SettingCheckBox("记录INFO日志", false, this);
+    auto *logLevel = new SettingCheckBox(tr("记录INFO日志"), false, this);
     vlayout->addWidget(logLevel);
 
     int level = AppSetting::instance().getLogLevel();
@@ -903,9 +979,53 @@ void SystemSettingWnd::initOtherSetting(QVBoxLayout* vlayout) {
 
 }
 
+void deleteDictionary(const QString& dirPath)
+{
+    QFileInfo info(dirPath);
+    if(info.isDir())
+    {
+        QDir baseDir(dirPath);
+        auto infoList = baseDir.entryInfoList(QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot);
+        for(const auto& tmpInfo : infoList)
+        {
+            if(tmpInfo.isDir())
+            {
+                deleteDictionary(tmpInfo.absoluteFilePath());
+                baseDir.rmpath(tmpInfo.absoluteFilePath());
+            }
+            else {
+                QFile::remove(tmpInfo.absoluteFilePath());
+            }
+        }
+    }
+    else
+    {
+        QFile::remove(dirPath);
+    }
+}
+
+void deleteHistoryLogs()
+{
+    QString logBasePath = QString("%1/logs").arg(Platform::instance().getAppdataRoamingPath().data());
+
+    QDir baseDir(logBasePath);
+    auto infoList = baseDir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
+    for(const auto& info : infoList)
+    {
+        QString dirName = info.baseName();
+        auto dirDate = QDate::fromString(dirName, "yyyy-MM-dd");
+        auto now = QDate::currentDate();
+        if(dirDate.addDays(5) <= now)
+        {
+            deleteDictionary(info.absoluteFilePath());
+            baseDir.rmpath(info.absoluteFilePath());
+        }
+    }
+}
+
 void SystemSettingWnd::initVersionInfo(QVBoxLayout* vlayout) {
 
-    QLabel *versionLbl = new QLabel("当前版本:", this);
+    QLabel *versionLbl = new QLabel(tr("当前版本:"), this);
     versionLbl->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     vlayout->addWidget(versionLbl);
 
@@ -915,14 +1035,21 @@ void SystemSettingWnd::initVersionInfo(QVBoxLayout* vlayout) {
         versionLay->setContentsMargins(65,0,0,0);
         vlayout->addLayout(versionLay);
 
-        QLabel *versionLab = new QLabel(this);
+        auto *versionLab = new QLabel(this);
         versionLay->addWidget(versionLab);
 
         std::string clientVersion = Platform::instance().getGlobalVersion();
         QString currentVersion = QString("%1 ( %2 )").arg(clientVersion.data()).arg(Platform::instance().getClientNumVerison());
         versionLab->setText(currentVersion);
 
-        auto *checkUpdateBtn = new QPushButton("检查更新");
+        auto *build_time_label = new QLabel(this);
+        build_time_label->setContentsMargins(65,0,0,0);
+        vlayout->addWidget(build_time_label);
+
+        std::string build_time = Platform::instance().get_build_date_time();
+        build_time_label->setText(QString("build at: %1").arg(build_time.data()));
+
+        auto *checkUpdateBtn = new QPushButton(tr("检查更新"));
         checkUpdateBtn->setFixedSize(80,24);
         checkUpdateBtn->setObjectName("SettingBtn");
         versionLay->addWidget(checkUpdateBtn);
@@ -932,24 +1059,36 @@ void SystemSettingWnd::initVersionInfo(QVBoxLayout* vlayout) {
         connect(checkUpdateBtn, &QPushButton::clicked, this, &SystemSettingWnd::sgCheckUpdate);
     }
 
-    QLabel *repairLbl = new QLabel("便捷维护:", this);
+    QLabel *repairLbl = new QLabel(tr("便捷维护:"), this);
     vlayout->addWidget(repairLbl);
 
     { // 便捷维护
         auto *repairLay = new QHBoxLayout;
         repairLay->setAlignment(Qt::AlignmentFlag::AlignLeft);
-        repairLay->setSpacing(0);
+        repairLay->setSpacing(30);
         repairLay->setContentsMargins(65,0,0,0);
         vlayout->addLayout(repairLay);
 
-        auto *repairBtn = new QPushButton;
-        repairBtn->setFixedSize(80,24);
-        repairBtn->setText("清除缓存");
+        auto *repairBtn = new QPushButton(this);
+        repairBtn->setFixedHeight(24);
+        repairBtn->setText(tr("清除缓存"));
         repairBtn->setObjectName("SettingBtn");
         repairLay->addWidget(repairBtn);
 
+        auto *clearLogs = new QPushButton(this);
+        clearLogs->setFixedHeight(24);
+        clearLogs->setText(tr("清除日志"));
+        clearLogs->setObjectName("SettingBtn");
+        repairLay->addWidget(clearLogs);
+
         connect(repairBtn, &QPushButton::clicked, [this](){
             emit sgClearSystemCache();
+        });
+
+        connect(clearLogs, &QPushButton::clicked, [this](){
+            deleteHistoryLogs();
+            QtMessageBox::information(this, tr("提醒"), tr("日志清理完毕"));
+//            emit sgClearSystemCache();
         });
     }
 
@@ -971,7 +1110,7 @@ void SystemSettingWnd::initFeedback(QVBoxLayout* vlayout) {
 
     auto *inputEdit = new QTextEdit(this);
     inputEdit->setAcceptRichText(false);
-    inputEdit->setPlaceholderText("请输入反馈描述");
+    inputEdit->setPlaceholderText(tr("请输入反馈描述"));
     inputEdit->setObjectName("FeedbackEdit");
     inputEdit->setFixedHeight(100);
     vInputLay->addWidget(inputEdit);
@@ -980,7 +1119,7 @@ void SystemSettingWnd::initFeedback(QVBoxLayout* vlayout) {
     auto *hLayout = new QHBoxLayout;
     hLayout->setAlignment(Qt::AlignmentFlag::AlignRight);
     vInputLay->addLayout(hLayout);
-    auto *submitBtn = new QPushButton("提交", this);
+    auto *submitBtn = new QPushButton(tr("提交"), this);
     submitBtn->setObjectName("SubmitBtn");
     submitBtn->setFixedSize(72,32);
     hLayout->addWidget(submitBtn);
@@ -1013,7 +1152,7 @@ void SystemSettingWnd::initSeat(QVBoxLayout *vlayout) {
                 QJsonObject seat = datas.at(i).toObject();
 
                 QLabel* title = new QLabel;
-                title->setText("店铺名：" + seat.value("sname").toString());
+                title->setText(tr("店铺名：") + seat.value("sname").toString());
 
                 vlayout->addWidget(title);
 

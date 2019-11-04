@@ -108,7 +108,7 @@ void ScanQRcode::onScanSuccess(const QString& ret)
         QString groupId = ret.section("id=", 1, 1);
         std::string selfId = g_pMainPanel->getSelfUserId();
         //
-        QtMessageBox::information(g_pMainPanel, "提醒", QString("即将加入群聊%1").arg(groupId.section("@", 0, 0)));
+        QtMessageBox::information(g_pMainPanel, tr("提醒"), QString(tr("即将加入群聊%1")).arg(groupId.section("@", 0, 0)));
         //
         std::vector<std::string> members;
         members.push_back(selfId);
@@ -119,8 +119,8 @@ void ScanQRcode::onScanSuccess(const QString& ret)
         if(ret.startsWith("http") ||
            ret.startsWith("www"))
         {
-            int ret =QtMessageBox::question(g_pMainPanel, "提醒", QString("是否使用浏览器打开 %1 ?").arg(ret));
-            if(QtMessageBox::EM_BUTTON_YES == ret)
+            int ret_btn =QtMessageBox::question(g_pMainPanel, tr("提醒"), QString(tr("是否使用浏览器打开 %1 ?")).arg(ret));
+            if(QtMessageBox::EM_BUTTON_YES == ret_btn)
             {
                 if(AppSetting::instance().getOpenOaLinkWithAppBrowser())
                     WebService::loadUrl(url);
@@ -130,7 +130,7 @@ void ScanQRcode::onScanSuccess(const QString& ret)
         }
         else
         {
-            QtMessageBox::information(g_pMainPanel, "扫一扫结果", ret);
+            QtMessageBox::information(g_pMainPanel, tr("扫一扫结果"), ret);
         }
     }
 
@@ -139,9 +139,11 @@ void ScanQRcode::onScanSuccess(const QString& ret)
 
 void ScanQRcode::scanPixmap(const QPixmap& pix, bool flag)
 {
-    std::thread([this, pix, flag](){
+    QPointer<ScanQRcode> pThis(this);
+    std::thread([pThis, pix, flag](){
         QImage img = pix.toImage();
         int width = 0, height = 0;
+        if(!pThis) return;
         if(flag)
         {
             width = pix.width();
@@ -149,17 +151,19 @@ void ScanQRcode::scanPixmap(const QPixmap& pix, bool flag)
         }
         else
         {
-            width = _pScanFrm->width();
-            height = _pScanFrm->height();
+
+            width = pThis->_pScanFrm->width();
+            height = pThis->_pScanFrm->height();
         }
-        QString ret = _qzxing.decodeImage(img, width, height, true);
+        QString ret = pThis->_qzxing.decodeImage(img, width, height, true);
+        if(!pThis) return;
         if(!ret.isEmpty())
         {
-            emit sgScanSuccess(ret);
+            emit pThis->sgScanSuccess(ret);
         }
         else if(flag)
         {
-            emit g_pMainPanel->sgShowInfoMessageBox("无法识别二维码");
+            emit g_pMainPanel->sgShowInfoMessageBox(tr("无法识别二维码"));
         }
     }).detach();
 }

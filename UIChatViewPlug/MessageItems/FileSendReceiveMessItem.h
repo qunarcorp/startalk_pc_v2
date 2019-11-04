@@ -22,6 +22,10 @@ public slots:
     void setProcess(double speed, double dtotal, double dnow, double utotal, double unow);
     void onSaveAsAct();
 
+Q_SIGNALS:
+    void sgOpenDir();
+    void sgOpenFile(bool);
+
 private:
     void init();
     void initFileIconMap();

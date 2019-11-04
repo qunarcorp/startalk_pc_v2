@@ -15,7 +15,7 @@
 **/
 class CUSTOMUISHARED_EXPORT LiteMessageBox : public QFrame{
 public:
-    LiteMessageBox(int type, const QString& message);
+    LiteMessageBox(int type, const QString& message, QWidget* base);
 
     ~LiteMessageBox() override;
 
@@ -28,8 +28,8 @@ public:
     };
 
 public:
-    static void success(const QString& message, int duration = 3000);
-    static void failed(const QString& message, int duration = 3000);
+    static void success(const QString& message, int duration = 3000, QWidget* = nullptr);
+    static void failed(const QString& message, int duration = 3000, QWidget* = nullptr);
 };
 
 

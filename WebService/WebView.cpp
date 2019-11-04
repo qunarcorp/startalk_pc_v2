@@ -21,7 +21,7 @@ WebView::WebView(QWidget* parent)
     _pWebView = new QWebEngineView(this);
 	_pWebCannel = new QWebChannel(this);
     _downloadWgt = new DownLoadWgt(this);
-	_pWebView->settings()->setAttribute(QWebEngineSettings::PluginsEnabled, true);
+//	_pWebView->settings()->setAttribute(QWebEngineSettings::PluginsEnabled, true);
     _pWebPage = new WebEnginePage(this);
     _pWebView->setPage(_pWebPage);
     auto * lay = new QVBoxLayout(this);
@@ -29,19 +29,17 @@ WebView::WebView(QWidget* parent)
     lay->addWidget(_pWebView, 1);
     lay->addWidget(_downloadWgt, 0);
 
+    auto* profile = _pWebPage->profile();
+    QString cachePath = profile->cachePath();
+    profile->setHttpCacheType(QWebEngineProfile::NoCache);
     _pWebView->setContextMenuPolicy(Qt::NoContextMenu);
     _downloadWgt->setVisible(false);
 
     _pWebView->settings()->setAttribute(QWebEngineSettings::FullScreenSupportEnabled, true);
     _pWebPage->profile()->setPersistentCookiesPolicy(QWebEngineProfile::AllowPersistentCookies);
 
-    auto *obj = new WebJsObj(this);
-    _pWebCannel->registerObject("client", obj);
     _pWebPage->setWebChannel(_pWebCannel);
-    connect(obj, &WebJsObj::runScript, this, &WebView::excuteJs);
-
     connect(_pWebPage, &WebEnginePage::contentsSizeChanged, [this](const QSizeF &size){
-
 
     });
 
@@ -49,15 +47,13 @@ WebView::WebView(QWidget* parent)
     connect(_pWebPage, &WebEnginePage::sgFullScreen, this, &WebView::sgFullScreen);
     connect(_pWebPage, &WebEnginePage::loadFinished, this, &WebView::sgLoadFinished);
     connect(_pWebPage, &WebEnginePage::loadFinished, [this](){
-        qreal zoom = _pWebView->zoomFactor();
-        if(abs(zoom - 0.8) > 0.00001)
-            _pWebView->setZoomFactor(0.8);
+//        qreal zoom = _pWebView->zoomFactor();
+//        if(abs(zoom - 0.8) > 0.00001)
+//            _pWebView->setZoomFactor(0.8);
     });
     auto cookieStore = _pWebPage->profile()->cookieStore();
     connect(cookieStore, &QWebEngineCookieStore::cookieAdded, this, &WebView::sgCookieAdded);
     connect(cookieStore, &QWebEngineCookieStore::cookieRemoved, this, &WebView::sgCookieRemoved);
-    connect(obj, &WebJsObj::sgFullScreen, this, &WebView::sgFullScreen);
-    connect(obj, &WebJsObj::closeGroupRoom, this, &WebView::closeVideo);
 
     QWebEngineSettings::globalSettings()->setAttribute(QWebEngineSettings::PluginsEnabled, true);
     QWebEngineSettings::defaultSettings()->setAttribute(QWebEngineSettings::ScreenCaptureEnabled, true);
@@ -65,6 +61,13 @@ WebView::WebView(QWidget* parent)
 }
 
 WebView::~WebView() = default;
+
+void WebView::setObj(WebJsObj *obj) {
+    _pWebCannel->registerObject("client", obj);
+    connect(obj, &WebJsObj::runScript, this, &WebView::excuteJs);
+    connect(obj, &WebJsObj::sgFullScreen, this, &WebView::sgFullScreen);
+    connect(obj, &WebJsObj::closeGroupRoom, this, &WebView::closeVideo);
+}
 
 /**
  *
@@ -111,6 +114,7 @@ void WebView::setAgent(const QString & userAgent)
 void WebView::excuteJs(const QString &js)
 {
     _pWebPage->runJavaScript(js);
+    qInfo() << js;
     info_log(js.toStdString());
 }
 

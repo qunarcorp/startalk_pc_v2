@@ -33,7 +33,7 @@ else ()
         ADD_DEFINITIONS(-DPLATFORM_WIN32)
         set(CMAKE_GENERATOR_PLATFORM x86)
         set(PROJECTNAME_ARCHITECTURE "x86")
-        set(QT_HOME C:/Qt/5.12.3/msvc2017)
+        set(QT_HOME C:/Qt/Qt5.12.3/5.12.3/msvc2017)
 
         link_directories(Depends/zlib/lib/windows/win32)
         link_directories(Depends/curl/lib/windows/x86)

@@ -18,6 +18,7 @@
 **/
 class ChatViewItem;
 class CodeShowWnd : public UShadowDialog{
+	Q_OBJECT
 public:
     explicit CodeShowWnd(QWidget* parent = nullptr);
     ~CodeShowWnd() override;

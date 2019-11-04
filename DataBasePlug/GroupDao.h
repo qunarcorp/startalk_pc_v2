@@ -1,9 +1,9 @@
 ﻿#ifndef GROUPDAO_H
 #define GROUPDAO_H
 
-#include "sqlite/database.h"
 #include <vector>
 #include "../include/CommonDefine.h"
+#include "DaoInterface.h"
 #include <memory>
 
 namespace QTalk {
@@ -12,11 +12,11 @@ namespace QTalk {
     }
 }
 
-class GroupDao {
+class GroupDao : public DaoInterface {
 public:
     explicit GroupDao(qtalk::sqlite::database *sqlDb = nullptr);
-    bool creatTable();
-    bool clearData();
+    bool creatTable() override;
+    bool clearData() override;
 
 public:
     bool insertGroupInfo(const QTalk::Entity::ImGroupInfo &userInfo);
@@ -43,9 +43,6 @@ public:
     bool deleteAllGroup();
 
     void getGroupCardMaxVersion(long long &version);
-
-private:
-    qtalk::sqlite::database *_sqlDb;
 };
 
 #endif // GROUPDAO_H

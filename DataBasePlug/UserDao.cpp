@@ -7,7 +7,7 @@
 #include <sstream>
 
 UserDao::UserDao(qtalk::sqlite::database *sqlDb) :
-        _sqlDb(sqlDb) {
+        DaoInterface(sqlDb) {
 
 }
 
@@ -18,7 +18,7 @@ UserDao::UserDao(qtalk::sqlite::database *sqlDb) :
   * @date 2018.9.27
   */
 bool UserDao::creatTable() {
-    if (!_sqlDb) {
+    if (!_pSqlDb) {
         return false;
     }
 
@@ -35,7 +35,7 @@ bool UserDao::creatTable() {
                       "`ExtendedFlag`	BLOB, "
                       "PRIMARY KEY(`XmppId`) ) ";
 
-    qtalk::sqlite::statement query(*_sqlDb, sql);
+    qtalk::sqlite::statement query(*_pSqlDb, sql);
     return query.executeStep();
 }
 
@@ -44,13 +44,13 @@ bool UserDao::creatTable() {
  * @return
  */
 bool UserDao::clearData() {
-    if (!_sqlDb) {
+    if (!_pSqlDb) {
         return false;
     }
 
     std::string sql = "DELETE FROM `IM_User`;";
     try {
-        qtalk::sqlite::statement query(*_sqlDb, sql);
+        qtalk::sqlite::statement query(*_pSqlDb, sql);
         return query.executeStep();
     }
     catch (const std::exception &e) {
@@ -68,14 +68,14 @@ bool UserDao::clearData() {
   * @date     2018/09/29
   */
 bool UserDao::getUserVersion(int &version) {
-    if (!_sqlDb) {
+    if (!_pSqlDb) {
         return false;
     }
 
     std::string sql = "select max(`IncrementVersion`) from IM_User ;";
 
     try {
-        qtalk::sqlite::statement query(*_sqlDb, sql);
+        qtalk::sqlite::statement query(*_pSqlDb, sql);
         if (query.executeNext()) {
             version = query.getColumn(0).getInt();
             return true;
@@ -99,7 +99,7 @@ bool UserDao::getUserVersion(int &version) {
   */
 bool UserDao::insertUserInfo(const QTalk::Entity::ImUserInfo &userInfo) {
 
-    if (!_sqlDb) {
+    if (!_pSqlDb) {
         return false;
     }
     std::string sql = "INSERT OR REPLACE INTO IM_User(`UserId`, `XmppId`, `Name`, `DescInfo`, `HeaderSrc`, "
@@ -107,7 +107,7 @@ bool UserDao::insertUserInfo(const QTalk::Entity::ImUserInfo &userInfo) {
                       "userType, isVisible ) "
                       "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
-    qtalk::sqlite::statement query(*_sqlDb, sql);
+    qtalk::sqlite::statement query(*_pSqlDb, sql);
 
     try {
         query.bind(1, userInfo.UserId);
@@ -141,7 +141,7 @@ bool UserDao::insertUserInfo(const QTalk::Entity::ImUserInfo &userInfo) {
   * @date 2018.9.29
   */
 bool UserDao::bulkInsertUserInfo(const std::vector<QTalk::Entity::ImUserInfo> &userInfos) {
-    if (!_sqlDb) {
+    if (!_pSqlDb) {
         return false;
     }
 
@@ -150,9 +150,9 @@ bool UserDao::bulkInsertUserInfo(const std::vector<QTalk::Entity::ImUserInfo> &u
                       "userType, isVisible ) "
                       "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
-    qtalk::sqlite::statement query(*_sqlDb, sql);
+    qtalk::sqlite::statement query(*_pSqlDb, sql);
     try {
-        _sqlDb->exec("begin immediate;");
+        _pSqlDb->exec("begin immediate;");
         for (const QTalk::Entity::ImUserInfo& userInfo : userInfos) {
             query.bind(1, userInfo.UserId);
             query.bind(2, userInfo.XmppId);
@@ -175,12 +175,12 @@ bool UserDao::bulkInsertUserInfo(const std::vector<QTalk::Entity::ImUserInfo> &u
 
         }
         query.clearBindings();
-        _sqlDb->exec("commit transaction;");
+        _pSqlDb->exec("commit transaction;");
         return true;
     } catch (std::exception &e) {
         error_log(e.what());
         query.clearBindings();
-        _sqlDb->exec("rollback transaction;");
+        _pSqlDb->exec("rollback transaction;");
         return false;
     }
 }
@@ -190,27 +190,27 @@ bool UserDao::bulkInsertUserInfo(const std::vector<QTalk::Entity::ImUserInfo> &u
  * @param userIds
  */
 bool UserDao::bulkDeleteUserInfo(const std::vector<std::string> &userIds) {
-    if (!_sqlDb) {
+    if (!_pSqlDb) {
         return false;
     }
 
     std::string sql = "DELETE FROM IM_User WHERE `XmppId` = ?;";
 
-    qtalk::sqlite::statement query(*_sqlDb, sql);
+    qtalk::sqlite::statement query(*_pSqlDb, sql);
     try {
-        _sqlDb->exec("begin immediate;");
+        _pSqlDb->exec("begin immediate;");
         for (const std::string& userId : userIds) {
             query.bind(1, userId);
             query.executeStep();
             query.resetBindings();
         }
         query.clearBindings();
-        _sqlDb->exec("commit transaction;");
+        _pSqlDb->exec("commit transaction;");
         return true;
     } catch (std::exception &e) {
         error_log(e.what());
         query.clearBindings();
-        _sqlDb->exec("rollback transaction;");
+        _pSqlDb->exec("rollback transaction;");
         return false;
     }
 }
@@ -222,7 +222,7 @@ bool UserDao::bulkDeleteUserInfo(const std::vector<std::string> &userIds) {
   * @date 2018.9.29
   */
 std::shared_ptr<QTalk::Entity::ImUserInfo> UserDao::getUserInfoByXmppId(const std::string &xmppid) {
-    if (!_sqlDb) {
+    if (!_pSqlDb) {
         return nullptr;
     }
 
@@ -230,7 +230,7 @@ std::shared_ptr<QTalk::Entity::ImUserInfo> UserDao::getUserInfoByXmppId(const st
                       "`SearchIndex`, `HeadVersion`, `IncrementVersion`, `ExtendedFlag`, `NickName`, `mood`"
                       "FROM IM_User WHERE `XmppId` = ?";
 
-    qtalk::sqlite::statement query(*_sqlDb, sql);
+    qtalk::sqlite::statement query(*_pSqlDb, sql);
     query.bind(1, xmppid);
     try {
         if (query.executeNext()) {
@@ -269,18 +269,18 @@ std::shared_ptr<QTalk::Entity::ImUserInfo> UserDao::getUserInfoByXmppId(const st
   * @date     2018/09/29
   */
 bool UserDao::setUserCardInfo(const std::vector<QTalk::StUserCard> &userInfos) {
-    if (!_sqlDb) {
+    if (!_pSqlDb) {
         return false;
     }
     //先insert 再update
     std::string sqlInsert = "insert or ignore into IM_User (`XmppId`, `NickName`, `HeaderSrc`,`mood`) values(?, ?, ?, ?);";
-    qtalk::sqlite::statement queryInsert(*_sqlDb, sqlInsert);
+    qtalk::sqlite::statement queryInsert(*_pSqlDb, sqlInsert);
 
     std::string sql = "UPDATE IM_User set `HeaderSrc` = ? , `HeadVersion` = ?, `NickName` = ? ,'mood' = ? WHERE `XmppId` = ?;";
 
-    qtalk::sqlite::statement query(*_sqlDb, sql);
+    qtalk::sqlite::statement query(*_pSqlDb, sql);
     try {
-        _sqlDb->exec("begin immediate;");
+        _pSqlDb->exec("begin immediate;");
         for (const QTalk::StUserCard& userInfo : userInfos) {
             queryInsert.bind(1, userInfo.xmppId);
             queryInsert.bind(2, userInfo.nickName);
@@ -299,14 +299,14 @@ bool UserDao::setUserCardInfo(const std::vector<QTalk::StUserCard> &userInfos) {
         }
         queryInsert.clearBindings();
         query.clearBindings();
-        _sqlDb->exec("commit transaction;");
+        _pSqlDb->exec("commit transaction;");
         return true;
     }
     catch (std::exception &e) {
         error_log(e.what());
         queryInsert.clearBindings();
         query.clearBindings();
-        _sqlDb->exec("rollback transaction;");
+        _pSqlDb->exec("rollback transaction;");
         return false;
     }
 }
@@ -319,7 +319,7 @@ bool UserDao::setUserCardInfo(const std::vector<QTalk::StUserCard> &userInfos) {
   * @date     2018/10/08
   */
 bool UserDao::getUserCardInfos(const std::vector<std::string>& arUserIds, std::vector<QTalk::StUserCard> &userInfos) {
-    if (!_sqlDb) {
+    if (!_pSqlDb) {
         return false;
     }
 
@@ -340,7 +340,7 @@ bool UserDao::getUserCardInfos(const std::vector<std::string>& arUserIds, std::v
 
     std::string sql = stringStream.str();
 
-    qtalk::sqlite::statement query(*_sqlDb, sql);
+    qtalk::sqlite::statement query(*_pSqlDb, sql);
     try {
 
         while (query.executeNext()) {
@@ -362,7 +362,7 @@ bool UserDao::getUserCardInfos(const std::vector<std::string>& arUserIds, std::v
 }
 
 bool UserDao::getUserCardInfos(std::map<std::string, QTalk::StUserCard> &userInfos) {
-    if (!_sqlDb) {
+    if (!_pSqlDb) {
         return false;
     }
 
@@ -383,7 +383,7 @@ bool UserDao::getUserCardInfos(std::map<std::string, QTalk::StUserCard> &userInf
 
     std::string sql = stringStream.str();
 
-    qtalk::sqlite::statement query(*_sqlDb, sql);
+    qtalk::sqlite::statement query(*_pSqlDb, sql);
     try {
 
         while (query.executeNext()) {
@@ -406,12 +406,12 @@ bool UserDao::getUserCardInfos(std::map<std::string, QTalk::StUserCard> &userInf
 }
 
 bool UserDao::getStructure(std::vector<std::shared_ptr<QTalk::Entity::ImUserInfo>> &structure) {
-    if (!_sqlDb) {
+    if (!_pSqlDb) {
         return false;
     }
 
     std::string sql = "SELECT `XmppId`, `Name`, `DescInfo`, `HeaderSrc`, `SearchIndex`, isVisible, NickName FROM IM_User;";
-    qtalk::sqlite::statement query(*_sqlDb, sql);
+    qtalk::sqlite::statement query(*_pSqlDb, sql);
     try {
         while (query.executeNext())
         {
@@ -442,14 +442,16 @@ bool UserDao::getStructure(std::vector<std::shared_ptr<QTalk::Entity::ImUserInfo
  * @return
  */
 bool UserDao::getStructureCount(const std::string &strName, int &count) {
-    if (!_sqlDb) {
+    if (!_pSqlDb) {
         return false;
     }
 
-    std::string sql = "SELECT count(`XmppId`) FROM IM_User WHERE DescInfo like ? and isVisible = true";
-    qtalk::sqlite::statement query(*_sqlDb, sql);
+    std::string sql = "SELECT count(`XmppId`) FROM IM_User WHERE (DescInfo like ? or DescInfo = ?) and isVisible = true;";
+
+    qtalk::sqlite::statement query(*_pSqlDb, sql);
     try {
-        query.bind(1, strName + "%");
+        query.bind(1, strName + "/%");
+        query.bind(2, strName);
         if (query.executeNext()) {
             count = query.getColumn(0).getInt();
         }
@@ -462,14 +464,15 @@ bool UserDao::getStructureCount(const std::string &strName, int &count) {
 }
 
 bool UserDao::getStructureMember(const std::string &strName, std::vector<std::string> &arMember) {
-    if (!_sqlDb) {
+    if (!_pSqlDb) {
         return false;
     }
 
-    std::string sql = "SELECT `XmppId` FROM IM_User WHERE DescInfo like ?;";
-    qtalk::sqlite::statement query(*_sqlDb, sql);
+    std::string sql = "SELECT `XmppId` FROM IM_User WHERE (DescInfo like ? or DescInfo = ?) and isVisible = true;";
+    qtalk::sqlite::statement query(*_pSqlDb, sql);
     try {
-        query.bind(1, strName + "%");
+        query.bind(1, strName + "/%");
+        query.bind(2, strName);
         while (query.executeNext()) {
             arMember.push_back(query.getColumn(0).getString());
         }
@@ -482,13 +485,13 @@ bool UserDao::getStructureMember(const std::string &strName, std::vector<std::st
 }
 
 bool UserDao::addColumn_03() {
-    if (!_sqlDb) {
+    if (!_pSqlDb) {
         return false;
     }
     std::string sql = "ALTER TABLE IM_User ADD COLUMN mood TEXT;";
 
     try{
-        qtalk::sqlite::statement query(*_sqlDb, sql);
+        qtalk::sqlite::statement query(*_pSqlDb, sql);
         return query.executeStep();;
     }catch (std::exception &e){
         error_log(e.what());
@@ -499,14 +502,14 @@ bool UserDao::addColumn_03() {
 
 void UserDao::geContactsSession(std::vector<QTalk::StShareSession> &sessions)
 {
-    if (!_sqlDb) {
+    if (!_pSqlDb) {
         return;
     }
     std::string sql = "select XmppId, HeaderSrc,"
                       " (case Name when '' then NickName else Name end) as N, SearchIndex "
                       "From IM_User order by SearchIndex;";
 
-    qtalk::sqlite::statement query(*_sqlDb, sql);
+    qtalk::sqlite::statement query(*_pSqlDb, sql);
 
     while (query.executeNext())
     {
@@ -523,22 +526,22 @@ void UserDao::geContactsSession(std::vector<QTalk::StShareSession> &sessions)
 
 void UserDao::addColumn_04()
 {
-    if (!_sqlDb) {
+    if (!_pSqlDb) {
         return;
     }
 
     try {
         // sex column
         std::string sql = "ALTER TABLE IM_User ADD COLUMN sex INTEGER default 1;";
-        qtalk::sqlite::statement query(*_sqlDb, sql);
+        qtalk::sqlite::statement query(*_pSqlDb, sql);
         query.executeStep();
         // userType column
         sql = "ALTER TABLE IM_User ADD COLUMN userType TEXT";
-        qtalk::sqlite::statement queryRobot(*_sqlDb, sql);
+        qtalk::sqlite::statement queryRobot(*_pSqlDb, sql);
         queryRobot.executeStep();
         // isVisible column
         sql = "ALTER TABLE IM_User ADD COLUMN isVisible Boolean default true;";
-        qtalk::sqlite::statement queryVisible(*_sqlDb, sql);
+        qtalk::sqlite::statement queryVisible(*_pSqlDb, sql);
         queryVisible.executeStep();
     }
     catch (const std::exception& e)
@@ -549,14 +552,14 @@ void UserDao::addColumn_04()
 
 void UserDao::modDefaultValue_05()
 {
-    if (!_sqlDb) {
+    if (!_pSqlDb) {
         return;
     }
 
     try {
         // sex column
         std::string sql = "DROP TABLE IM_User;";
-        qtalk::sqlite::statement query(*_sqlDb, sql);
+        qtalk::sqlite::statement query(*_pSqlDb, sql);
         query.executeStep();
 
         sql = "CREATE TABLE IF NOT EXISTS `IM_User` ( "
@@ -576,7 +579,7 @@ void UserDao::modDefaultValue_05()
               " isVisible Boolean default true , "
               "PRIMARY KEY(`XmppId`) ) ";
 
-        qtalk::sqlite::statement queryVisible(*_sqlDb, sql);
+        qtalk::sqlite::statement queryVisible(*_pSqlDb, sql);
         queryVisible.executeStep();
     }
     catch (const std::exception& e)

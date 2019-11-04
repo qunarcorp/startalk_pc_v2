@@ -33,8 +33,8 @@ QRcode::QRcode(QWidget* parent)
     titleLay->addWidget(closeBtn);
 #endif
     //
-    scanBtn = new TipButton("扫一扫", em_wnd_scan,this);
-    makeBtn = new TipButton("生成二维码", em_wnd_make,this);
+    scanBtn = new TipButton(tr("扫一扫"), em_wnd_scan,this);
+    makeBtn = new TipButton(tr("生成二维码"), em_wnd_make,this);
     auto* btnLay = new QHBoxLayout;
     btnLay->setSpacing(30);
     btnLay->addItem(new QSpacerItem(10, 10, QSizePolicy::Expanding));

@@ -11,7 +11,7 @@
 CodeEdit::CodeEdit(QWidget* parent)
     : QTextEdit(parent)
 {
-    setPlaceholderText("请输入代码片段");
+    setPlaceholderText(tr("请输入代码片段"));
 }
 
 CodeEdit::~CodeEdit() {

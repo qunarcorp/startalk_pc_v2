@@ -172,7 +172,12 @@ void VoiceMessageItem::initReceiveLayout() {
 
     if (QTalk::Enum::ChatType::GroupChat == _msgInfo.ChatType
         && QTalk::Entity::MessageDirectionReceive == _msgInfo.Direction ) {
-        rightLay->addWidget(_nameLab);
+        auto* nameLay = new QHBoxLayout;
+        nameLay->setMargin(0);
+        nameLay->setSpacing(5);
+        nameLay->addWidget(_nameLab);
+        nameLay->addWidget(_medalWgt);
+        rightLay->addLayout(nameLay);
     }
     if (!_contentFrm) {
         _contentFrm = new QFrame(this);
@@ -237,16 +242,18 @@ void VoiceMessageItem::initContentLayout() {
         //
         local_path = Platform::instance().getAppdataRoamingUserPath() + "/voice/" + local_path + ".amr";
         //
-        std::thread([this, _voicePath](){
+        QPointer<VoiceMessageItem> pThis(this);
+        std::thread([pThis, _voicePath](){
             if(g_pMainPanel)
             {
-                g_pMainPanel->getMessageManager()->sendDownLoadFile(local_path, _voicePath, _msgInfo.MsgId);
+                if(pThis) {
+                    g_pMainPanel->getMessageManager()->sendDownLoadFile(pThis->local_path, _voicePath, pThis->_msgInfo.MsgId);
 #ifdef Q_NO_AMR
-				bool isok = QTalk::VoiceHelper::amrToWav(local_path + ".amr", local_path + ".wav");
+				bool isok = QTalk::VoiceHelper::amrToWav(pThis->local_path + ".amr", pThis->local_path + ".wav");
 				if (isok)
-					local_path = local_path + ".wav";
+                    pThis->local_path = pThis->local_path + ".wav";
 #endif // Q_NO_AMR
-
+                }
             }
         }).detach();
 

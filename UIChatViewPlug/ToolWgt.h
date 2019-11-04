@@ -36,9 +36,6 @@ public:
 	void showSeats(std::vector<QTalk::Entity::ImTransfer> transfers);
 	void sendWechat();
 
-private:
-	std::map<std::string, std::string> _mapAtInfo;
-
 Q_SIGNALS:
     void showSearchWnd();
 

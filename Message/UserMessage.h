@@ -5,6 +5,7 @@
 #include <vector>
 #include <map>
 #include <string>
+#include <set>
 #include "../include/CommonStrcut.h"
 #include "../EventBus/Event.hpp"
 #include "../entity/im_user.h"
@@ -15,6 +16,7 @@
 #include "../entity/UID.h"
 #include "../entity/im_qr_group.h"
 #include "../entity/im_qr_content.h"
+#include "../entity/im_user_status_medal.h"
 
 // 获取用户列表
 class GetUserCardMessage : public Event
@@ -247,5 +249,41 @@ class IncrementUser : public Event {
 public:
     std::vector<QTalk::Entity::ImUserInfo> arUserInfo;
     std::vector<std::string> arDeletes;
+};
+
+class GetHotLines : public Event {
+
+};
+
+class UserMedalEvt: public Event {
+public:
+    UserMedalEvt(std::string xmppId, std::set<QTalk::StUserMedal>& medal)
+        :medal(medal), xmppId(std::move(xmppId)) {
+    }
+
+public:
+    std::string xmppId;
+    std::set<QTalk::StUserMedal>& medal;
+};
+
+class UserMedalChangedEvt : public Event
+{
+public:
+    std::vector<QTalk::Entity::ImUserStatusMedal> userMedals;
+};
+
+class GetMedalUserEvt : public Event
+{
+public:
+    int medalId;
+    std::vector<QTalk::StMedalUser> metalUsers;
+};
+
+class ModifyUserMedalStatusEvt : public Event {
+public:
+    int medalId = -1;
+    bool isWear = false;
+
+    bool result = false;
 };
 #endif//_USER_MESSAGE_H_

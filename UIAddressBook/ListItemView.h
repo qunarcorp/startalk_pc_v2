@@ -32,7 +32,7 @@ public:
     explicit ListItemDelegate(QObject *parent = nullptr);
     ~ListItemDelegate() override;
 
-signals:
+Q_SIGNALS:
     void itemClicked(const QString&, const QUInt8);
 
 protected:
@@ -58,7 +58,7 @@ public:
     void addItem(const QString& id, const QUInt8& type, const QString& icon, const QString& name);
     void removeItem(const QString& id);
 
-signals:
+Q_SIGNALS:
     //void addItemSignal(const QString&, const QString&, const QString&);
     //void removeItemSignal(const QString& id);
 

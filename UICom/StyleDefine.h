@@ -51,7 +51,7 @@ namespace QTalk {
         inline QColor getDropNormalFontColor() { return _drop_normal_font_color; };
         inline QColor getDropSelectFontColor() { return _drop_select_font_color; };
         //
-        inline QString getLinkUrl() { return _link_url_color; };
+        inline QColor getLinkUrl() { return _link_url_color; };
         // local search
         inline QColor getLocalSearchTimeFontColor() { return _local_search_time_font_color; }
         // at block
@@ -99,7 +99,7 @@ namespace QTalk {
         inline void setDropSelectColor(const QColor& color) { _drop_select_color = color; };
         inline void setDropNormalFontColor(const QColor& color) { _drop_normal_font_color = color; };
         inline void setDropSelectFontColor(const QColor& color) { _drop_select_font_color = color; };
-        inline void setLinkUrl(const QString& color) { _link_url_color = color; };
+        inline void setLinkUrl(const QColor& color) { _link_url_color = color; };
         // local search
         inline void setLocalSearchTimeFontColor(const QColor& color) { _local_search_time_font_color = color; }
         // at block
@@ -123,6 +123,11 @@ namespace QTalk {
         inline void setFileProcessBarLine(const QColor& color) { _file_process_bar_line = color; }
 
         inline void setHeadPhotoMaskColor(const QColor& color) { _head_photo_mask_color = color; }
+        //
+        inline void setHotLineTipItemColor(const QColor& color) { _hot_line_tip_item_color = color; };
+        inline QColor getHotLineTipItemColor() { return _hot_line_tip_item_color; };
+        inline void setHotLineTipItemFontColor(const QColor& color) { _hot_line_tip_item_font_color = color; };
+        inline QColor getHotLineTipItemFontColor() { return _hot_line_tip_item_font_color; };
 
     private:
         // 会话列表
@@ -151,7 +156,7 @@ namespace QTalk {
         QColor _drop_normal_font_color = {51,51,51};
         QColor _drop_select_font_color = {0, 202, 190};
         //
-        QString _link_url_color = "32,188,210";
+        QColor _link_url_color = {32,188,210};
         //
         QColor _local_search_time_font_color = {51, 51, 51};
 
@@ -174,6 +179,9 @@ namespace QTalk {
         QColor _file_process_bar_line = {242,242,242};
 
         QColor _head_photo_mask_color = {0,0,0,0};
+
+        QColor _hot_line_tip_item_color = {242, 242, 242, 255};
+        QColor _hot_line_tip_item_font_color = {51, 51, 51, 255};
     };
 }
 

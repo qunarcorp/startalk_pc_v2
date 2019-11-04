@@ -24,7 +24,7 @@ class ChoseItemDelegate : public QStyledItemDelegate
 public:
     explicit ChoseItemDelegate(QWidget *parent);
 
-signals:
+Q_SIGNALS:
     void removeItem(const QString&);
 
 protected:

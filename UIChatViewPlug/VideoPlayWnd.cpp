@@ -37,7 +37,7 @@ void VideoPlayWnd::showVideo(const QString& url, int width, int height)
 //    {
 //        newUrl = QString("%1/%2").arg(NavigationManager::instance().getFileHttpHost().data()).arg(newUrl);
 //    }
-    QApplication::processEvents();
+    QApplication::processEvents(QEventLoop::AllEvents, 100);
 
 //    QDesktopWidget *deskTop = QApplication::desktop();
 //    int curMonitor = deskTop->screenNumber(this);

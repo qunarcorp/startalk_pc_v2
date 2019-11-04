@@ -41,6 +41,8 @@ public:
     void setUserSetting(bool isSetting, const std::string &key, const std::string &subKey, const std::string &value);
 
     void addEmptyMessage(const QTalk::Entity::ImMessageInfo& info);
+
+    void quitGroupById(const std::string& groupId);
 };
 
 /**
@@ -68,7 +70,9 @@ class NavigationMsgListener
           public EventHandler<DestroyGroupRet>,
           public EventHandler<ChangeHeadRetMessage>,
           public EventHandler<UserCardMessgae>,
-          public EventHandler<IncrementConfig>
+          public EventHandler<IncrementConfig>,
+          public EventHandler<RecvVideoMessage>,
+          public EventHandler<MStateEvt>
           {
 public:
     explicit NavigationMsgListener(NavigationMianPanel *navigationMianPanel);
@@ -95,6 +99,8 @@ public:
     void onEvent(ChangeHeadRetMessage& e) override;
     void onEvent(UserCardMessgae& e) override;
     void onEvent(IncrementConfig& e) override;
+    void onEvent(RecvVideoMessage& e) override;
+    void onEvent(MStateEvt& e) override;
 
 private:
     NavigationMianPanel *_pNavigationMianPanel;

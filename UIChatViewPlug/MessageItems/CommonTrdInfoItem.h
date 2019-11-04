@@ -21,7 +21,7 @@ public:
 public:
     QSize itemWdtSize() override;
 
-signals:
+Q_SIGNALS:
     void sgDownloadedIcon(const QString&);
 
 protected:

@@ -21,7 +21,7 @@ public:
 public:
     void setCheckState(bool check);
 
-signals:
+Q_SIGNALS:
     void clicked();
 
 protected:
@@ -41,7 +41,7 @@ public:
     explicit UCButtonGroup(QObject* parent = nullptr);
     ~UCButtonGroup() override = default;
 
-signals:
+Q_SIGNALS:
     void clicked(int);
 
 public:

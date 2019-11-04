@@ -23,14 +23,15 @@
 
 class DownLoadWgt : public QWidget
 {
+    Q_OBJECT
 public:
     explicit DownLoadWgt(QWidget* parent = nullptr)
         :_download(nullptr)
     {
         _pProcessBar = new QProgressBar(this);
         _pCancelBtn = new QPushButton(tr("取消"), this);
-        _pOpenDir = new QPushButton("打开文件夹", this);
-        _closeBtn = new QPushButton("关闭", this);
+        _pOpenDir = new QPushButton(tr("打开文件夹"), this);
+        _closeBtn = new QPushButton(tr("关闭"), this);
         _pUrlLabel = new QLabel(this);
         auto* titLay = new QHBoxLayout();
         titLay->addWidget(_pUrlLabel, 1);
@@ -183,13 +184,14 @@ private:
 **/
 #include "webservice_global.h"
 class WebEnginePage;
+class WebJsObj;
 class WEBSERVICE_EXPORT WebView : public QFrame {
     Q_OBJECT
 public:
     explicit WebView(QWidget* parent = nullptr);
     ~WebView() override;
 
-signals:
+Q_SIGNALS:
     void sgFullScreen();
     void sgLoadFinished();
     void closeVideo();
@@ -208,6 +210,9 @@ public:
 
 public:
     void onDownLoadFile(QWebEngineDownloadItem *download);
+
+public:
+    void setObj(WebJsObj* obj);
 
 private:
     WebEnginePage* _pWebPage;

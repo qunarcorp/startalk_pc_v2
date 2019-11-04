@@ -11,7 +11,7 @@
 #include "../UICom/qimage/qimage.h"
 
 
-LiteMessageBox::LiteMessageBox(int type, const QString& message)
+LiteMessageBox::LiteMessageBox(int type, const QString& message, QWidget* base)
 {
     Q_INIT_RESOURCE(ushadowdialog);
     Qt::WindowFlags flags = Qt::Tool | Qt::WindowContextHelpButtonHint | Qt::FramelessWindowHint
@@ -19,8 +19,8 @@ LiteMessageBox::LiteMessageBox(int type, const QString& message)
     this->setWindowFlags(flags);
     this->setAttribute(Qt::WA_ShowWithoutActivating, true);
     //
-    QLabel* iconLab = new QLabel(this);
-    QLabel* textLab = new QLabel(this);
+    auto* iconLab = new QLabel(this);
+    auto* textLab = new QLabel(this);
     textLab->setObjectName("LiteMessageBoxText");
     //
     //iconLab->setFixedSize(14, 14);
@@ -41,7 +41,7 @@ LiteMessageBox::LiteMessageBox(int type, const QString& message)
     }
     textLab->setText(message);
     //
-    QFrame* mainFrm = new QFrame(this);
+    auto* mainFrm = new QFrame(this);
     auto * mainLay = new QHBoxLayout(mainFrm);
     mainLay->setMargin(10);
     mainLay->setSpacing(8);
@@ -53,7 +53,11 @@ LiteMessageBox::LiteMessageBox(int type, const QString& message)
     lay->addWidget(mainFrm);
 
     //
-    QWidget* wgt = UICom::getInstance()->getAcltiveMainWnd();
+    QWidget* wgt = nullptr;
+    if(nullptr != base)
+        wgt = base;
+    else
+        wgt = UICom::getInstance()->getAcltiveMainWnd();
     //setParent(wgt);
     if(nullptr != wgt)
     {
@@ -66,21 +70,21 @@ LiteMessageBox::LiteMessageBox(int type, const QString& message)
 
 LiteMessageBox::~LiteMessageBox() = default;
 
-void LiteMessageBox::success(const QString& message, int duration)
+void LiteMessageBox::success(const QString& message, int duration, QWidget* base)
 {
-    auto * box = new LiteMessageBox(EM_TYPE_SUCCESS, message);
+    auto * box = new LiteMessageBox(EM_TYPE_SUCCESS, message, base);
     box->setAttribute(Qt::WA_QuitOnClose, false);
     box->setVisible(true);
     if(duration <= 1000)
         duration = 1000;
     QTimer::singleShot(duration, [box](){
         box->setVisible(false);
-        delete box;
+        box->deleteLater();
     });
 }
 
-void LiteMessageBox::failed(const QString &message, int duration) {
-    auto * box = new LiteMessageBox(EM_TYPE_FAILED, message);
+void LiteMessageBox::failed(const QString &message, int duration, QWidget* base) {
+    auto * box = new LiteMessageBox(EM_TYPE_FAILED, message, base);
     box->setAttribute(Qt::WA_QuitOnClose, false);
     box->setVisible(true);
     if(duration <= 1000)

@@ -20,7 +20,7 @@ public:
 
 protected Q_SLOTS:
         void onTextChangeSlot();
-signals:
+Q_SIGNALS:
         void sgTextInputComplete(const QString&);
 
 private:

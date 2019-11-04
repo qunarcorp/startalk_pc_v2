@@ -29,9 +29,6 @@ UShadowDialog::UShadowDialog(QWidget *parent, bool radius, bool hasBorder) :
     _pMoveContentWgt(nullptr)
 {
     Qt::WindowFlags flags = Qt::Window | Qt::WindowContextHelpButtonHint | Qt::FramelessWindowHint
-#ifdef _WINDOWS
-                           | Qt::WindowMinimizeButtonHint | Qt::WindowMaximizeButtonHint | Qt::WindowSystemMenuHint
-#endif
                            | Qt::WindowFullscreenButtonHint | Qt::WindowCloseButtonHint | Qt::WindowTitleHint;
     this->setWindowFlags(flags);
     //setAttribute(Qt::WA_AlwaysShowToolTips, true);
@@ -151,7 +148,7 @@ int UShadowDialog::showModel() {
 //    Qt::WindowModal 阻塞父窗口，所有祖先窗口及其子窗口
 //    Qt::ApplicationModal 阻塞整个应用程序
 
-    this->setWindowModality(Qt::ApplicationModal);
+//    this->setWindowModality(Qt::ApplicationModal);
 	this->show();
 	//_evtLoop = new QEventLoop(this);
 	//_evtLoop->exec();

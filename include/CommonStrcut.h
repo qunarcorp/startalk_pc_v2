@@ -90,6 +90,8 @@ namespace QTalk
         std::string searchUrl;
         std::string uploadLog;
 
+        std::string videoUrl;
+
         std::string qcadminHost;
 
         std::string mailSuffix;
@@ -98,6 +100,8 @@ namespace QTalk
 
         bool showmsgstat;
         std::string qcGrabOrder;
+
+        std::string loginType = "password";
     };
 
     struct StOAUIData
@@ -132,6 +136,36 @@ namespace QTalk
         std::string searchKey;
     };
 
+    struct StUserMedal
+    {
+        int medalId = -1;
+        int medalStatus= 0;
+
+        StUserMedal() : medalId(-1), medalStatus(0) {
+
+        }
+
+        StUserMedal(int id, int status) : medalId(id), medalStatus(status) {
+
+        }
+
+        bool operator<(const StUserMedal& other) const
+        {
+            if(this->medalId == other.medalId)
+                return false;
+
+            if(this->medalStatus == other.medalStatus)
+                return this->medalId < other.medalId;
+            else
+                return this->medalStatus > other.medalStatus;
+        }
+    };
+
+    struct StMedalUser {
+        std::string xmppId{};
+        std::string userHead{};
+        std::string userName{};
+    };
 }
 
 
@@ -196,7 +230,35 @@ namespace QTalk
 
         struct StHistory
         {
+            int         type;
+            std::string key;
+            std::string name;
+            std::string icon;
+            int         count;       // 匹配消息数
+            std::string msg_id;
+            std::string body;
+            QInt64      time;
+            std::string from;
+            std::string to;
+//            std::string real_from;
+//            std::string real_to;
+        };
 
+        struct StHistoryFile {
+            std::string key;
+            std::string source;
+            std::string icon;
+            std::string msg_id;
+            std::string body;
+            std::string extend_info;
+            QInt64      time;
+            std::string from;
+            std::string to;
+
+            std::string file_md5;
+            std::string file_name;
+            std::string file_size;
+            std::string file_url;
         };
 
         struct StSearchResult
@@ -211,6 +273,8 @@ namespace QTalk
             std::vector<StGroupItem> _groups;
             // history
             std::vector<StHistory> _history;
+
+            std::vector<StHistoryFile> _files;
         };
     }
 }
@@ -228,5 +292,22 @@ struct StNetEmoticon
 };
 typedef std::vector<std::shared_ptr<StNetEmoticon> > ArStNetEmoticon;
 typedef std::map<int, QTalk::Search::StSearchResult> SearchResult;
+
+
+
+namespace QTalk {
+    struct StNotificationParam {
+        std::string title{};
+        std::string message{};
+        std::string icon{};
+        bool playSound{};
+        //
+        std::string xmppId{};
+        std::string from{};
+        std::string realJid{};
+        std::string loginUser{};
+        int   chatType{};
+    };
+}
 
 #endif//_COMMONSTRCUT_H_

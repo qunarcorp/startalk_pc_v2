@@ -99,7 +99,7 @@ private slots:
     void setNewHead(const QString& userName, const QString& newHeadPath);
     void onTabGroupClicked(int tab);
 
-signals:
+Q_SIGNALS:
     void sgCurFunChanged(const int &index);
     void showSelfUserCard(const QString&);
     void sgOpenNewSession(const StSessionInfo &into);
@@ -117,6 +117,9 @@ signals:
     void sgOperator(const QString& desc);
     void sgSwitchUserStatusRet(const QString& status);
     void sgAutoReply(bool);
+#ifdef _MACOS
+    void sgShowMinWnd();
+#endif
 
 private:
     QFrame * _leftCorFrm;

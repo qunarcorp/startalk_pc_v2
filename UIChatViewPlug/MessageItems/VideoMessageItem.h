@@ -19,7 +19,7 @@ public:
     QSize itemWdtSize() override;
     void setProcess(double speed, double dtotal, double dnow, double utotal, double unow);
 
-signals:
+Q_SIGNALS:
     void sgPlayVideo(const QString &videoUrl, int width, int height);
     void sgDownloadedIcon(const QString&);
 

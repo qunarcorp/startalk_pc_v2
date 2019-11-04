@@ -5,7 +5,7 @@
 #pragma execution_character_set("utf-8")
 #endif
 
-#include "sqlite/database.h"
+#include "DaoInterface.h"
 #include "../QtUtil/Enum/im_enum.h"
 #include "../entity/IM_Session.h"
 #include <vector>
@@ -18,15 +18,13 @@ namespace QTalk {
         struct ImMessageInfo;
     }
 }
-class MessageDao {
+class MessageDao : public DaoInterface{
 public:
     explicit MessageDao(qtalk::sqlite::database *sqlDb = nullptr);
-
-public:
     bool creatTable();
-
     bool clearData();
 
+public:
     bool creatIndex();
 
 public:
@@ -98,14 +96,14 @@ public:
     void getAfterMessage(const long long &time, const std::string &userId, const std::string &realJid,
                          std::vector<QTalk::Entity::ImMessageInfo>& msgList);
 
+    //
+    void updateMessageExtendInfo(const std::string& msgId, const std::string& info);
+
+public:
     // 修正消息type
     void fixMessageType();
-
     //
     void updateMessageReadFlags(const std::map<std::string, int>& readFlags);
-
-private:
-    qtalk::sqlite::database *_sqlDb;
 };
 
 #endif // MESSAGEDAO_H

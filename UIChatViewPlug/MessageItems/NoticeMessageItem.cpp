@@ -169,7 +169,12 @@ void NoticeMessageItem::initReceiveLayout() {
     mainLay->addLayout(rightLay);
     if (QTalk::Enum::ChatType::GroupChat == _msgInfo.ChatType
         && QTalk::Entity::MessageDirectionReceive == _msgInfo.Direction ) {
-        rightLay->addWidget(_nameLab);
+        auto* nameLay = new QHBoxLayout;
+        nameLay->setMargin(0);
+        nameLay->setSpacing(5);
+        nameLay->addWidget(_nameLab);
+        nameLay->addWidget(_medalWgt);
+        rightLay->addLayout(nameLay);
     }
     if (!_contentFrm) {
         _contentFrm = new QFrame(this);

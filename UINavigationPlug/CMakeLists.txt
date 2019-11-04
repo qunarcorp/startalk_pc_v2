@@ -10,6 +10,7 @@ set(CMAKE_AUTORCC ON)
 find_package(Qt5Widgets)
 find_package(Qt5Network)
 find_package(Qt5WebEngineWidgets)
+find_package(Qt5Concurrent)
 
 #
 set(SOURCE_FILES
@@ -57,4 +58,5 @@ target_link_libraries(${PROJECT_NAME}
         Qt5::Widgets
         Qt5::Network
         Qt5::WebEngineWidgets
+        Qt5::Concurrent
         CustomUi EventBus Platform WebService)

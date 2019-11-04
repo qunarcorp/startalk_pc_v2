@@ -7,7 +7,7 @@
 #ifndef QTALK_V2_WEBSERVICE_H
 #define QTALK_V2_WEBSERVICE_H
 
-#include <QFrame>
+#include <QDialog>
 #include "WebView.h"
 #include <QToolButton>
 #include "webservice_global.h"
@@ -20,7 +20,7 @@ typedef QMap<QString, QString> MapCookie;
 * @author: cc
 * @create: 2019-01-27 23:46
 **/
-class WEBSERVICE_EXPORT WebService : public QFrame{
+class WEBSERVICE_EXPORT WebService : public QDialog{
     Q_OBJECT
 private:
     WebService();
@@ -29,6 +29,7 @@ public:
     ~WebService() override;
 
 public:
+    static void loadCoEdit(const QUrl& url);
     static void loadUrl(const QUrl& url, bool showUrl = true, const MapCookie& cookies = MapCookie());
     static void loadUrl(const QUrl& url,const std::string& domain, bool showUrl = true, const MapCookie& cookies = MapCookie());
 

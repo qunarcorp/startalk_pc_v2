@@ -37,7 +37,7 @@ private:
         EM_TYPE_INVALID, EM_TYPE_CREATGROUP, EM_TYPE_ADDGROUPMEMBER
     };
 
-signals:
+Q_SIGNALS:
     void setTreeDataFinish();
     void initDataFinish();
 

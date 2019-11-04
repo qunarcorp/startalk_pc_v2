@@ -25,7 +25,7 @@ public:
 public:
     void clear();
 
-signals:
+Q_SIGNALS:
     void sgBatchAddGroupMember(const QString&);
 
 private:

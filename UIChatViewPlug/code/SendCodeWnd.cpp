@@ -27,11 +27,11 @@ SendCodeWnd::~SendCodeWnd()
 void SendCodeWnd::initUi()
 {
     _pCodeEdit = new CodeEdit(this);
-    _pCodeShell = new CodeShell("发送代码片段", _pCodeEdit, this);
+    _pCodeShell = new CodeShell(tr("发送代码片段"), _pCodeEdit, this);
 
     // bottom
-    QPushButton* cancelBtn = new QPushButton("取消", this);
-    QPushButton* sendBtn = new QPushButton("发送", this);
+    QPushButton* cancelBtn = new QPushButton(tr("取消"), this);
+    QPushButton* sendBtn = new QPushButton(tr("发送"), this);
 
     cancelBtn->setObjectName("cancelBtn");
     sendBtn->setObjectName("sendBtn");
@@ -88,7 +88,7 @@ void SendCodeWnd::sendCode()
 
         if(code.toLocal8Bit().size() > 1024 * 64)
         {
-            QtMessageBox::warning(g_pMainPanel, "警告", "输入的代码过长，无法发送!");
+            QtMessageBox::warning(g_pMainPanel, tr("警告"), tr("输入的代码过长，无法发送!"));
             return;
         }
 

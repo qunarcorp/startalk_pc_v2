@@ -35,7 +35,8 @@ GroupChatSidebar::~GroupChatSidebar()
 }
 
 void GroupChatSidebar::updateGroupMember(const std::string& memberJid, const std::string& nick, int affiliation) {
-	_pGroupMember->updateGroupMember(memberJid, nick, affiliation);
+    if(_pGroupMember)
+	    _pGroupMember->updateGroupMember(memberJid, nick, affiliation);
 }
 
 /**
@@ -88,7 +89,8 @@ void GroupChatSidebar::updateGroupMember(const GroupMemberMessage& e)
 	}
 
 	//
-    emit _pGroupMember->sgUpdateMemberCount(members.size(), onlineUserSize);
+	if(_pGroupMember)
+        emit _pGroupMember->sgUpdateMemberCount(members.size(), onlineUserSize);
 
 	// 删除
 	for (const std::string& id : deletedMembers)

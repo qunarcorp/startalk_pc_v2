@@ -42,7 +42,6 @@
 
 #define ImageType_Image "ImageType_Image"
 #define ImageType_Emot "ImageType_Emot"
-#define MessageBox MessageBox
 
 extern ChatViewMainPanel *g_pMainPanel;
 InputWgt::InputWgt(ChatMainWgt *pMainWgt, ChatViewItem *parent)
@@ -79,21 +78,21 @@ void sendFile(ChatViewItem *pChatView, const QFileInfo &fileInfo)
     QInt64 size = fileInfo.size();
     if(0 == size)
     {
-        QtMessageBox::warning(g_pMainPanel, "警告", "无效的空文件!");
+        QtMessageBox::warning(g_pMainPanel, QObject::tr("警告"), QObject::tr("无效的空文件!"));
         return;
     }
 
     QString strSize;
     if (size > 1024 * 1024 * 1024) {
-        QtMessageBox::warning(g_pMainPanel, "警告", "文件太大 暂时不支持大文件发送!");
+        QtMessageBox::warning(g_pMainPanel, QObject::tr("警告"), QObject::tr("文件太大 暂时不支持大文件发送!"));
         return;
     } else if (size > 1024 * 1024)
         strSize = QString("%1MB").arg(QString::number(size / (1024 * 1024.00), 'f', 2));
     else
         strSize = QString("%1KB").arg(QString::number(size / 1024.00, 'f', 2));
 
-    if (pChatView) {
-        pChatView->sendFileMessage(fileInfo.absoluteFilePath(), fileInfo.fileName(), strSize);
+    if (g_pMainPanel && pChatView) {
+        g_pMainPanel->sendFileMessage(pChatView->_uid, pChatView->_chatType, fileInfo.absoluteFilePath(), fileInfo.fileName(), strSize);
     }
 }
 
@@ -120,7 +119,7 @@ void InputWgt::dealFile(const QString &filePath, bool isFile, const QString& ima
                 QImage img;
                 img.load(filePath, format.toStdString().c_str());
                 if (img.isNull()) {
-                    insertPlainText("[图片已损坏]");
+                    insertPlainText(tr("[图片已损坏]"));
                     return;
                 }
                 //
@@ -166,7 +165,7 @@ void InputWgt::dealFile(const QString &filePath, bool isFile, const QString& ima
     }
     else
     {
-        QtMessageBox::warning(g_pMainPanel, "警告", "无法找到该文件!");
+        QtMessageBox::warning(g_pMainPanel, tr("警告"), tr("无法找到该文件!"));
     }
 }
 
@@ -186,10 +185,10 @@ void InputWgt::keyPressEvent(QKeyEvent *e) {
         return;
     }
 
-#ifndef _WINDOWS
-    if(_atView && (e->text() == "@" || e->text() == "＠"))
-        _showAtView = true;
-#endif
+//#ifndef _WINDOWS
+//    if(_atView && (e->text() == "@" || e->text() == tr("＠")))
+//        _showAtView = true;
+//#endif
 
     if (_pChatView->_chatType == QTalk::Enum::GroupChat) {
         if (_atView && _atView->isVisible() && !_atView->eventFilter(_pChatView, e)) {
@@ -269,12 +268,17 @@ void InputWgt::sendMessage()
         {
             this->setReadOnly(true);
             _isSending = true;
-            std::thread([this](){
+            QPointer<InputWgt> pThis(this);
+            std::thread([pThis](){
 #ifdef _MACOS
                 pthread_setname_np("translate message thread");
 #endif
-                QString srcText = translateText();
-                emit sgTranslated(srcText);
+                if(pThis)
+                {
+                    QString srcText = pThis->translateText();
+                    emit pThis->sgTranslated(srcText);
+                }
+
             }).detach();
         }
     }
@@ -323,11 +327,11 @@ void InputWgt::initUi() {
     setContextMenuPolicy(Qt::CustomContextMenu);
     _pMenu = new QMenu(this);
     _pMenu->setAttribute(Qt::WA_TranslucentBackground, true);
-    QAction *selectAllAct = new QAction("全选");
-    QAction *copyAct = new QAction("复制");
-    QAction *pasteAct = new QAction("粘贴");
-    QAction *pasteTextAct = new QAction("粘贴为文本");
-    QAction *pasteImageAct = new QAction("粘贴为图片");
+    QAction *selectAllAct = new QAction(tr("全选"));
+    QAction *copyAct = new QAction(tr("复制"));
+    QAction *pasteAct = new QAction(tr("粘贴"));
+    QAction *pasteTextAct = new QAction(tr("粘贴为文本"));
+    QAction *pasteImageAct = new QAction(tr("粘贴为图片"));
 
     _pMenu->addAction(selectAllAct);
     _pMenu->addAction(copyAct);
@@ -387,7 +391,7 @@ void InputWgt::initUi() {
         }
     });
 
-    connect(this, &InputWgt::textChanged, this, &InputWgt::onTextChanged);
+    connect(this, &InputWgt::cursorPositionChanged, this, &InputWgt::onTextChanged);
     connect(this, &InputWgt::sgTranslated, this, &InputWgt::sendText);
 }
 
@@ -407,27 +411,31 @@ void InputWgt::sendText(const QString& srcText)
         return;
 
     // pre send -> insert to db and show ui
+    QPointer<InputWgt> pThis(this);
+    if(!pThis || nullptr == pThis->_pChatView)
+        return;
+    QTalk::Entity::UID uid = pThis->_pChatView->_uid;
+    int chatType = pThis->_pChatView->_chatType;
     std::string messageId = QTalk::utils::getMessageId();
-    _pChatView->preSendMessage(_atMessage ? QTalk::Entity::MessageTypeGroupAt : QTalk::Entity::MessageTypeText,
-                               srcText, messageId);
-    //
-    std::thread([this, srcText, messageId](){
-        if(nullptr == _pChatView)
-            return;
+    g_pMainPanel->preSendMessage(uid, chatType,
+            _atMessage ? QTalk::Entity::MessageTypeGroupAt : QTalk::Entity::MessageTypeText,
+            srcText, messageId);
 
+    std::thread([pThis, uid, chatType, srcText, messageId](){
         std::map<std::string, std::string> mapAt;
         bool success = false;
         QString messageContent = g_pMainPanel->getRealText(srcText, messageId.data(), success, mapAt);
-        if(! success)
+        if(!success)
         {
-            emit _pMainWgt->sgSendFailed(messageId.data());
+            if(pThis)
+                    emit pThis->_pMainWgt->sgSendFailed(messageId.data());
             return;
         }
         //
         QString tmpText = messageContent;
         tmpText = tmpText.trimmed().replace("\n", "");
-        if(!tmpText.isEmpty()) {
-            _pChatView->sendTextMessage(messageContent.toStdString(), mapAt, messageId);
+        if(g_pMainPanel && !tmpText.isEmpty()) {
+            g_pMainPanel->sendTextMessage(uid, chatType, messageContent.toStdString(), mapAt, messageId);
         }
         else
             warn_log("empty message {0}", messageId);
@@ -481,8 +489,6 @@ QString InputWgt::translateText() {
                     QString imageType = newImageFormat.stringProperty(ImageType);
                     QString imagePath = newImageFormat.stringProperty(ImagePath);
                     QString imageLink = newImageFormat.stringProperty(ImageUrl);
-//                    if(imageLink.isEmpty())
-//                        imageLink = getNetImgPath(imagePath);
 
                     if (imagePath.isEmpty()) {
                         imagePath = newImageFormat.name();
@@ -492,7 +498,6 @@ QString InputWgt::translateText() {
                     if (imageType == ImageType_Image) {
                         QFileInfo imageInfo(imagePath);
                         if (imageInfo.exists() && imageInfo.isFile()) {
-//                            imagePath = QUrl(imagePath).toLocalFile();
                             addJsonItem(array, Type_Image, imagePath, imageLink);
                         }
                         else
@@ -500,23 +505,6 @@ QString InputWgt::translateText() {
                             error_log("invalid image {0}", imagePath.toStdString());
                             continue;
                         }
-                        //
-//                        QImage image(imagePath);
-//                        int w = image.width();
-//                        int h = image.height();
-//                        w = (w == 0 ? newImageFormat.width() : w);
-//                        h = (h == 0 ? newImageFormat.height() : h);
-
-//                        strRet += QString("[obj type=\"image\" value=\"%3\" width=%2 height=%1]").arg(h).arg(w).arg(imageLink);
-
-//                        // 移动原图处理
-//                        if(!imageLink.isEmpty() && !imagePath.isEmpty())
-//                        {
-//                            QString srcImgPath = QTalk::GetSrcImagePathByUrl(imageLink.toStdString()).data();
-//                            if(!QFile::exists(srcImgPath))
-//                                QFile::copy(imagePath, srcImgPath);
-//                        }
-
                     } else if (imageType == ImageType_Emot) {
 
                     } else {
@@ -612,7 +600,7 @@ QString InputWgt::getNetImgPath(const QString &localPath) {
                 std::string((const char *) localPath.toLocal8Bit()));
         retPath = QString(netFilePath.c_str());
         //
-        QApplication::processEvents();
+        QApplication::processEvents(QEventLoop::AllEvents, 100);
     }
     return retPath;
 }
@@ -710,28 +698,33 @@ void InputWgt::onTextChanged() {
         return;
     }
     if (nullptr != _atView) {
-        if (_atView->isHidden()) {
-#ifndef _WINDOWS
-            if(_showAtView)
-            {
-                _showAtView = false;
-                showAtView();
-            }
-#else
-            QTextCursor csor = textCursor();
-            int pos = csor.position();
-            if (pos > 0) {
-                csor.setPosition(pos - 1, QTextCursor::KeepAnchor);
-                QString strSelectText = csor.selectedText();
-                csor.setPosition(pos, QTextCursor::KeepAnchor);
-                if (strSelectText == "@" || strSelectText == "＠") {
-                    showAtView();
-                }
-            }
-#endif
-        } else {
+        if (_atView->isVisible()) {
             _atView->updateFilter();
+        } else { }
+
+//#ifndef _WINDOWS
+//            if(_showAtView)
+//            {
+//                _showAtView = false;
+//                showAtView();
+//            }
+//#else
+        QTextCursor csor = textCursor();
+        int pos = csor.position();
+        if (pos >= 0) {
+            csor.setPosition(qMax(pos - 5, 0), QTextCursor::KeepAnchor);
+            QString strSelectText = csor.selectedText();
+            csor.setPosition(pos, QTextCursor::KeepAnchor);
+            if (strSelectText.contains("@") || strSelectText.contains("＠")) {
+                auto match = strSelectText;
+                match.replace("＠", "@");
+                auto index = match.lastIndexOf("@");
+                match = match.mid(index + 1);
+                if((!match.isEmpty() && _atView->match(match)) || match.isEmpty())
+                    showAtView();
+            }
         }
+//#endif
     }
 }
 
@@ -796,11 +789,11 @@ void InputWgt::insertQuote(const QString &userName, const QString &src) {
         QString type = regExp.cap(1); // 多媒体类型
 
         if ("url" == type) {
-            tmpContent.replace(pos, item.size(), "[链接]");
+            tmpContent.replace(pos, item.size(), tr("[链接]"));
         } else if ("image" == type) {
-            tmpContent.replace(pos, item.size(), "[图片]");
+            tmpContent.replace(pos, item.size(), tr("[图片]"));
         } else if ("emoticon" == type) {
-            tmpContent.replace(pos, item.size(), "[表情]");
+            tmpContent.replace(pos, item.size(), tr("[表情]"));
         }
     }
 
@@ -959,7 +952,7 @@ void InputWgt:: onPaste() {
                 QString plainText = mimeData->text();
                 if(plainText.toLocal8Bit().size() > 1024 * 64)
                 {
-                    int ret = QtMessageBox::information(g_pMainPanel, "警告", "输入的文本过长，将转换为文件发送!");
+                    int ret = QtMessageBox::information(g_pMainPanel, tr("警告"), tr("输入的文本过长，将转换为文件发送!"));
                     if(ret == QtMessageBox::EM_BUTTON_YES)
                     {
                         QString localPath = QString("%1/temp/").arg(Platform::instance().getAppdataRoamingUserPath().c_str());
@@ -1127,7 +1120,7 @@ void InputWgt::insertAt(const std::string &xmppId)
     if(xmppId.empty())
         return;
 
-    std::string name = QTalk::getUserName(xmppId);
+    std::string name = QTalk::getUserNameNoMask(xmppId);
 
     QString atText = QString("@%1 ").arg(name.data());
     QTextCharFormat atFromat;
@@ -1143,7 +1136,56 @@ void InputWgt::insertAt(const std::string &xmppId)
 
 void InputWgt::showMessage(const QString& message)
 {
-    QtMessageBox::warning(g_pMainPanel, "警告", message);
+    QtMessageBox::warning(g_pMainPanel, tr("警告"), message);
     this->setReadOnly(false);
     this->setFocus();
+}
+
+void InputWgt::setContentByJson(const QString &json) {
+
+    auto document = QJsonDocument::fromJson(json.toUtf8());
+    if(document.isNull()){
+
+    }
+    else
+    {
+        QJsonArray array = document.array();
+        for(auto && i : array)
+        {
+            QJsonObject obj = i.toObject();
+            int key = obj.value("key").toInt();
+            QString value = obj.value("value").toString();
+            switch (key)
+            {
+                case Type_Text:
+                case Type_Url:
+                {
+                    this->insertPlainText(value);
+                    break;
+                }
+                case Type_Image:
+                {
+                    QString imageLink = obj.value("info").toString();
+                    dealFile(value, false, imageLink);
+                    break;
+                }
+                case Type_At:
+                {
+                    QString xmppId = obj.value("info").toString();
+                    insertAt(xmppId.toStdString());
+                    break;
+                }
+                case Type_Invalid:
+                default:
+                    break;
+            }
+        }
+    }
+}
+
+void InputWgt::inputMethodEvent(QInputMethodEvent *e) {
+
+//    if(!hasFocus())
+//        e->setCommitString("");
+    QTextEdit::inputMethodEvent(e);
 }

@@ -6,7 +6,7 @@
 #include "../QtUtil/Utils/Log.h"
 
 FriendListDao::FriendListDao(qtalk::sqlite::database *sqlDb)
-        : _pSqlDb(sqlDb) {
+        : DaoInterface(sqlDb) {
 
 }
 

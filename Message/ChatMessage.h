@@ -253,6 +253,15 @@ public:
     const std::map<std::string, QInt32 >& mapReadState;
 };
 
+class MStateEvt : public Event
+{
+public:
+    std::string userId;
+    std::string realJid;
+    std::string messageId;
+    QInt64 time;
+};
+
 class GroupReadState : public Event
 {
 public:
@@ -283,20 +292,28 @@ class RevokeMessage : public Event
 public:
     RevokeMessage(QTalk::Entity::UID uid, std::string fromId,
                   std::string messageId)
-        :uid(std::move(uid)), messageFrom(std::move(fromId)), messageId(std::move(messageId)) {
+        : uid(std::move(uid)), messageFrom(std::move(fromId)), messageId(std::move(messageId)),chatType(QTalk::Enum::ChatType::TwoPersonChat) {
     }
+
+public:
+	RevokeMessage(QTalk::Entity::UID uid, std::string fromId,
+				  std::string messageId,QUInt8 chatType)
+			:uid(std::move(uid)), messageFrom(std::move(fromId)), messageId(std::move(messageId)),chatType(chatType) {
+	}
 
 public:
     const QTalk::Entity::UID uid;
     const std::string messageFrom;
     const std::string messageId;
+	const QUInt8 chatType;
+    QInt64 time;
 };
 
 class S_RevokeMessage : public RevokeMessage
 {
 public:
-    S_RevokeMessage(const QTalk::Entity::UID& uid, const std::string& fromId, const std::string& messageId)
-        :RevokeMessage(uid, fromId, messageId) {}
+    S_RevokeMessage(const QTalk::Entity::UID& uid, const std::string& fromId, const std::string& messageId,const QUInt8 chatType)
+        :RevokeMessage(uid, fromId, messageId,chatType) {}
     ~S_RevokeMessage() override = default;
 };
 
@@ -352,6 +369,13 @@ public:
 
 public:
     std::string dumpFile;
+};
+
+class CheckUpdaterEvt : public Event
+{
+public:
+    int version = 0;
+    std::string updater_link;
 };
 
 class LogReportMessageRet : public Event
@@ -473,5 +497,18 @@ public:
 
 public:
     QTalk::Entity::ImMessageInfo msgInfo;
+};
+
+class HotLineMessageListEvt : public Event
+{
+public:
+    std::string xmppId;
+};
+
+class UpdateMsgExtendInfo : public Event
+{
+public:
+    std::string msgId;
+    std::string extendInfo;
 };
 #endif//_CHARMESSAGE_H_

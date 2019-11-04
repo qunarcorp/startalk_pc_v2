@@ -9,8 +9,6 @@ find_package(Qt5Widgets CONFIG REQUIRED)
 
 #
 set(SOURCE_FILES
-        customui.cpp
-        customui.h
         customui_global.h
         HeadPhotoLab.cpp
         HeadPhotoLab.h
@@ -34,7 +32,7 @@ set(SOURCE_FILES
         LiteMessageBox.cpp
         LiteMessageBox.h
         NavigationItem.cpp
-        NavigationItem.h)
+        NavigationItem.h MedalWgt.cpp MedalWgt.h)
 
 if (APPLE)
     ADD_DEFINITIONS(-D_MACOS)

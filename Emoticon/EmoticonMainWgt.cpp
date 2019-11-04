@@ -670,7 +670,7 @@ void EmoticonMainWgt::addMyCollection() {
 
     _collectionEmo.iconPath = ":/chatview/image1/Emoticon/MyEmoticon.png";
     _collectionEmo.pkgid = DEM_COLLECTION;
-    _collectionEmo.name = QStringLiteral("我的收藏");
+    _collectionEmo.name = tr("我的收藏");
     addEmoticon(_collectionEmo);
 
     auto wgt = _mapBtnTableWgt.value(DEM_COLLECTION).second;

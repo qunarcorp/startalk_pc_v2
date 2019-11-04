@@ -199,13 +199,14 @@ QPushButton#NavManager_CloseBtn:hover{
 	border-image:url(:/login/image1/closeBtn_hover.png);
 }
 
-QPushButton#NavView_addbtn, #DeleteBtn, #AddNavWnd_cancel {
+QPushButton#NavView_addbtn, #DeleteBtn, #AddNavWnd_cancel, #BackBtn {
+    padding: 6px 20px;
     color:rgba(177, 191, 199, 0.8);
     background:rgba(61,68,76,0.8);
     border-radius:2px;
 }
 
-QPushButton#NavView_addbtn:hover, #DeleteBtn:hover, #AddNavWnd_cancel:hover {
+QPushButton#NavView_addbtn:hover, #DeleteBtn:hover, #AddNavWnd_cancel:hover, #BackBtn:hover {
     color:rgba(177, 191, 199, 1);
     background:rgba(61,68,76, 1);
 }

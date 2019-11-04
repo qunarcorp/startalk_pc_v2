@@ -183,7 +183,7 @@ void AddressBookPanel::onNavItemClicked(QUInt8 type)
                 }
                 else if (item->getItemWgt() == _pStaffView)
                 {
-                    emit sgOpeartor("组织架构");
+                    emit sgOpeartor(tr("组织架构"));
 #ifdef _STARTALK
                     _pEmptyLabel->setPixmap(QPixmap(":/addressbook/image1/staff_default.png"));
 #endif
@@ -657,7 +657,7 @@ void AddressBookPanel::parentShow(QStandardItem *item) {
         tmpItem = tmpItem->parent();
         aritems.push_front(tmpItem);
     }
-            foreach(QStandardItem *i, aritems) {
+        for(QStandardItem *i : aritems) {
             _pStaffView->expand(i->index());
         }
 }
@@ -685,7 +685,6 @@ void AddressBookPanel::onStaffItemClicked(const QModelIndex &index) {
  */
 void AddressBookPanel::onJumpToStructre(const QString &strureName)
 {
-#ifdef _STARTALK
     if (_mapNavItems.contains(EM_ITEM_TYPE_STAFF) && _mapNavItems[EM_ITEM_TYPE_STAFF]) {
         onNavItemClicked(EM_ITEM_TYPE_STAFF);
         _mapNavItems[EM_ITEM_TYPE_STAFF]->setSelectState(true);
@@ -714,7 +713,6 @@ void AddressBookPanel::onJumpToStructre(const QString &strureName)
             }
         }
     }
-#endif
 }
 
 void AddressBookPanel::getShowItemByStructre(QStandardItem* parentItem, const QString& structre)
@@ -842,12 +840,12 @@ void AddressBookPanel::updateUi() {
 //
 void AddressBookPanel::creatChildItem(const StStrcuture *os, QStandardItem *parentItem) {
 
-    static int index = 0;
-    if(++index == 10)
-    {
-        QApplication::processEvents(QEventLoop::AllEvents, 100);
-        index = 0;
-    }
+//    static int index = 0;
+//    if(++index == 10)
+//    {
+//        QApplication::processEvents(QEventLoop::AllEvents, 100);
+//        index = 0;
+//    }
 
     if (os) {
         auto it = os->mapChild.begin();

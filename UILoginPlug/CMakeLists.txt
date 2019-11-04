@@ -24,6 +24,7 @@ endif ()
 find_package(Qt5Core)
 find_package(Qt5Widgets)
 find_package(Qt5WebEngineWidgets)
+find_package(Qt5Concurrent)
 #
 set(SOURCE_FILES
         ../qzxing/QZXing.h
@@ -58,6 +59,7 @@ target_link_libraries(${PROJECT_NAME}
         Qt5::Core
         Qt5::Widgets
         Qt5::WebEngineWidgets
+        Qt5::Concurrent
         EventBus
         CustomUi
         UICom

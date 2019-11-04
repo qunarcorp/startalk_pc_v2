@@ -16,6 +16,8 @@
 #include "../QtUtil/Entity/JID.h"
 #include "../QtUtil/lib/http/QtHttpRequest.h"
 #include "../include/CommonStrcut.h"
+#include "../entity/im_medal_list.h"
+#include "../entity/im_user_status_medal.h"
 
 typedef std::map<std::string, std::map<std::string, int>> UserCardMapParam;
 
@@ -105,6 +107,14 @@ public:
     void getUserCard(std::shared_ptr<QTalk::Entity::ImUserInfo>& info);
     // 移除会话
     void removeSession(const string &peerId);
+    //
+    void getMedalList();
+    //
+    void getUserMedal(bool = false);
+    //
+    void getMedalUser(int medalId, std::vector<QTalk::StMedalUser>& metalUsers);
+    //
+    bool modifyUserMedalStatus(int medalId, bool wear);
 
 public: // 群组相关
 
@@ -140,6 +150,8 @@ public:
     void onUserJoinGroup(const std::string& groupId, const std::string& memberId, int affiliation);
     //
     void onStaffChanged();
+    //
+    std::string checkUpdater(int ver);
 
 private:
     // 获取好友列表
@@ -156,13 +168,17 @@ public:
 //qchat 登录相关
 public:
     std::string getQchatQvt(const std::string &userName, const std::string &password);
-    std::map<std::string,std::string> getQchatTokenByQVT(const std::string &qvt);
+    void getQchatTokenByQVT(const std::string &qvt,std::map<std::string,std::string> &map);
 
 public:
     // 最近聊天
     void getRecntSession(std::vector<QTalk::StShareSession> &sessions);
     // 联系人
     void geContactsSession(std::vector<QTalk::StShareSession> &sessions);
+
+public:
+    //新登录获取token
+    void getNewLoginToken(const std::string u, const std::string p,std::map<std::string,std::string> &map);
 
 public:
     CommMsgManager *_pMsgManager;
@@ -172,7 +188,7 @@ public:
     OnLineManager *_pOnLineManager;
     SearchManager *_pSearchManager;
     UserConfig *_pUserConfig;
-    HotLinesConfig *_pHostLinesConfig;
+    HotLinesConfig *_pHotLinesConfig;
 
     OfflineMessageManager *_pOfflineMessageManager;
 
@@ -193,7 +209,6 @@ private:
 
 private:
     const int _threadPoolCount;
-    ThreadPool _socketPool;         // 线程 根据功能判断
     STLazyQueue<std::pair<std::string, UserCardMapParam>> *userCardQueue;
     std::vector<ThreadPool *> _httpPool;
 };

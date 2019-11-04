@@ -5,19 +5,20 @@
 #ifndef QTALK_V2_CACHEDATADAO_H
 #define QTALK_V2_CACHEDATADAO_H
 
-#include "sqlite/database.h"
+#include "DaoInterface.h"
 #include <vector>
 
-class CacheDataDao
+class CacheDataDao : public DaoInterface
 {
 public:
-    CacheDataDao(qtalk::sqlite::database *sqlDb);
-    bool creatTable();
+    explicit CacheDataDao(qtalk::sqlite::database *sqlDb);
+    bool creatTable() override;
+    bool clearData() override;
 
 public:
-    bool insertUserId(std::string value);
+    bool insertUserId(const std::string& value);
     bool insertHotLine(std::string value);
-    bool isHotLine(const std::string xmppid);
+    void getHotLines(std::string &hotLines);
     bool isHotlineMerchant(const std::string xmppid);
 
 public:
@@ -25,10 +26,12 @@ public:
     bool updateGroupReadMarkTime(const std::string time);
 
     std::string getLoginBeforeGroupReadMarkTime();
-    bool saveLoginBeforeGroupReadMarkTime(const std::string time);
+    bool saveLoginBeforeGroupReadMarkTime(const std::string& time);
 
-private:
-    qtalk::sqlite::database *_pSqlDb;
+public:
+    //
+    void clear_data_01();
+
 };
 
 #endif //QTALK_V2_CACHEDATADAO_H

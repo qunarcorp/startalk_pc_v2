@@ -1,5 +1,6 @@
 ﻿#include "TextBrowser.h"
 #include <QDebug>
+#include <QTextBlock>
 #include <blocks/LinkBlock.h>
 #include "../blocks/ImageBlock.h"
 #include "../blocks/block_define.h"
@@ -21,6 +22,17 @@ TextBrowser::TextBrowser(QWidget *parent) :
     LinkBlock* linkBlock = new LinkBlock;
     document()->documentLayout()->registerHandler(imageObjectType, imageBlock);
     document()->documentLayout()->registerHandler(linkObjectType, linkBlock);
+
+//    connect(this, &TextBrowser::cursorPositionChanged, [this](){
+//        if(_pressed)
+//        {
+//            int curNum = this->textCursor().blockNumber();;
+//            //
+//            auto changed = curNum - _scrollVal;
+//            _scrollVal = curNum;
+//            this->scroll(0, changed * this->fontMetrics().height());
+//        }
+//    });
 }
 
 /**
@@ -72,6 +84,8 @@ void TextBrowser::addLink(const QString &link, qreal width) {
 
 void TextBrowser::mousePressEvent(QMouseEvent *e)
 {
+//    _pressed = true;
+//    _scrollVal = this->textCursor().blockNumber();
     QTextBrowser::mousePressEvent(e);
     if(e->button() == Qt::LeftButton)
     {
@@ -94,9 +108,11 @@ void TextBrowser::mousePressEvent(QMouseEvent *e)
         bool type = fmt.isImageFormat();
         if(type)
         {
-            QString imagePath = fmt.property(imagePropertyLink).toString();
+            QString imageLink = fmt.property(imagePropertyLink).toString();
+            QString imagePath = fmt.property(imagePropertyPath).toString();
             int index = fmt.property(imagePropertyIndex).toInt();
             emit imageClicked(index);
+            emit sgImageClicked(imagePath, imageLink);
         }
     }
 }
@@ -109,4 +125,9 @@ QTextCursor TextBrowser::getCurrentCursor() {
 //    if(rect.x() < eventPos.x())
 //        cursor.movePosition(QTextCursor::WordRight);
     return cursor;
+}
+
+void TextBrowser::mouseReleaseEvent(QMouseEvent *e) {
+//    _pressed = false;
+    QTextBrowser::mouseReleaseEvent(e);
 }

@@ -40,12 +40,13 @@
 
 #define QTALK_2_0_CONFIG "QTALK_2_0_CONFIG"
 
+#define LOGIN_TYPE_NEW_PASSWORD "newpassword"
+
 using namespace QTalk;
 using namespace QTalk::JSON;
 
 Communication::Communication()
         : _threadPoolCount(3),
-          _socketPool("Communication's socket pool"),
           _port(0) {
     _pMsgManager = new CommMsgManager;
     _pMsgListener = new CommMsgListener(this);
@@ -56,7 +57,7 @@ Communication::Communication()
     _pSearchManager = new SearchManager(this);
     _pOfflineMessageManager = new OfflineMessageManager(this);
     _pUserConfig = new UserConfig(this);
-    _pHostLinesConfig = new HotLinesConfig(this);
+    _pHotLinesConfig = new HotLinesConfig(this);
     for (int i = 0; i < _threadPoolCount; ++i) {
         _httpPool.push_back(new ThreadPool(SFormat("Communication's http pool {0}", i).c_str()));
     }
@@ -155,25 +156,54 @@ bool Communication::OnLogin(const std::string& userName, const std::string& pass
         }
         return false;
     }
-    std::string loginName = userName + "@" + domain;
+
+    //增加新登录逻辑
+    std::string loginType = NavigationManager::instance().getLoginType();
+    if(!loginType.empty() && LOGIN_TYPE_NEW_PASSWORD == loginType){
+        std::map<std::string,std::string> map;
+        getNewLoginToken(userName,password,map);
+        std::string u = map["u"];
+        std::string p = map["t"];
+        if(!u.empty() && !p.empty()){
+            char uuid[36];
+            utils::generateUUID(uuid);
+            cJSON *nauth = cJSON_CreateObject();
+            cJSON *gObj = cJSON_CreateObject();
+            cJSON_AddStringToObject(gObj, "u", userName.c_str());
+            cJSON_AddStringToObject(gObj, "p", p.c_str());
+            cJSON_AddStringToObject(gObj, "mk", uuid);
+            cJSON_AddItemToObject(nauth,"nauth",gObj);
+            std::string pp = QTalk::JSON::cJSON_to_string(nauth);
+            cJSON_Delete(nauth);
+            AsyncConnect(u + "@" + domain, pp, host, port);
+        } else {
+            if (_pMsgManager) {
+                _pMsgManager->sendLoginErrMessage("获取token失败!");
+            }
+            return false;
+        }
+    } else{
+        std::string loginName = userName + "@" + domain;
 
 #ifndef _QCHAT
-    AsyncConnect(loginName, password, host, port);
-#else
-    std::string plaint = LogicManager::instance()->getLogicBase()->chatRsaEncrypt(password);
-    std::string qvt = getQchatQvt(userName, plaint);
-    if(qvt.empty()){
         AsyncConnect(loginName, password, host, port);
-    } else{
-        std::map<std::string,std::string> map = getQchatTokenByQVT(qvt);
-        std::string token = map["password"];
-        if(token.empty()){
+#else
+        std::string plaint = LogicManager::instance()->getLogicBase()->chatRsaEncrypt(password);
+        std::string qvt = getQchatQvt(userName, plaint);
+        if(qvt.empty()){
             AsyncConnect(loginName, password, host, port);
         } else{
-            AsyncConnect(loginName, token, host, port);
+            std::map<std::string,std::string> map;
+            getQchatTokenByQVT(qvt,map);
+            std::string token = map["password"];
+            if(token.empty()){
+                AsyncConnect(loginName, password, host, port);
+            } else{
+                AsyncConnect(loginName, token, host, port);
+            }
         }
-    }
 #endif
+    }
     return true;
 }
 
@@ -191,7 +221,8 @@ void Communication::AsyncConnect(const std::string &userName, const std::string 
 
 void Communication::tryConneteToServer()
 {
-    LogicManager::instance()->getLogicBase()->tryConnectToServer(_userName, _password, _host, _port);
+    bool isNewLogin = (LOGIN_TYPE_NEW_PASSWORD == NavigationManager::instance().getLoginType());
+    LogicManager::instance()->getLogicBase()->tryConnectToServer(_userName, _password, _host, _port,isNewLogin);
 }
 
 /**
@@ -200,8 +231,9 @@ void Communication::tryConneteToServer()
 void Communication::tryConneteToServerByQVT()
 {
     std::string qvt = Platform::instance().getQvt();
-    std::map<std::string,std::string> userMap = getQchatTokenByQVT(qvt);
-    LogicManager::instance()->getLogicBase()->tryConnectToServer(_userName, userMap["password"], _host, _port);
+    std::map<std::string,std::string> userMap;
+    getQchatTokenByQVT(qvt,userMap);
+    LogicManager::instance()->getLogicBase()->tryConnectToServer(_userName, userMap["password"], _host, _port, false);
 }
 
 /**
@@ -238,6 +270,7 @@ bool Communication::getNavInfo(const std::string &navAddr, QTalk::StNav &nav) {
             nav.mobileurl = cJSON_SafeGetStringValue(baseAddress, "mobileurl");
             nav.leaderUrl = cJSON_SafeGetStringValue(baseAddress, "leaderurl");
             nav.shareUrl = cJSON_SafeGetStringValue(baseAddress, "shareurl");
+            nav.videoUrl = cJSON_SafeGetStringValue(baseAddress, "videourl");
 
             //imcofig
             if (cJSON_HasObjectItem(data, "imConfig")) {
@@ -267,7 +300,13 @@ bool Communication::getNavInfo(const std::string &navAddr, QTalk::StNav &nav) {
                 cJSON *qcadmin = cJSON_GetObjectItem(data, "qcadmin");
                 nav.qcadminHost = cJSON_SafeGetStringValue(qcadmin, "host");
             }
-            //
+            //Login
+            if(cJSON_HasObjectItem(data,"Login")){
+                cJSON *login = cJSON_GetObjectItem(data, "Login");
+                if(cJSON_HasObjectItem(login,"loginType")){
+                    nav.loginType = cJSON_SafeGetStringValue(login, "loginType");
+                }
+            }
             ret = true;
 
             cJSON_Delete(data);
@@ -313,6 +352,9 @@ void Communication::setLoginNav(const QTalk::StNav &nav) {
     NavigationManager::instance().setFoundConfigUrl(nav.foundConfigUrl);
     NavigationManager::instance().setShowmsgstat(nav.showmsgstat);
     NavigationManager::instance().setQcGrabOrder(nav.qcGrabOrder);
+    NavigationManager::instance().setLoginType(nav.loginType);
+    // video
+    NavigationManager::instance().setVideoUrl(nav.videoUrl);
 }
 
 /**
@@ -331,13 +373,13 @@ void Communication::synSeverData() {
 //        sendHeartbeat();
         // 获取组织架构
         info_log("获取组织架构");
-        _pMsgManager->sendLoginProcessMessage("正在获取用户信息");
+        _pMsgManager->sendLoginProcessMessage("getting user information");
         if (_pUserManager && _pMsgManager) {
             bool ret = _pUserManager->getNewStructure();
             _pMsgManager->sendGotStructure(ret);
         }
         // 获取群信息
-        _pMsgManager->sendLoginProcessMessage("正在获取群信息");
+        _pMsgManager->sendLoginProcessMessage("getting group information");
         if (_pUserGroupManager && _pMsgManager) {
             info_log("获取群信息");
             MapGroupCard groups;
@@ -349,7 +391,7 @@ void Communication::synSeverData() {
         }
         // 获取单人配置
         info_log("获取单人配置");
-        _pMsgManager->sendLoginProcessMessage("正在初始化配置");
+        _pMsgManager->sendLoginProcessMessage("initializing configuration");
         _pUserConfig->getUserConfigFromServer(false);
         // 初始化配置
         info_log("初始化配置");
@@ -362,50 +404,63 @@ void Communication::synSeverData() {
         getFriendList();
         // 获取单人离线消息
         info_log("获取单人消息");
-        _pMsgManager->sendLoginProcessMessage("正在获取单人消息");
+        _pMsgManager->sendLoginProcessMessage("getting user message");
         bool isok = _pOfflineMessageManager->updateChatOfflineMessage();
         //
-        if(isok)
+        if(!isok)
         {
-            _pMsgManager->sendLoginProcessMessage("正在更新单人阅读状态");
-            _pOfflineMessageManager->updateChatMasks();
+            _pMsgManager->sendGetHistoryError();
+            return;
         }
-        else
-        {
-            // todo
-        }
+        _pMsgManager->sendLoginProcessMessage("updating message read mask");
+        _pOfflineMessageManager->updateChatMasks();
 
         // 获取群离线消息
         info_log("获取群离线消息");
-        _pMsgManager->sendLoginProcessMessage("正在获取群离线消息");
-        _pOfflineMessageManager->updateGroupOfflineMessage();
+        _pMsgManager->sendLoginProcessMessage("getting group message");
+        isok = _pOfflineMessageManager->updateGroupOfflineMessage();
+        if(!isok)
+        {
+            _pMsgManager->sendGetHistoryError();
+            return;
+        }
         //
         info_log("更新群阅读状态");
         _pOfflineMessageManager->updateGroupMasks();
         // 获取通知消息
         info_log("获取通知消息");
-        _pMsgManager->sendLoginProcessMessage("正在获取通知消息");
-        _pOfflineMessageManager->updateNoticeOfflineMessage();
+        _pMsgManager->sendLoginProcessMessage("getting notice message");
+        isok = _pOfflineMessageManager->updateNoticeOfflineMessage();
+        if(!isok)
+        {
+            _pMsgManager->sendGetHistoryError();
+            return;
+        }
         //获取热线账号
         info_log("获取热线账号信息");
-        _pHostLinesConfig->getVirtualUserRole();
+        _pHotLinesConfig->getVirtualUserRole();
 #ifdef _QCHAT
         info_log("获取坐席状态");
-        _pHostLinesConfig->getServiceSeat();
+        _pHotLinesConfig->getServiceSeat();
         info_log("获取快捷回复");
-        _pHostLinesConfig->updateQuickReply();
+        _pHotLinesConfig->updateQuickReply();
 #endif
         // 根据离线消息生成sessionList
         //LogicManager::instance()->GetDatabase()->QueryImSessionInfos();
         // 获取最新版本号
 //        initAppNetVersion();
-        _pMsgManager->sendLoginProcessMessage("正在获取用户状态信息");
+        // 增量拉取勋章信息
+        getMedalList();
+        getUserMedal();
+
+        //
+        _pMsgManager->sendLoginProcessMessage("getting user state");
         if (_pMsgManager) {
             _pMsgManager->sendSynOfflineSuccees();
             // 同步完离线后 开启在线信息查询定时器
             synUsersUserStatus();
         }
-        _pMsgManager->sendLoginProcessMessage("登录成功 正在启动");
+        _pMsgManager->sendLoginProcessMessage("login success");
     }
     catch (const std::exception &e) {
         error_log(e.what());
@@ -675,7 +730,7 @@ void Communication::getGroupMemberById(const std::string &groupId) {
 void Communication::dealBindMsg() {
 
     if(_pMsgManager)
-        _pMsgManager->sendLoginProcessMessage("正在打开数据库");
+        _pMsgManager->sendLoginProcessMessage("opening database");
 
     std::string path = Platform::instance().getAppdataRoamingUserPath();
     path += "/qtalk.db";
@@ -799,81 +854,86 @@ void Communication::onInviteGroupMembers(const std::string &groupId) {
 void
 Communication::addHttpRequest(const QTalk::HttpRequest &req, const std::function<void(int, const std::string &)>& callback) {
 
-    if(Platform::instance().isMainThread())
-        warn_log("main thread http request {0}", req.url);
+    try {
 
-    int currentThread = 0;
-    if (!req.url.empty() && req.url.size() > 4 && req.url.substr(0, 4) == "http") {
-        std::string url = req.url;
-        std::size_t hash = std::hash<std::string>{}(url);
-        currentThread = static_cast<int>(hash % _threadPoolCount);
+        if(Platform::instance().isMainThread())
+            warn_log("main thread http request {0}", req.url);
 
-        auto http = _httpPool[currentThread]->enqueue([this, req, callback, currentThread]() {
-            info_log("在第{1}个http坑 开始请求: {0}", req.url, currentThread);
+        int currentThread = 0;
+        if (!req.url.empty() && req.url.size() > 4 && req.url.substr(0, 4) == "http") {
+            std::string url = req.url;
+            std::size_t hash = std::hash<std::string>{}(url);
+            currentThread = static_cast<int>(hash % _threadPoolCount);
 
-            perf_counter("addHttpRequest {0}", req.url);
+            auto http = _httpPool[currentThread]->enqueue([this, req, callback, currentThread]() {
+                info_log("在第{1}个http坑 开始请求: {0}", req.url, currentThread);
 
-            QTalk::QtHttpRequest request(req.url.c_str());
-            //method
-            request.setRequestMethod((RequestMethod)req.method);
-            // header
-            auto itr = req.header.begin();
-            for (; itr != req.header.end(); itr++) {
-                info_log("请求header:{0} = {1}", itr->first, itr->second);
-                request.addRequestHeader(itr->first.c_str(), itr->second.c_str());
-            }
-            std::string requestHeaders = std::string("q_ckey=") + Platform::instance().getClientAuthKey();
-            request.addRequestHeader("Cookie", requestHeaders.c_str());
-            // body
-            if ((RequestMethod)req.method == QTalk::RequestMethod::POST) {
-                info_log("请求body:{0}", req.body);
-                request.appendPostData(req.body.c_str(), req.body.length());
-            }
-            // form
-            if (!req.formFile.empty()) {
-                request.addFromFile(req.formFile);
-            }
-            // process callback
-            if (req.addProcessCallback) {
-                // 参数 总下载量 当前下载量 总上传量 当前上传量 速度 剩余时间
-                std::function<void(StProcessParam)> processCallback;
-                processCallback = [this, req](StProcessParam param) {
-                    if (_pMsgManager) {
-                        _pMsgManager->updateFileProcess(param.key, param.dt, param.dn,
-                                param.ut, param.un, param.speed, param.leftTime);
-                    }
-                };
-                request.setProcessCallback(req.processCallbackKey, processCallback);
-            }
+                perf_counter("addHttpRequest {0}", req.url);
 
-            // start
-            request.startSynchronous();
+                QTalk::QtHttpRequest request(req.url.c_str());
+                //method
+                request.setRequestMethod((RequestMethod)req.method);
+                // header
+                auto itr = req.header.begin();
+                for (; itr != req.header.end(); itr++) {
+                    info_log("请求header:{0} = {1}", itr->first, itr->second);
+                    request.addRequestHeader(itr->first.c_str(), itr->second.c_str());
+                }
+                std::string requestHeaders = std::string("q_ckey=") + Platform::instance().getClientAuthKey();
+                request.addRequestHeader("Cookie", requestHeaders.c_str());
+                // body
+                if ((RequestMethod)req.method == QTalk::RequestMethod::POST) {
+                    info_log("请求body:{0}", req.body);
+                    request.appendPostData(req.body.c_str(), req.body.length());
+                }
+                // form
+                if (!req.formFile.empty()) {
+                    request.addFromFile(req.formFile);
+                }
+                // process callback
+                if (req.addProcessCallback) {
+                    // 参数 总下载量 当前下载量 总上传量 当前上传量 速度 剩余时间
+                    std::function<void(StProcessParam)> processCallback;
+                    processCallback = [this, req](StProcessParam param) {
+                        if (_pMsgManager) {
+                            _pMsgManager->updateFileProcess(param.key, param.dt, param.dn,
+                                                            param.ut, param.un, param.speed, param.leftTime);
+                        }
+                    };
+                    request.setProcessCallback(req.processCallbackKey, processCallback);
+                }
 
-            info_log("请求结果: code: {0}", request.getResponseCode());
+                // start
+                request.startSynchronous();
+
+                info_log("请求结果: code: {0}", request.getResponseCode());
 
 
-            if ((RequestMethod)req.method == QTalk::RequestMethod::POST) {
-                info_log("请求结果: data: {0}", *request.getResponseData());
-            }
+                if ((RequestMethod)req.method == QTalk::RequestMethod::POST) {
+                    info_log("请求结果: data: {0}", *request.getResponseData());
+                }
 
-            // callback
-            callback(request.getResponseCode(), *request.getResponseData());
+                // callback
+                callback(request.getResponseCode(), *request.getResponseData());
 
-            if (request.getResponseCode() != 200) {
-                error_log("请求失败:{0} \n {1}", req.url, *request.getResponseData());
-            }
-        });
+                if (request.getResponseCode() != 200) {
+                    error_log("请求失败:{3} -> {0} \n params{2} \n {1}", req.url, *request.getResponseData(), req.body, request.getResponseCode());
+                }
+            });
 
-        // 等待http请求结果
-        http.get();
-        //
-        info_log("请求返回: {0}", req.url);
-    } else {
-        error_log("invalid url {0}", req.url);
-        callback(-1, "");
+            // 等待http请求结果
+            http.get();
+            //
+            info_log("请求返回: {0}", req.url);
+        } else {
+            error_log("invalid url {0}", req.url);
+            callback(-1, "");
+        }
     }
-
-
+    catch (const std::exception& e)
+    {
+        error_log("http exception, {0}", e.what());
+    }
 }
 
 // 获取session and 个人配置
@@ -1109,20 +1169,25 @@ std::string Communication::getQchatQvt(const std::string &userName, const std::s
 
 }
 
-std::map<std::string,std::string> Communication::getQchatTokenByQVT(const std::string &qvt) {
-    std::map<std::string,std::string> userMap;
+void Communication::getQchatTokenByQVT(const std::string &qvt,std::map<std::string,std::string> &userMap) {
+}
+
+void Communication::getNewLoginToken(const std::string u, const std::string p,std::map<std::string,std::string> &map) {
     std::ostringstream url;
-    url << NavigationManager::instance().getApiUrl()
-        << "/http_gettk";
+    url << NavigationManager::instance().getHttpHost()
+        << "/nck/qtlogin.qunar";
+    std::string plaint = LogicManager::instance()->getLogicBase()->normalRsaEncrypt(p);
     char uuid[36];
     utils::generateUUID(uuid);
     cJSON *gObj = cJSON_CreateObject();
-    cJSON_AddStringToObject(gObj, "macCode", uuid);
-    cJSON_AddStringToObject(gObj, "plat", "pc");
+    cJSON_AddStringToObject(gObj, "u", u.c_str());
+    cJSON_AddStringToObject(gObj, "p", plaint.c_str());
+    cJSON_AddStringToObject(gObj, "h", NavigationManager::instance().getDomain().c_str());
+    cJSON_AddStringToObject(gObj, "mk", uuid);
     std::string postData = QTalk::JSON::cJSON_to_string(gObj);
     cJSON_Delete(gObj);
 
-    auto callback = [&userMap,&uuid](int code, const std::string &responseData) {
+    auto callback = [&map](int code, const std::string &responseData) {
         if (code == 200) {
 
             cJSON *retDta = cJSON_Parse(responseData.c_str());
@@ -1134,12 +1199,10 @@ std::map<std::string,std::string> Communication::getQchatTokenByQVT(const std::s
             int errCode = cJSON_GetObjectItem(retDta, "errcode")->valueint;
             if(errCode == 0){
                 cJSON *data = cJSON_GetObjectItem(retDta,"data");
-                std::string userName = cJSON_GetObjectItem(data,"username")->valuestring;
-                std::string token = cJSON_GetObjectItem(data,"token")->valuestring;
-                std::string macCode(uuid);
-                std::string password = "{\"token\":{\"plat\":\"pc\", \"macCode\":\""+ macCode + "\", \"token\":\""+ token + "\"}}";
-                userMap["name"] = userName;
-                userMap["password"] = password;
+                std::string u = cJSON_GetObjectItem(data,"u")->valuestring;
+                std::string t = cJSON_GetObjectItem(data,"t")->valuestring;
+                map["u"] = u;
+                map["t"] = t;
             } else{
                 error_log(cJSON_GetObjectItem(retDta, "errmsg")->valuestring);
             }
@@ -1148,22 +1211,10 @@ std::map<std::string,std::string> Communication::getQchatTokenByQVT(const std::s
     };
 
     QTalk::HttpRequest req(url.str(), QTalk::RequestMethod::POST);
-    if(qvt.empty()){
-        return userMap;
-    }
-    cJSON *qvtJson = cJSON_GetObjectItem(cJSON_Parse(qvt.data()),"data");
-    std::string qcookie = cJSON_GetObjectItem(qvtJson,"qcookie")->valuestring;
-    std::string vcookie = cJSON_GetObjectItem(qvtJson,"vcookie")->valuestring;
-    std::string tcookie = cJSON_GetObjectItem(qvtJson,"tcookie")->valuestring;
-    cJSON_Delete(qvtJson);
-    std::string requestHeaders = std::string("_q=") + qcookie + ";_v=" + vcookie + ";_t=" + tcookie;
     req.header["Content-Type"] = "application/json;";
-    req.header["Cookie"] = requestHeaders;
     req.body = postData;
 
     addHttpRequest(req, callback);
-
-    return userMap;
 }
 
 /**
@@ -1282,6 +1333,7 @@ void Communication::reportLog(const std::string &desc, const std::string &logPat
                             << "登录用户: " << Platform::instance().getSelfXmppId()
                             << " " << Platform::instance().getSelfName() <<"\n"
                             << "版本号: " << Platform::instance().getClientVersion() << "\n"
+                            << "编译时间: " << Platform::instance().get_build_date_time() << "\n"
                             << "使用平台: " << Platform::instance().getPlatformStr() << "\n"
                             << "OS 信息: " << Platform::instance().getOSInfo() << "\n"
                             << "描述信息: " << desc << " \n"
@@ -1577,10 +1629,10 @@ void Communication::updateTimeStamp()
             timeStamp = LogicManager::instance()->getDatabase()->getMaxTimeStampByChatType(QTalk::Enum::TwoPersonChat);
             LogicManager::instance()->getDatabase()->insertConfig(DEM_MESSAGE_MAXTIMESTAMP, DEM_TWOPERSONCHAT,
                                                                   std::to_string(timeStamp));
-            warn_log("{0} insert new timestamp {1}", DEM_TWOPERSONCHAT, timeStamp);
+            warn_log("{0} insert new timestamp {1} str:{2}", DEM_TWOPERSONCHAT, timeStamp, configTimeStamp);
         }
         else
-            warn_log("{0} has old timestamp {1}", DEM_TWOPERSONCHAT, configTimeStamp);
+            warn_log("{0} has old timestamp {1} str:{2}", DEM_TWOPERSONCHAT, timeStamp, configTimeStamp);
 
         //
         configTimeStamp = "";
@@ -1595,10 +1647,10 @@ void Communication::updateTimeStamp()
             timeStamp = LogicManager::instance()->getDatabase()->getMaxTimeStampByChatType(QTalk::Enum::GroupChat);
             LogicManager::instance()->getDatabase()->insertConfig(DEM_MESSAGE_MAXTIMESTAMP, DEM_GROUPCHAT,
                                                                   std::to_string(timeStamp));
-            warn_log("{0} insert new timestamp {1}", DEM_GROUPCHAT, timeStamp);
+            warn_log("{0} insert new timestamp {1} str:{2}", DEM_GROUPCHAT, timeStamp, configTimeStamp);
         }
         else
-            warn_log("{0} has old timestamp {1}", DEM_GROUPCHAT, configTimeStamp);
+            warn_log("{0} has old timestamp {1} str:{2}", DEM_GROUPCHAT, timeStamp, configTimeStamp);
 
         //
         configTimeStamp = "";
@@ -1613,10 +1665,10 @@ void Communication::updateTimeStamp()
             timeStamp = LogicManager::instance()->getDatabase()->getMaxTimeStampByChatType(QTalk::Enum::System);
             LogicManager::instance()->getDatabase()->insertConfig(DEM_MESSAGE_MAXTIMESTAMP, DEM_SYSTEM,
                                                                   std::to_string(timeStamp));
-            warn_log("{0} insert new timestamp {1}", DEM_SYSTEM, timeStamp);
+            warn_log("{0} insert new timestamp {1} str:{2}", DEM_SYSTEM, timeStamp, configTimeStamp);
         }
         else
-            warn_log("{0} has old timestamp {1}", DEM_SYSTEM, configTimeStamp);
+            warn_log("{0} has old timestamp {1} str:{2}", DEM_SYSTEM, timeStamp, configTimeStamp);
 
     }
     catch (const std::exception &e) {
@@ -1631,40 +1683,40 @@ void Communication::updateTimeStamp()
 
 
 void Communication::setServiceSeat(const int sid, const int seat) {
-    if(_pHostLinesConfig){
-        _pHostLinesConfig->setServiceSeat(sid,seat);
+    if(_pHotLinesConfig){
+        _pHotLinesConfig->setServiceSeat(sid,seat);
     }
 }
 
 void Communication::serverCloseSession(const std::string& username, const std::string &seatname,
                                        const std::string& virtualname) {
-    if(_pHostLinesConfig){
-        _pHostLinesConfig->serverCloseSession(username, seatname, virtualname);
+    if(_pHotLinesConfig){
+        _pHotLinesConfig->serverCloseSession(username, seatname, virtualname);
     }
 }
 
 void Communication::getSeatList(const QTalk::Entity::UID uid) {
-    if(_pHostLinesConfig){
-        _pHostLinesConfig->getTransferSeatsList(uid);
+    if(_pHotLinesConfig){
+        _pHotLinesConfig->getTransferSeatsList(uid);
     }
 }
 
 void Communication::sendProduct(const std::string username, const std::string virtualname,const std::string product,const std::string type) {
-    if(_pHostLinesConfig){
-        _pHostLinesConfig->sendProduct(username,virtualname,product,type);
+    if(_pHotLinesConfig){
+        _pHotLinesConfig->sendProduct(username,virtualname,product,type);
     }
 }
 
 void Communication::sessionTransfer(const QTalk::Entity::UID uid, const std::string newCser,
                                     const std::string reason) {
-    if(_pHostLinesConfig){
-        _pHostLinesConfig->transferCsr(uid,newCser,reason);
+    if(_pHotLinesConfig){
+        _pHotLinesConfig->transferCsr(uid,newCser,reason);
     }
 }
 
 void Communication::sendWechat(const QTalk::Entity::UID uid) {
-    if(_pHostLinesConfig){
-        _pHostLinesConfig->sendWechat(uid);
+    if(_pHotLinesConfig){
+        _pHotLinesConfig->sendWechat(uid);
     }
 }
 
@@ -1705,7 +1757,7 @@ void Communication::onUserJoinGroup(const std::string &groupId, const std::strin
     LogicManager::instance()->getDatabase()->bulkInsertGroupMember(groupId, members);
     std::shared_ptr<QTalk::Entity::ImUserInfo> userInfo = LogicManager::instance()->getDatabase()->getUserInfoByXmppId(
             jid);
-    if (userInfo && userInfo->Name.empty()) {
+    if (userInfo && !userInfo->Name.empty()) {
         member->nick = userInfo->Name;
     }
     member->domain = QTalk::Entity::JID(memberId.data()).domainname();
@@ -1720,4 +1772,260 @@ void Communication::onStaffChanged()
     if (_pUserManager) {
         _pUserManager->getNewStructure(true);
     }
+}
+
+//
+std::string Communication::checkUpdater(int ver) {
+    return "";
+}
+
+//
+void Communication::getMedalList()
+{
+    std::ostringstream url;
+    url << NavigationManager::instance().getHttpHost()
+        << "/medal/medalList.qunar";
+    std::string strUrl = url.str();
+    //
+    std::string strVer;
+    LogicManager::instance()->getDatabase()->getConfig("MEDAL_LIST", "VERSION", strVer);
+    auto version = atoi(strVer.data());
+    cJSON* obj = cJSON_CreateObject();
+    cJSON_AddNumberToObject(obj, "version", version);
+    std::string postData = cJSON_to_string(obj);
+    cJSON_Delete(obj);
+    //
+    std::vector<QTalk::Entity::ImMedalList> medalList;
+    std::set<std::string> imgs;
+    int newVersion = 0;
+    auto call_back = [this, &medalList, &newVersion, &imgs](int code, const std::string& resData){
+
+        if(resData.empty())
+            return;
+        cJSON* json = cJSON_Parse(resData.data());
+        if(nullptr == json)
+        {
+            error_log("json Parse error {0}", resData);
+            return;
+        }
+        if(code == 200) {
+            //
+            cJSON_bool ret = JSON::cJSON_SafeGetBoolValue(json, "ret");
+            if(ret)
+            {
+                cJSON* data = cJSON_GetObjectItem(json, "data");
+                newVersion = JSON::cJSON_SafeGetIntValue(data, "version");
+                //
+                cJSON* list = cJSON_GetObjectItem(data, "medalList");
+                cJSON* temp = nullptr;
+                cJSON_ArrayForEach(temp, list){
+                    QTalk::Entity::ImMedalList medal;
+                    medal.medalId = JSON::cJSON_SafeGetIntValue(temp, "id");
+                    medal.medalName = JSON::cJSON_SafeGetStringValue(temp, "medalName");
+                    medal.obtainCondition = JSON::cJSON_SafeGetStringValue(temp, "obtainCondition");
+                    medal.status = JSON::cJSON_SafeGetIntValue(temp, "status");
+
+                    cJSON* icon = cJSON_GetObjectItem(temp, "icon");
+                    medal.smallIcon = JSON::cJSON_SafeGetStringValue(icon, "small");
+                    medal.bigLightIcon = JSON::cJSON_SafeGetStringValue(icon, "bigLight");
+//                    medal.bigGrayIcon = JSON::cJSON_SafeGetStringValue(icon, "bigGray");
+                    medal.bigLockIcon = JSON::cJSON_SafeGetStringValue(icon, "bigLock");
+
+                    medalList.push_back(medal);
+
+                    imgs.insert(medal.smallIcon);
+                    imgs.insert(medal.bigLightIcon);
+                    imgs.insert(medal.bigLockIcon);
+                };
+            }
+            else
+            {
+                std::string errorMsg = JSON::cJSON_SafeGetStringValue(json, "errmsg");
+                error_log("getMedalList error {0}", errorMsg);
+            }
+        }
+        else
+        {
+
+        }
+        cJSON_Delete(json);
+    };
+
+    QTalk::HttpRequest req(strUrl, QTalk::RequestMethod::POST);
+    req.header["Content-Type"] = "application/json;";
+    req.body = postData;
+    addHttpRequest(req, call_back);
+
+    if(newVersion >= version && !medalList.empty())
+    {
+        try {
+            //
+            LogicManager::instance()->getDatabase()->insertMedalList(medalList);
+            //
+            LogicManager::instance()->getDatabase()->insertConfig("MEDAL_LIST", "VERSION", std::to_string(newVersion));
+        }
+        catch (const std::exception& e)
+        {
+            error_log("update medal list error {0}", e.what());
+        }
+    }
+    //
+    std::vector<QTalk::Entity::ImMedalList> medals;
+    LogicManager::instance()->getDatabase()->getMedalList(medals);
+    if(!medals.empty())
+        dbPlatForm::instance().setMedals(medals);
+
+    if(!imgs.empty() && _pFileHelper)
+    {
+        for(const auto& img : imgs)
+            _pFileHelper->getLocalImgFilePath(img, "/image/medal/", false);
+    }
+}
+
+void Communication::getUserMedal(bool presence) {
+    std::ostringstream url;
+    url << NavigationManager::instance().getHttpHost()
+        << "/medal/userMedalList.qunar";
+    std::string strUrl = url.str();
+    //
+    std::string strVer;
+    LogicManager::instance()->getDatabase()->getConfig("USER_MEDAL", "VERSION", strVer);
+    auto version = atoi(strVer.data());
+    cJSON* obj = cJSON_CreateObject();
+    cJSON_AddNumberToObject(obj, "version", version);
+//    cJSON_AddStringToObject(obj, "userId", Platform::instance().getSelfUserId().data());
+//    cJSON_AddStringToObject(obj, "host", Platform::instance().getSelfDomain().data());
+    std::string postData = cJSON_to_string(obj);
+    cJSON_Delete(obj);
+    //
+    std::vector<QTalk::Entity::ImUserStatusMedal> userMedals;
+    int newVersion = 0;
+    auto call_back = [this, &userMedals, &newVersion](int code, const std::string& resData){
+
+        if(resData.empty())
+            return;
+        cJSON* json = cJSON_Parse(resData.data());
+        if(nullptr == json)
+        {
+            error_log("json Parse error {0}", resData);
+            return;
+        }
+        if(code == 200) {
+            //
+            cJSON_bool ret = JSON::cJSON_SafeGetBoolValue(json, "ret");
+            if(ret)
+            {
+                cJSON* data = cJSON_GetObjectItem(json, "data");
+                newVersion = JSON::cJSON_SafeGetIntValue(data, "version");
+                //
+                cJSON* list = cJSON_GetObjectItem(data, "userMedals");
+                cJSON* temp = nullptr;
+                cJSON_ArrayForEach(temp, list){
+                    QTalk::Entity::ImUserStatusMedal medal;
+                    medal.medalId = JSON::cJSON_SafeGetIntValue(temp, "medalId");
+                    medal.userId = JSON::cJSON_SafeGetStringValue(temp, "userId");
+                    medal.host = JSON::cJSON_SafeGetStringValue(temp, "host");
+                    medal.medalStatus = JSON::cJSON_SafeGetIntValue(temp, "medalStatus");
+                    medal.mappingVersion = JSON::cJSON_SafeGetIntValue(temp, "mappingVersion");
+                    medal.updateTime = JSON::cJSON_SafeGetLonglongValue(temp, "updateTime");
+                    userMedals.push_back(medal);
+                };
+            }
+            else
+            {
+                std::string errorMsg = JSON::cJSON_SafeGetStringValue(json, "errmsg");
+                error_log("getMedalList error {0}", errorMsg);
+            }
+        }
+        else
+        {
+
+        }
+        cJSON_Delete(json);
+    };
+
+    QTalk::HttpRequest req(strUrl, QTalk::RequestMethod::POST);
+    req.header["Content-Type"] = "application/json;";
+    req.body = postData;
+    addHttpRequest(req, call_back);
+
+    if(newVersion > version && !userMedals.empty())
+    {
+        try {
+            //
+            LogicManager::instance()->getDatabase()->insertMedals(userMedals);
+            //
+            LogicManager::instance()->getDatabase()->insertConfig("USER_MEDAL", "VERSION", std::to_string(newVersion));
+
+            if(presence && _pMsgManager)
+            {
+                _pMsgManager->onUserMadelChanged(userMedals);
+            }
+        }
+        catch (const std::exception& e)
+        {
+            error_log("update medal list error {0}", e.what());
+        }
+    }
+}
+
+void Communication::getMedalUser(int medalId, std::vector<QTalk::StMedalUser> &metalUsers) {
+    try {
+        LogicManager::instance()->getDatabase()->getMedalUsers(medalId, metalUsers);
+    }
+    catch (const std::exception& e)
+    {
+        error_log("getMedalUser error", e.what());
+    }
+}
+
+bool Communication::modifyUserMedalStatus(int medalId, bool wear) {
+    std::ostringstream url;
+    url << NavigationManager::instance().getHttpHost()
+        << "/medal/userMedalStatusModify.qunar";
+    std::string strUrl = url.str();
+    //
+    cJSON* obj = cJSON_CreateObject();
+    cJSON_AddNumberToObject(obj, "medalStatus", wear ? 3 : 1);
+    cJSON_AddStringToObject(obj, "userId", Platform::instance().getSelfUserId().data());
+    cJSON_AddStringToObject(obj, "host", Platform::instance().getSelfDomain().data());
+    cJSON_AddNumberToObject(obj, "medalId", medalId);
+    std::string postData = cJSON_to_string(obj);
+    cJSON_Delete(obj);
+    //
+    bool ret = false;
+    auto call_back = [this, &ret](int code, const std::string& resData){
+
+        if(resData.empty())
+            return;
+        cJSON* json = cJSON_Parse(resData.data());
+        if(nullptr == json)
+        {
+            error_log("json Parse error {0}", resData);
+            return;
+        }
+        if(code == 200) {
+            //
+            ret = JSON::cJSON_SafeGetBoolValue(json, "ret");
+            if(!ret)
+            {
+                std::string errorMsg = JSON::cJSON_SafeGetStringValue(json, "errmsg");
+                error_log("userMedalStatusModify error {0}", errorMsg);
+            }
+        }
+        else
+        {
+
+        }
+        cJSON_Delete(json);
+    };
+
+    QTalk::HttpRequest req(strUrl, QTalk::RequestMethod::POST);
+    req.header["Content-Type"] = "application/json;";
+    req.body = postData;
+    addHttpRequest(req, call_back);
+
+    if(ret)
+        LogicManager::instance()->getDatabase()->modifyUserMedalStatus(Platform::instance().getSelfXmppId(), medalId, wear ? 3 : 1);
+    return ret;
 }

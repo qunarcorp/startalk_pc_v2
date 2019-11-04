@@ -18,7 +18,7 @@ protected:
     void mousePressEvent(QMouseEvent *event) override;
     void keyPressEvent(QKeyEvent* e) override;
 
-signals:
+Q_SIGNALS:
     void sgIsOpenSearch(const bool &isOpenSearch);
     void sgSelectUp();
     void sgSelectDown();

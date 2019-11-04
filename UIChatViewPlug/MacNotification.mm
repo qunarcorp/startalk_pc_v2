@@ -18,7 +18,7 @@ void sendTextMessage(const std::string &text,
     if (g_pMainPanel && g_pMainPanel->getMessageManager() && loginUser == g_pMainPanel->getSelfUserId()) {
         // 发送消息
         long long sendtime;
-        sendtime = QDateTime::currentDateTime().toMSecsSinceEpoch() - Platform::instance().getServerDiffTime();
+        sendtime = QDateTime::currentDateTime().toMSecsSinceEpoch() - Platform::instance().getServerDiffTime() * 1000;
         std::string msgId = QTalk::utils::getMessageId();
 
         QTalk::Entity::ImMessageInfo message;
@@ -57,7 +57,7 @@ void sendTextMessage(const std::string &text,
 
 @implementation MacNotification
 
-- (void)showNotification :(QTalk::mac::StNotificationParam*)param {
+- (void)showNotification :(QTalk::StNotificationParam*)param {
 
     NSString *title = [NSString stringWithUTF8String:param->title.data()];
 //    NSString *subTitle = [NSString stringWithUTF8String:param->subTitle];

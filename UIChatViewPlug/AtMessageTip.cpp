@@ -6,6 +6,7 @@
 #include "ChatMainWgt.h"
 #include <QHBoxLayout>
 #include <QPainter>
+#include <QPointer>
 #include <QtWidgets/QGraphicsDropShadowEffect>
 
 AtMessageTip::AtMessageTip(ChatMainWgt *chatMainWgt)
@@ -55,7 +56,9 @@ void AtMessageTip::mousePressEvent(QMouseEvent *e)
     StShowAtInfo info = _arAtItems.last();
     _arAtItems.pop_back();
     //
-    _pChatMainWgt->scrollToItem(info.atItem, QAbstractItemView::PositionAtBottom);
+    if(info.atItem)
+        _pChatMainWgt->scrollToItem(info.atItem, QAbstractItemView::PositionAtBottom);
+
 	if (!_arAtItems.empty())
 	{
         showAtInfo();
@@ -78,9 +81,9 @@ void AtMessageTip::showAtInfo()
         _pNameLabel->setText(info.name);
 
         if(info.isAtAll)
-            _pAtLabel->setText("@全体成员");
+            _pAtLabel->setText(tr("@全体成员"));
         else
-            _pAtLabel->setText("@了我");
+            _pAtLabel->setText(tr("@了我"));
 
         QFont font = this->font();
         font.setPixelSize(14);

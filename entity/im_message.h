@@ -46,6 +46,8 @@ namespace QTalk {
             MessageTypeBurnAfterRead        =128,      //(阅后即焚)
             MessageTypeCardShare            =256,      //(分享名片)
             MessageTypeMeetingRemind        =257,      //会议室提醒
+            MessageTypeWorkWorldAtRemind    = 258,
+            MessageTypeMedalRemind          = 259,     // 勋章提醒消息
             MessageTypeEncrypt              =404,      //加密消息
             MessageTypeActivity             =511,
             MessageTypeRedPack              =512,      //(红包)
@@ -70,9 +72,13 @@ namespace QTalk {
             MessageTypeShareLocation        =8192,     // (位置共享)
             MessageTypeTransNormal          =10081,    //(普通透传消息)
             WebRTC_MsgType_Live             =65501,     //(直播消息)
+            WebRTC_MsgType_VideoCall = 65505,
+            WebRTC_MsgType_AudioCall = 65506,
+            WebRTC_MsgType_Video_Group      =65534,
             WebRTC_MsgType_Video            =65535,    //音视频
             MessageTypeRobotQuestionList    =65536,    //机器人问题列表
             MessageTypeRobotTurnToUser      =65537,    //机器人转人工提示
+            MessageTypeRobotAnswerList      =65538,    //机器人转人工提示
             MessageTypeFlightRemind         =65550,    //机票航班动态提醒消息
             WebRTC_MsgType_Audio            =131072,
             MessageTypeNotice               =134217728,//(通知类信息)

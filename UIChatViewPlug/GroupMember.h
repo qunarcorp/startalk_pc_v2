@@ -20,8 +20,6 @@ enum memberType
 	EM_MEMBER_TYPE_MEMBER,
 };
 
-#define DEM_SEARCHEDIT_PLACEHOLDER "成员 %1 / %2"
-
 class GroupItemWgt;
 class QMenu;
 class GroupMemberSortModel;
@@ -32,7 +30,7 @@ public:
     explicit GroupMember(QWidget *parent = nullptr, const QString& groupId = nullptr);
 	~GroupMember() override;
 
-signals:
+Q_SIGNALS:
 	void addMemberSignal(const std::string& xmppid, const std::string& userName,
 	        const QString& headSrc, QInt8 userType, bool isOnline, const QString&);
     void sgUpdateMemberCount(unsigned int, unsigned int);

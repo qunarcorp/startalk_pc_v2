@@ -18,6 +18,8 @@
 #include "../../include/CommonStrcut.h"
 #include "../../entity/im_qr_group.h"
 #include "../../entity/im_qr_content.h"
+#include "../../entity/im_medal_list.h"
+#include "../../entity/im_user_status_medal.h"
 
 /**
  * 数据库操作接口
@@ -61,6 +63,8 @@ public:
     virtual bool updateMState(const std::string &messageId, const QInt64 &time) = 0;
     virtual bool updateReadMask(const std::map<std::string, QInt32> &readMasks) = 0;
     virtual bool updateReadMask(const std::map<std::string, QInt64> &readMasks) = 0;
+    //
+    virtual void updateMessageExtendInfo(const std::string& msgId, const std::string& info) = 0;
 
     // local message
     virtual void getLocalMessage(const long long &time, const std::string &userId, const std::string &realJid,
@@ -187,14 +191,14 @@ public:
 public:
     virtual bool insertUserId(std::string value) = 0;
     virtual bool insertHotLine(std::string value) = 0;
-    virtual bool isHotLine(const std::string xmppid) = 0;
+    virtual void getHotLines(std::string &hotLines) = 0;
     virtual bool isHotlineMerchant(const std::string xmppid) = 0;
 
     virtual std::string getGroupReadMarkTime() = 0;
     virtual bool updateGroupReadMarkTime(const std::string time) = 0;
 
     virtual std::string getLoginBeforeGroupReadMarkTime() = 0;
-    virtual bool saveLoginBeforeGroupReadMarkTime(const std::string time) = 0;
+    virtual bool saveLoginBeforeGroupReadMarkTime(const std::string& time) = 0;
 
 public:
     virtual void getCareUsers(std::set<std::string>& users) = 0;
@@ -202,6 +206,14 @@ public:
     virtual void getQuickReplyVersion(QInt64 version[]) = 0;
     virtual void getQuickGroups(std::vector<QTalk::Entity::ImQRgroup>& groups) = 0;
     virtual void getQuickContentByGroup(std::vector<QTalk::Entity::IMQRContent>& contents,int id) = 0;
+
+public:
+    virtual void insertMedalList(const std::vector<QTalk::Entity::ImMedalList>& medals) = 0;
+    virtual void insertMedals(const std::vector<QTalk::Entity::ImUserStatusMedal>& medals) = 0;
+    virtual void getUserMedal(const std::string& xmppId, std::set<QTalk::StUserMedal>& stMedal) = 0;
+    virtual void getMedalList(std::vector<QTalk::Entity::ImMedalList>& medals) = 0;
+    virtual void getMedalUsers(int medalId, std::vector<QTalk::StMedalUser>& metalUsers) = 0;
+    virtual void modifyUserMedalStatus(const std::string& userId, int medalId, int status) = 0;
 };
 
 #endif // IDATABASEPLUG_H

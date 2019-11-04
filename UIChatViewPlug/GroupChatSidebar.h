@@ -17,7 +17,7 @@ public:
     explicit GroupChatSidebar(QWidget* parent = nullptr, const QString& groupId = nullptr);
 	~GroupChatSidebar() override;
 
-signals:
+Q_SIGNALS:
 	void deleteMember(const std::string& );
 	void updateGroupTopic(const QString&);
 

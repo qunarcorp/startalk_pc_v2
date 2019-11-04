@@ -239,7 +239,12 @@ void VideoMessageItem::initReceiveLayout() {
     mainLay->addLayout(rightLay);
     if (QTalk::Enum::ChatType::GroupChat == _msgInfo.ChatType
         && QTalk::Entity::MessageDirectionReceive == _msgInfo.Direction ) {
-        rightLay->addWidget(_nameLab);
+        auto* nameLay = new QHBoxLayout;
+        nameLay->setMargin(0);
+        nameLay->setSpacing(5);
+        nameLay->addWidget(_nameLab);
+        nameLay->addWidget(_medalWgt);
+        rightLay->addLayout(nameLay);
     }
     if (!_contentFrm) {
         _contentFrm = new QFrame(this);
@@ -349,10 +354,11 @@ void VideoMessageItem::initContentLayout() {
                 else
                 {
                     maskFrame->setImage(placeHolder);
-                    std::thread([this, thumbUrl](){
+                    QPointer<VideoMessageItem> pThis(this);
+                    std::thread([pThis, thumbUrl](){
                         std::string downloadFile = g_pMainPanel->getMessageManager()->getLocalFilePath(thumbUrl.toStdString());
-                        if(!downloadFile.empty())
-                                emit sgDownloadedIcon(QString::fromStdString(downloadFile));
+                        if(pThis && !downloadFile.empty())
+                                emit pThis->sgDownloadedIcon(QString::fromStdString(downloadFile));
                     }).detach();
                 }
             }
@@ -399,7 +405,7 @@ void VideoMessageItem::playVideo() {
         {
             //
             if(videoUrl.isEmpty())
-                QtMessageBox::warning(g_pMainPanel, "警告", "无效的视频文件!");
+                QtMessageBox::warning(g_pMainPanel, tr("警告"), tr("无效的视频文件!"));
             else
             {
                 //
@@ -460,7 +466,7 @@ void VideoMessageItem::setProcess(double speed, double dtotal, double dnow, doub
         QFileInfo info(localVideo);
         while (!info.exists() || info.isDir())
         {
-            QApplication::processEvents();
+            QApplication::processEvents(QEventLoop::AllEvents, 100);
         }
         playVideo();
         btnLable->setVisible(true);

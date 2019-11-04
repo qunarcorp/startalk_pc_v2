@@ -7,8 +7,6 @@
 #include <QListWidget>
 #include "../CustomUi/HeadPhotoLab.h"
 
-#define TIP_MODEL QStringLiteral("%1 条新消息")
-
 NewMessageTip::NewMessageTip(QWidget *parent)
     : QFrame(parent), _parentWgt(parent), _newMessageCount(0)
 {
@@ -21,7 +19,7 @@ NewMessageTip::NewMessageTip(QWidget *parent)
     picLabel->setParent(this);
     picLabel->setHead(":/chatview/image1/go.png", 10, false, false, true);
     picLabel->setFixedWidth(20);
-    _pLabel = new QLabel(QString(TIP_MODEL).arg(_newMessageCount));
+    _pLabel = new QLabel(QString(tr("%1 条新消息")).arg(_newMessageCount));
     _pLabel->setObjectName("NewMessageTipLabel");
     QHBoxLayout* lay = new QHBoxLayout(this);
     lay->addWidget(picLabel);
@@ -44,7 +42,7 @@ void NewMessageTip::onNewMessage() {
         this->move(w, _parentWgt->height() - 50);
     }
     //
-    _pLabel->setText(QString(TIP_MODEL).arg(_newMessageCount));
+    _pLabel->setText(QString(tr("%1 条新消息")).arg(_newMessageCount));
 }
 
 /*
@@ -61,7 +59,7 @@ void NewMessageTip::mousePressEvent(QMouseEvent *e) {
 void NewMessageTip::onResetWnd() {
     this->setVisible(false);
     _newMessageCount = 0;
-    _pLabel->setText(QString(TIP_MODEL).arg(_newMessageCount));
+    _pLabel->setText(QString(tr("%1 条新消息")).arg(_newMessageCount));
     QListWidget* parentWgt = qobject_cast<QListWidget*>(_parentWgt);
     if(parentWgt)
     {

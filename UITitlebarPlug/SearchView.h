@@ -25,7 +25,7 @@ public:
     explicit SearchView(QWidget* parent = nullptr);
     ~SearchView() override;
 
-signals:
+Q_SIGNALS:
     void sgOpenNewSession(const StSessionInfo &into);
     void sgGetMore(int );
     void sgSwitchFun(int );

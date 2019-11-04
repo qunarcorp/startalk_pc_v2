@@ -15,14 +15,10 @@
 #include "../Message/StatusMessage.h"
 #include "../Message/LoginMessgae.h"
 #include "../entity/UID.h"
+#include "../Message/LogicBaseMessage.h"
 
 class ChatMsgManager : public Object
 {
-public:
-	ChatMsgManager();
-
-    ~ChatMsgManager() override;
-
 public:
 
 	std::string getNetFilePath(const std::string& localFilePath);
@@ -49,7 +45,7 @@ public:
 
     void sendDownLoadFile(const std::string &strLocalPath, const std::string &strUri, const std::string& processKey);
 
-    void sendRevokeMessage(const QTalk::Entity::UID& uid, const std::string& from, const std::string& messageId);
+    void sendRevokeMessage(const QTalk::Entity::UID& uid, const std::string& from, const std::string& messageId, const QInt8& chatType);
     //
 	void setUserSetting(bool isSetting, const std::string& key, const std::string& subKey, const std::string& value);
 	//
@@ -81,6 +77,18 @@ public:
 	//
 	void getQuickGroups(std::vector<QTalk::Entity::ImQRgroup> &groups);
 	void getQuickContentByGroup(std::vector<QTalk::Entity::IMQRContent> &contents, int id);
+	//
+	void hotLineMessageList(const std::string& xmppId);
+	//
+    void postInterface(const std::string& url, const std::string& params);
+    //
+    std::string sendGetRequest(const std::string& url);
+    //
+    void updateMessageExtendInfo(const std::string& msgId, const std::string& info);
+    //
+    void sendWebRtcCommand(int msgType, const std::string& json, const std::string& id);
+
+    void getUserMedal(const std::string& xmppId, std::set<QTalk::StUserMedal>& medal);
 };
 
 // 消息接收
@@ -98,6 +106,9 @@ class ChatMsgListener : public EventHandler<R_Message>, public EventHandler<Grou
 					  , public EventHandler<ChangeHeadRetMessage>, public EventHandler<UpdateMoodRet>
 					  , public EventHandler<FeedBackLogEvt> , public EventHandler<GetSeatListRet>
 					  , public EventHandler<IncrementConfig>, public EventHandler<GroupReadMState>
+					  , public EventHandler<MStateEvt>
+					  , public EventHandler<WebRtcCommand>
+					  , public EventHandler<UserMedalChangedEvt>
 {
 public:
 	ChatMsgListener();
@@ -115,6 +126,7 @@ public:
 	void onEvent(LoginSuccessMessage& e) override;
 	void onEvent(UpdateGroupMember& e) override;
     void onEvent(SignalReadState& e) override;
+    void onEvent(MStateEvt& e) override;
     void onEvent(RevokeMessage& e) override;
     void onEvent(UpdateUserConfigMsg& e) override;
 	void onEvent(DestroyGroupRet& e) override;
@@ -131,6 +143,8 @@ public:
     void onEvent(GetSeatListRet& e) override;
     void onEvent(IncrementConfig& e) override;
     void onEvent(GroupReadMState& e) override;
+    void onEvent(WebRtcCommand& e) override;
+    void onEvent(UserMedalChangedEvt& e) override;
 
 private:
 

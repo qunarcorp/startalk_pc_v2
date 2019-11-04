@@ -3,7 +3,7 @@
 #include "../QtUtil/Utils/Log.h"
 
 ConfigDao::ConfigDao(qtalk::sqlite::database *sqlDb)
-        : _pSqlDb(sqlDb) {
+        : DaoInterface(sqlDb) {
 
 }
 

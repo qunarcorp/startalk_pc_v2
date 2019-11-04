@@ -56,10 +56,14 @@ void StyleSheetManager::setStylesForApp(int theme, const std::string& font)
     if(font.empty())
     {
         QFont tmpFont;
+#ifdef _WDINWOS
+        tmpFont.fromString(tr("方正兰亭黑简体"));
+        qss.append(QString("* {font-family: \"方正兰亭黑简体\";}"));
+#else
         tmpFont.fromString("FZLanTingHeiS-R-GB");
-        qApp->setFont(tmpFont);
-        //
         qss.append(QString("* {font-family: \"FZLanTingHeiS-R-GB\";}"));
+#endif
+        qApp->setFont(tmpFont);
     }
     else
     {

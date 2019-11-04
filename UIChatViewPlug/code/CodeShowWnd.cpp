@@ -32,7 +32,8 @@ void CodeShowWnd::initUi()
 {
     _pWebView = new QWebEngineView(this);
 	_pWebView->setObjectName("CodeWebView");
-    _pCodeShell = new CodeShell("查看代码片段", _pWebView, this);
+	QString titleName = tr("查看代码片段");
+    _pCodeShell = new CodeShell(titleName, _pWebView, this);
 
     setMoverAble(true, _pCodeShell->getTitleFrm());
     //
@@ -107,7 +108,9 @@ void CodeShowWnd::loadCodeFile(const QString &type, const QString &language)
         _strCodeContent.replace("'", "&apos;");
         _strCodeContent.replace("<",  "&lt;");
         _strCodeContent.replace(">",  "&gt;");
+#ifndef _WINDOWS
         _strCodeContent.replace("\U00002028",  "\n");
+#endif
     }
 
     QString html = QString("<!DOCTYPE html>  "

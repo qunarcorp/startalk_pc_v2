@@ -1,4 +1,7 @@
-﻿#ifndef _EMOTICONMANAGER_H_
+﻿#if _MSC_VER >= 1600
+#pragma execution_character_set("utf-8")
+#endif
+#ifndef _EMOTICONMANAGER_H_
 #define _EMOTICONMANAGER_H_
 
 #include "../CustomUi/UShadowWnd.h"
@@ -10,6 +13,7 @@ class NetEmoticon;
 class EmoticonManager;
 class EmoticonTitleBar : public QFrame
 {
+    Q_OBJECT
 public:
 	explicit EmoticonTitleBar(EmoticonManager* parent);
 	~EmoticonTitleBar() override;

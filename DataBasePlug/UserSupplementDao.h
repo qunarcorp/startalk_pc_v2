@@ -5,23 +5,18 @@
 #ifndef QTALK_V2_USERSUPPLEMENTDAO_H
 #define QTALK_V2_USERSUPPLEMENTDAO_H
 
-#include "sqlite/database.h"
+#include "DaoInterface.h"
 #include <memory>
 #include "../entity/im_userSupplement.h"
 
-
-
-class UserSupplementDao
+class UserSupplementDao : public DaoInterface
 {
 public:
-    UserSupplementDao(qtalk::sqlite::database * sqlDb = nullptr);
-    ~UserSupplementDao();
+    explicit UserSupplementDao(qtalk::sqlite::database * sqlDb = nullptr);
+    bool creatTable() override;
+    bool clearData() override;
 
 public:
-    bool creatTable();
-
-    bool clearData();
-
     bool insertOrUpdateUserMood(const std::string& userId, const std::string& userMood, const int& version);
 
     bool insertOrUpdateUserPhoneNo(const std::string& userId, const std::string& phoneNo);
@@ -30,9 +25,6 @@ public:
 
 private:
     int checkRecordCount(const std::string &userId);
-
-private:
-    qtalk::sqlite::database * _sqlDb;
 };
 
 

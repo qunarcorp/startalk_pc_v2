@@ -32,6 +32,7 @@ public:
 	void setAutoLoginFlag(bool flag) override;
     void initConf() override;
 	void saveHeadPath() override;
+    void setLoginMessage(const QString&) override;
 
 private:
     void init() override;

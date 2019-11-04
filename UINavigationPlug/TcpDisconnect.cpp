@@ -13,7 +13,7 @@ TcpDisconnect::TcpDisconnect(NavigationMianPanel *pMainPanel, QWidget *parent)
     QPixmap pic(":/UINavigationPlug/image1/error.png");
     QLabel *picLabel = new QLabel;
     picLabel->setPixmap(pic);
-    _pTextLabel = new QLabel(QStringLiteral("当前网络不可用"));
+    _pTextLabel = new QLabel(tr("当前网络不可用"));
     auto *layout = new QHBoxLayout(this);
     layout->addSpacerItem(new QSpacerItem(10, 10, QSizePolicy::Expanding));
     layout->addWidget(picLabel);
@@ -36,7 +36,7 @@ void TcpDisconnect::onRetryConnected() {
     if (_isRetryConnect) {
         _isRetryConnect = false;
     }
-    _pTextLabel->setText(QStringLiteral("当前网络不可用"));
+    _pTextLabel->setText(tr("当前网络不可用"));
 }
 
 void TcpDisconnect::setText(const QString& text)
@@ -54,7 +54,7 @@ void TcpDisconnect::setText(const QString& text)
 void TcpDisconnect::mousePressEvent(QMouseEvent *e) {
     if (_pMainPanel && !_isRetryConnect) {
         _isRetryConnect = true;
-        _pTextLabel->setText(QStringLiteral("正在重连"));
+        _pTextLabel->setText(tr("正在重连"));
 //        _pMainPanel->retryToConnect();
     }
     return QFrame::mousePressEvent(e);

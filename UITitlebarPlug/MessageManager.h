@@ -26,6 +26,11 @@ public:
 
 	void chanegUserStatus(const std::string& status);
 	void setServiceSeat(int sid,int seat);
+
+    std::string uploadImage(const std::string &localFilePath);
+    //
+    void sendPostReq(const std::string &url, const std::string &params,
+                     std::function<void(int code, const std::string &responseData)> callback);
 };
 
 class MainPanel;

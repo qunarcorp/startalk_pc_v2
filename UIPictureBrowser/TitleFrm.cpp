@@ -62,17 +62,17 @@ void TitleFrm::initUi()
     _pMaxBtn->setObjectName("MaxBtn");
     _pRestBtn->setObjectName("RestBtn");
 
-    _pTurnBeforeBtn->setToolTip("上一张");
-    _pTurnNextBtn->setToolTip("下一张");
-    _pEnlargeBtn->setToolTip("放大");
-    _pNarrowBtn->setToolTip("缩小");
-    _pOne2OneBtn->setToolTip("1:1显示");
-    _pRotateBtn->setToolTip("旋转");
-    _pSaveAsBtn->setToolTip("另存为");
-    _pMinBtn->setToolTip("最小化");
-    _pMaxBtn->setToolTip("最大化");
-    _pRestBtn->setToolTip("恢复窗口");
-    _pCloseBtn->setToolTip("关闭");
+    _pTurnBeforeBtn->setToolTip(tr("上一张"));
+    _pTurnNextBtn->setToolTip(tr("下一张"));
+    _pEnlargeBtn->setToolTip(tr("放大"));
+    _pNarrowBtn->setToolTip(tr("缩小"));
+    _pOne2OneBtn->setToolTip(tr("1:1显示"));
+    _pRotateBtn->setToolTip(tr("旋转"));
+    _pSaveAsBtn->setToolTip(tr("另存为"));
+    _pMinBtn->setToolTip(tr("最小化"));
+    _pMaxBtn->setToolTip(tr("最大化"));
+    _pRestBtn->setToolTip(tr("恢复窗口"));
+    _pCloseBtn->setToolTip(tr("关闭"));
 
 	_pMinBtn->setVisible(false);
 	_pMaxBtn->setVisible(false);

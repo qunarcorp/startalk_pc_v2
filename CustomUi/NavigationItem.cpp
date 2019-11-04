@@ -20,19 +20,19 @@ NavigationItem::NavigationItem(const QUInt8& itemType, QWidget *parent)
         case EM_ITEM_TYPE_START:
         {
             _pIconLabel->setHead(":/Resource/starContact.png", 15, false, false);
-            _pTextLabel->setText(QStringLiteral("星标联系人"));
+            _pTextLabel->setText(tr("星标联系人"));
             break;
         }
         case EM_ITEM_TYPE_FRIENDLIST:
         {
             _pIconLabel->setHead(":/Resource/friendList.png", 15, false, false);
-            _pTextLabel->setText(QStringLiteral("好友列表"));
+            _pTextLabel->setText(tr("好友列表"));
             break;
         }
         case EM_ITEM_TYPE_GROUPLIST:
         {
             _pIconLabel->setHead(":/Resource/groupList.png", 15, false, false);
-            _pTextLabel->setText(QStringLiteral("群组列表"));
+            _pTextLabel->setText(tr("群组列表"));
             break;
         }
         case EM_ITEM_TYPE_STAFF:
@@ -42,19 +42,13 @@ NavigationItem::NavigationItem(const QUInt8& itemType, QWidget *parent)
 #else
             _pIconLabel->setHead(":/Resource/staff.png", 15, false, false);
 #endif
-            _pTextLabel->setText(QStringLiteral("Staff"));
-            break;
-        }
-        case EM_ITEM_TYPE_SUBSCRIPTION:
-        {
-            _pIconLabel->setHead(":/Resource/subscription.png", 15, false, false);
-            _pTextLabel->setText(QStringLiteral("公众号"));
+            _pTextLabel->setText("Staff");
             break;
         }
         case EM_ITEM_TYPE_BLACKLIST:
         {
             _pIconLabel->setHead(":/Resource/BlackList.png", 15, false, false);
-            _pTextLabel->setText(QStringLiteral("黑名单"));
+            _pTextLabel->setText(tr("黑名单"));
             break;
         }
         default:

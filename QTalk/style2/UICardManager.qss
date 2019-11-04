@@ -95,6 +95,9 @@ QPushButton#UserCard_AddFriend {
 QPushButton#UserCard_Star {
     border-image:url(:/CardManager/image1/Star_normal_2.png);
 }
+QPushButton#btn_destroy_group {
+    border-image:url(:/CardManager/image1/btn_destroy_black.png);
+}
 QPushButton#btn_More {
     border-image:url(:/CardManager/image1/More_normal_2.png);
 }
@@ -110,10 +113,12 @@ QPushButton:hover#UserCard_AddFriend {
 QPushButton:hover#UserCard_Star {
     border-image:url(:/CardManager/image1/Star_hover_2.png);
 }
+QPushButton:hover#btn_destroy_group {
+    border-image:url(:/CardManager/image1/btn_destroy_hover_black.png);
+}
 QPushButton:hover#btn_More {
     border-image:url(:/CardManager/image1/More_hover_2.png);
 }
-
 QPushButton:checked#UserCard_Star {
     border-image:url(:/CardManager/image1/Star_hover_2.png);
 }
@@ -168,4 +173,98 @@ QHeaderView::section {
 
 QTableView {
     background:rgba(47,51,55,1);
+}
+
+QFrame#UserMedalWnd_MainFrm, #MedalDetailWnd_MainFrm {
+    background:rgba(255,255,255,1);
+    border-top-left-radius:6px;
+    border-top-right-radius:6px;
+    border-bottom-right-radius:6px;
+    border-bottom-left-radius:6px;
+}
+
+QFrame#UserMedalWnd_topFrm {
+    border-image: url(:/CardManager/image1/UserMedalBg.png);;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+}
+
+QFrame#MedalDetailWnd_TitleFrm {
+    background:rgba(249,249,248,1);
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+}
+
+QLabel#MedalDetailWnd_TitleLabel {
+    font-size:14px;
+    font-weight:500;
+    color:rgba(51,51,51,1);
+    line-height:20px;
+}
+
+QFrame#UserMedalWnd_bodyFrm {
+    background:rgba(255,255,255,1);
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+}
+
+QLabel#UserMedalWnd_NameLabel {
+    font-size:20px;
+    color:rgba(255,255,255,1);
+    font-weight:600;
+}
+QTableWidget#UserMedalWnd_TableWgt {
+    background: rgba(255,255,255,1);
+}
+
+QTableWidget#UserMedalWnd_TableWgt::item:selected {
+    background: rgba(255,255,255,1);
+}
+
+QToolButton#BackBtn {
+    border-image: url(:/CardManager/image1/back.png);
+}
+
+QPushButton#wearMedalBtn {
+    width:292px;
+    height:32px;
+    background:rgba(0,202,190,1);
+    border-radius:2px;
+    font-size:14px;
+    color:rgba(255,255,255,1);
+}
+
+QPushButton#wearMedalBtn:hover {
+    background:rgba(0,172,162,1);
+}
+
+QPushButton#unloadMedalBtn {
+    width:292px;
+    height:32px;
+    background:rgba(255,255,255,1);
+    border-radius:2px;
+    border:1px solid rgba(1,202,191,1);
+    font-size:14px;
+    color:rgba(0,202,190,1);
+}
+
+QPushButton#unloadMedalBtn:hover {
+    background:rgba(211,249,248,1);
+    border:1px solid rgba(0,202,190,1);
+}
+
+QLabel#wearMedalTipLabel {
+    color:rgba(153,153,153,1);
+    font-size:13px;
+}
+
+QListView {
+    background:rgba(255,255,255,1);
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+}
+
+QFrame#Line {
+    height:2px;
+    background:rgba(238,238,238,1);
 }

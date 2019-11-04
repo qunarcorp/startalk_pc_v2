@@ -68,6 +68,8 @@ public:
 
     bool writeQvtToFile(const std::string &qvt);
     std::string getQvtFromFile();
+    //
+    bool writeFile(const std::string &filePath, const std::string *data);
 
 protected:
 
@@ -79,8 +81,6 @@ protected:
 
     std::string uploadFile(const std::string &filePath, const std::string &key,
             QInt64 size, const std::string &suffix, bool withProcess = true, const std::string& processKey = std::string());
-
-    bool writeFile(const std::string &filePath, const std::string *data);
 
 private:
     std::mutex _mutex;

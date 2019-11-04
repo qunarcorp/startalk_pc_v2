@@ -41,6 +41,8 @@ private:
     std::string shareUrl;
 
     std::string foundConfigUrl;
+    //
+    std::string videoUrl;
 
     // 请求地址
     std::string healthcheckUrl; //网络检测地址
@@ -64,6 +66,9 @@ private:
     //ability
     bool showmsgstat;
     std::string qcGrabOrder;
+
+    //login
+    std::string loginType;
 
 public:
     NavigationManager();
@@ -105,6 +110,9 @@ public: // base address
 
     void setShareUrl(const std::string& shareUrl);
     std::string getShareUrl();
+
+    void setVideoUrl(const std::string& videoUrl);
+    std::string getVideoUrl();
 
 public:// imconfig
 	void setRsaEncodeType(int t);
@@ -153,6 +161,10 @@ public://other
 
     void setMailSuffix(const std::string& mailSuffix);
     std::string getMailSuffix();
+
+public:
+	std::string getLoginType();
+	void setLoginType(const std::string& lt);
 };
 
 #endif // NAVIGATIONMANAGER_H

@@ -49,11 +49,19 @@ void QTalkMsgManager::reportDump(const std::string &dump) {
     EventBus::FireEvent(e);
 }
 
+std::string QTalkMsgManager::checkUpdater(int version) {
+    CheckUpdaterEvt e;
+    e.version = version;
+    EventBus::FireEvent(e);
+    return e.updater_link;
+}
+
 /*------------------*/
 QTalkMsgListener::QTalkMsgListener(MainWindow* pUiControl)
 	:_pUiControl(pUiControl)
 {
 	EventBus::AddHandler<LoginSuccessMessage>(*this);
+	EventBus::AddHandler<GetHistoryError>(*this);
 }
 
 QTalkMsgListener::~QTalkMsgListener()
@@ -71,4 +79,11 @@ void QTalkMsgListener::onEvent(LoginSuccessMessage& e)
 	{
 		_pUiControl->OnLoginSuccess(e.getSessionId());
 	}
+}
+
+void QTalkMsgListener::onEvent(GetHistoryError &e) {
+    if (nullptr != _pUiControl)
+    {
+        _pUiControl->onGetHistoryError();
+    }
 }

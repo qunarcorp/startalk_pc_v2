@@ -26,7 +26,7 @@ protected:
     void mousePressEvent(QMouseEvent* e) override;
     void setIcon(const QString& iconPath);
 
-signals:
+Q_SIGNALS:
     void sgDownloadedIcon(const QString&);
 
 private:

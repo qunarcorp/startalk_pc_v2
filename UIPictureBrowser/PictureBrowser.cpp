@@ -6,6 +6,7 @@
 #include "TitleFrm.h"
 #include "../Platform/Platform.h"
 #include "../CustomUi/QtMessageBox.h"
+#include "../UICom/uicom.h"
 #include <QHBoxLayout>
 #include <QWindow>
 #include <QKeyEvent>
@@ -45,9 +46,7 @@ void PictureBrowser::initUi() {
 
     setMoverAble(true, _pPTitleFrm);
     //
-#ifdef _MACOS
-    macAdjustWindows();
-#endif
+
 }
 
 void PictureBrowser::onShowChatPicture(const QString &messageId, const QString &messageContent, int index) {
@@ -64,7 +63,7 @@ void PictureBrowser::onShowChatPicture(const QString &messageId, const QString &
         analyseMessage(messageId.toStdString() ,messageContent, true);
         if(_images.empty())
         {
-            QtMessageBox::warning(this, "警告", "无法加载该图片!");
+            QtMessageBox::warning(this, tr("警告"), tr("无法加载该图片!"));
             return;
         }
         loadImage(true);
@@ -75,15 +74,29 @@ void PictureBrowser::onShowChatPicture(const QString &messageId, const QString &
     this->raise();
 }
 
-void PictureBrowser::showPicture(const QString &picPath) {
+void PictureBrowser::showPicture(const QString &picPath, const QString& linkPath) {
     if(_pPicFrm->loadNewPicture(picPath, true))
     {
+        _hasBefore = false;
+        _hasNext = false;
+        _images.clear();
+        _curIndex = 0;
         if(this->isVisible())
         {
             this->setVisible(false);
         }
         this->showNormal();
         activateWindow();
+
+        _curLink = linkPath.toStdString();
+        std::thread([this, linkPath](){
+            if(_msgManager)
+            {
+                std::string srcImg = _msgManager->getSourceImage(linkPath.toStdString());
+                if(!srcImg.empty())
+                        emit sgGotSourceImg(linkPath, QString::fromStdString(srcImg), true);
+            }
+        }).detach();
     }
 }
 
@@ -175,7 +188,7 @@ void PictureBrowser::turnBefore()
         }
         else
         {
-            QtMessageBox::warning(this, "警告", "无法加载更早的图片了!");
+            QtMessageBox::warning(this, tr("警告"), tr("无法加载更早的图片了!"));
         }
     }
 }
@@ -196,7 +209,7 @@ void PictureBrowser::turnNext()
         }
         else
         {
-            QtMessageBox::warning(this, "警告", "已看完最后一张图片!");
+            QtMessageBox::warning(this, tr("警告"), tr("已看完最后一张图片!"));
         }
     }
 }
@@ -215,7 +228,7 @@ void PictureBrowser::loadImage(bool isFirst)
     {
         imgPath = QString::fromStdString(QTalk::GetImagePathByUrl(_curLink));
         _pPicFrm->setEnabled(false);
-        std::thread([item, isFirst, this](){
+        std::thread([isFirst, this](){
             if(_msgManager)
             {
                 std::string srcImg = _msgManager->getSourceImage(_curLink);
@@ -230,6 +243,11 @@ void PictureBrowser::loadImage(bool isFirst)
         if(_pPicFrm->loadNewPicture(imgPath, isFirst) && !isVisible())
         {
 //            this->setWindowModality(Qt::WindowModal);
+#ifdef _MACOS
+            QWidget *wgt = UICom::getInstance()->getAcltiveMainWnd();
+            if(wgt && wgt->isFullScreen())
+                this->setWindowFlags(this->windowFlags() | Qt::Tool);
+#endif
             this->showNormal();
         }
     }
@@ -316,4 +334,20 @@ void PictureBrowser::getNextImgs(const std::string &msgId)
             isGetting = false;
         }
     }).detach();
+}
+
+void PictureBrowser::changeEvent(QEvent *event)
+{
+    if(event->type() == QEvent::WindowStateChange)
+    {
+#ifdef _MACOS
+        auto sts = this->windowState();
+        if((sts & Qt::WindowFullScreen))
+            setWindowFlags(this->windowFlags() | Qt::Tool);
+        else
+            setWindowFlags(this->windowFlags() & ~Qt::Tool);
+#endif
+    }
+
+    UShadowDialog::changeEvent(event);
 }

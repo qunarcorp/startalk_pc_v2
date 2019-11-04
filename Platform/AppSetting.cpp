@@ -38,12 +38,15 @@ AppSetting::AppSetting()
 , _showGroupMembers(true)     // 是否展示群成员列表
 , _switchChatScrollToBottom(false) //切换会话是否滚动到最低下
 , _autoLoginEnable(false)            // 是否自动登录
-,_openOaWithAppBrowser(true)
-,_screentShotHideWndFlag(false)
-,_showSendMessageBtn(false)
-,_strongWarn(true)
-,_showMoodFlag(true)
-,_autoReplyPreset(true)
+, _openOaWithAppBrowser(true)
+, _screentShotHideWndFlag(false)
+, _showSendMessageBtn(false)
+, _strongWarn(true)
+, _showMoodFlag(true)
+, _autoReplyPreset(true)
+, _supportNativeMessagePrompt(false)
+, _useNativeMessagePrompt(false)
+, _autoDeleteSession(true)
 {
 
 }
@@ -73,6 +76,8 @@ void AppSetting::initAppSetting(const std::string& setting)
         _autoReplyMsg = QTalk::JSON::cJSON_SafeGetStringValue(obj, "AUTOREPLYMSG");
         _autoReplyCusMsg = QTalk::JSON::cJSON_SafeGetStringValue(obj, "AUTOREPLYCUSMSG");
         _leaveMinute = QTalk::JSON::cJSON_SafeGetIntValue(obj, "LEAVEMINUTE", 5);
+        _useNativeMessagePrompt = QTalk::JSON::cJSON_SafeGetBoolValue(obj, "USENATIVEMESSAGEPROMPT", false);
+        _autoDeleteSession = QTalk::JSON::cJSON_SafeGetBoolValue(obj, "AUTODELETESESSION", true);
 
 		cJSON_Delete(obj);
 	}
@@ -545,6 +550,38 @@ bool AppSetting::getShowMoodFlag() {
     return _showMoodFlag;
 }
 
+void AppSetting::setAutoDeleteSession(bool autoDelete)
+{
+    std::lock_guard<QTalk::util::spin_mutex> lock(sm);
+    _autoDeleteSession = autoDelete;
+}
+
+bool AppSetting::getAutoDeleteSession()
+{
+    std::lock_guard<QTalk::util::spin_mutex> lock(sm);
+    return _autoDeleteSession;
+}
+
+void AppSetting::setShowQuanTool(bool show) {
+    std::lock_guard<QTalk::util::spin_mutex> lock(sm);
+    _showQuanWnd = show;
+}
+
+bool AppSetting::getShowQuanTool() {
+    std::lock_guard<QTalk::util::spin_mutex> lock(sm);
+    return _showQuanWnd;
+}
+
+std::string AppSetting::getCoEdit() {
+    std::lock_guard<QTalk::util::spin_mutex> lock(sm);
+    return _coEditor;
+}
+
+void AppSetting::setCoEdit(const std::string& edit) {
+    std::lock_guard<QTalk::util::spin_mutex> lock(sm);
+    _coEditor = edit;
+}
+
 /**
  *
  * @return
@@ -573,6 +610,8 @@ std::string AppSetting::saveAppSetting() {
     cJSON_AddStringToObject(obj, "AUTOREPLYMSG", _autoReplyMsg.data());
     cJSON_AddStringToObject(obj, "AUTOREPLYCUSMSG", _autoReplyCusMsg.data());
     cJSON_AddNumberToObject(obj, "LEAVEMINUTE", _leaveMinute);
+    cJSON_AddBoolToObject(obj, "USENATIVEMESSAGEPROMPT", _useNativeMessagePrompt);
+    cJSON_AddBoolToObject(obj, "AUTODELETESESSION", _autoDeleteSession);
 
 	ret = QTalk::JSON::cJSON_to_string(obj);
 	cJSON_Delete(obj);

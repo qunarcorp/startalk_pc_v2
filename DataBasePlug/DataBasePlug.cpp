@@ -15,6 +15,8 @@
 #include "../include/perfcounter.h"
 #include "CacheDataDao.h"
 #include "QuickReplyDao.h"
+#include "MedalListDao.h"
+#include "UserMedalDao.h"
 #include "TriggerConfig.h"
 
 DataBasePlug::DataBasePlug() :
@@ -107,6 +109,25 @@ void DataBasePlug::ClearDBData() {
     UserSupplementDao userSupDao(_dataBass);
     if (_dataBass->tableExists("IM_UserSupplement") && !userSupDao.clearData()) {
         error_log("IM_UserSupplement  清理表失败");
+    }
+
+    CacheDataDao cacheDataDao(_dataBass);
+    if (!cacheDataDao.clearData()) {
+        error_log("IM_Cache_Data  清理表失败");
+    }
+
+    QuickReplyDao quickReplyDao(_dataBass);
+    if (!quickReplyDao.clearData()) {
+        error_log("QuickReplyDao  清理表失败");
+    }
+    // Medal
+    MedalListDao medalListDao(_dataBass);
+    if (!medalListDao.clearData()) {
+        error_log("IM_Medal_List  清理表失败");
+    }
+    UserMedalDao medalDao(_dataBass);
+    if (!medalDao.clearData()) {
+        error_log("IM_User_Status_Medal 清理表失败");
     }
 }
 
@@ -630,7 +651,15 @@ void DataBasePlug::CreatTables() {
     if(!triggerConfig.createUnreadInserttrigger() || !triggerConfig.createUnreadUpdateTrigger()){
         error_log("TriggerConfig  创建触发器失败");
     }
-
+    // Medal
+    MedalListDao medalListDao(_dataBass);
+    if (!_dataBass->tableExists("IM_Medal_List") && !medalListDao.creatTable()) {
+        error_log("IM_Medal_List  表创建失败");
+    }
+    UserMedalDao medalDao(_dataBass);
+    if (!_dataBass->tableExists("IM_User_Status_Medal") && !medalDao.creatTable()) {
+        error_log("IM_User_Status_Medal 表创建失败");
+    }
 }
 
 //
@@ -685,7 +714,11 @@ void DataBasePlug::modifyDbByVersion() {
         MessageDao messageDao(_dataBass);
         messageDao.fixMessageType();
     }
-
+    if(dbVersion <= 100009)
+    {
+        CacheDataDao dao(_dataBass);
+        dao.clear_data_01();
+    }
     //
     dbConfig.setDbVersion(Platform::instance().getDbVersion());
 }
@@ -1072,14 +1105,12 @@ bool DataBasePlug::insertHotLine(std::string value) {
     return ret;
 }
 
-bool DataBasePlug::isHotLine(std::string xmppid) {
-    bool ret = false;
-    auto func = _dbPool.enqueue([this, &ret, xmppid]() {
+void DataBasePlug::getHotLines(std::string &hotLines) {
+    auto func = _dbPool.enqueue([this, &hotLines]() {
         CacheDataDao cacheDataDao(_dataBass);
-        ret = cacheDataDao.isHotLine(xmppid);
+        cacheDataDao.getHotLines(hotLines);
     });
     func.get();
-    return ret;
 }
 
 bool DataBasePlug::isHotlineMerchant(const std::string xmppid) {
@@ -1121,7 +1152,7 @@ std::string DataBasePlug::getLoginBeforeGroupReadMarkTime(){
     return ret;
 }
 
-bool DataBasePlug::saveLoginBeforeGroupReadMarkTime(std::string time){
+bool DataBasePlug::saveLoginBeforeGroupReadMarkTime(const std::string &time){
     bool ret = false;
     auto func = _dbPool.enqueue([this, &ret, time]() {
         CacheDataDao cacheDataDao(_dataBass);
@@ -1240,4 +1271,54 @@ void DataBasePlug::getAfterMessage(const long long &time, const std::string &use
 void DataBasePlug::updateMessageReadFlags(const std::map<std::string, int> &readFlags) {
     MessageDao dao(_dataBass);
     dao.updateMessageReadFlags(readFlags);
+}
+
+void DataBasePlug::updateMessageExtendInfo(const std::string &msgId, const std::string &info) {
+    auto func = _dbPool.enqueue([this, &msgId, info]() {
+        MessageDao dao(_dataBass);
+        dao.updateMessageExtendInfo(msgId, info);
+    });
+    func.get();
+}
+
+//
+void DataBasePlug::insertMedalList(const std::vector<QTalk::Entity::ImMedalList> &medals) {
+    auto func = _dbPool.enqueue([this, medals]() {
+        MedalListDao dao(_dataBass);
+        dao.insertMedalList(medals);
+    });
+    func.get();
+}
+
+void DataBasePlug::insertMedals(const std::vector<QTalk::Entity::ImUserStatusMedal> &medals) {
+    auto func = _dbPool.enqueue([this, medals]() {
+        UserMedalDao dao(_dataBass);
+        dao.insertMedals(medals);
+    });
+    func.get();
+}
+
+void DataBasePlug::getUserMedal(const std::string &xmppId, std::set<QTalk::StUserMedal> &stMedal) {
+    UserMedalDao dao(_dataBass);
+    dao.getUserMedal(xmppId, stMedal);
+}
+
+void DataBasePlug::getMedalList(std::vector<QTalk::Entity::ImMedalList> &medals) {
+    MedalListDao dao(_dataBass);
+    dao.getMedalList(medals);
+}
+
+//
+void DataBasePlug::getMedalUsers(int medalId, std::vector<QTalk::StMedalUser> &metalUsers)
+{
+    UserMedalDao dao(_dataBass);
+    dao.getMedalUsers(medalId, metalUsers);
+}
+
+void DataBasePlug::modifyUserMedalStatus(const std::string& userId, int medalId, int status) {
+    auto func = _dbPool.enqueue([this, userId, medalId, status]() {
+        UserMedalDao dao(_dataBass);
+        dao.modifyUserMedalStatus(userId, medalId, status);
+    });
+    func.get();
 }

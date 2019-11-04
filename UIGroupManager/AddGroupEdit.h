@@ -1,4 +1,4 @@
-//
+﻿//
 // Created by QITMAC000260 on 2019-03-22.
 //
 #if _MSC_VER >= 1600
@@ -16,6 +16,7 @@
 * @create: 2019-03-22 17:31
 **/
 class AddGroupEdit : public QTextEdit {
+	Q_OBJECT
 public:
     explicit AddGroupEdit(QWidget* parent = nullptr);
     ~AddGroupEdit() override;

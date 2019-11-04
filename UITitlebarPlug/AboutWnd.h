@@ -26,6 +26,7 @@ private:
 private:
     QLabel* _pVersionLabel;
     QLabel* _pCopyrightLabel;
+    QLabel* _pBuildDateTimeLabel;
 };
 
 

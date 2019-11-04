@@ -54,7 +54,7 @@ protected:
     QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const override;
     bool editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index) override;
 
-signals:
+Q_SIGNALS:
     void itemCheckChanged(const QModelIndex& index);
     void itemDbClicked(const QModelIndex& index);
 
@@ -84,7 +84,7 @@ private slots:
 protected:
     void closeEvent(QCloseEvent* e) override ;
 
-signals:
+Q_SIGNALS:
     void sgUpdateUi();
 
 private:

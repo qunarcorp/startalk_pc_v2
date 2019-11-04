@@ -76,7 +76,7 @@ class QZXingFilter : public QAbstractVideoFilter
         Q_PROPERTY(QZXing* decoder READ getDecoder)
         Q_PROPERTY(QRectF captureRect MEMBER captureRect NOTIFY captureRectChanged)
 
-    signals:
+    Q_SIGNALS:
         void isDecodingChanged();
         void decodingFinished(bool succeeded, int decodeTime);
         void decodingStarted();

@@ -20,14 +20,12 @@ set(SOURCE_FILES
         SessionListDao.h
         UserDao.cpp
         UserDao.h
-        UserMemberDao.cpp
-        UserMemberDao.h
         sqlite/database.cpp
         sqlite/database.h
         sqlite/shell.c
         sqlite/sqlite3.c
         sqlite/sqlite3.h
-        sqlite/sqlite3ext.h UserSupplementDao.cpp UserSupplementDao.h DbConfig.cpp DbConfig.h FriendListDao.cpp FriendListDao.h CacheDataDao.h CacheDataDao.cpp QuickReplyDao.h QuickReplyDao.cpp TriggerConfig.h TriggerConfig.cpp)
+        sqlite/sqlite3ext.h UserSupplementDao.cpp UserSupplementDao.h DbConfig.cpp DbConfig.h FriendListDao.cpp FriendListDao.h CacheDataDao.h CacheDataDao.cpp QuickReplyDao.h QuickReplyDao.cpp TriggerConfig.h TriggerConfig.cpp DaoInterface.h MedalListDao.cpp MedalListDao.h UserMedalDao.cpp UserMedalDao.h)
 
 if(APPLE)
     ADD_DEFINITIONS(-D_MACOS)

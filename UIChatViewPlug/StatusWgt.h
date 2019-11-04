@@ -19,6 +19,7 @@ enum Status
 
 class StautsLabel : public QLabel
 {
+    Q_OBJECT
 public:
     explicit StautsLabel(QWidget* parent);
 	~StautsLabel() override;
@@ -47,7 +48,7 @@ public:
 	void updateUserSts(const QString& sts);
 	void showResource(const std::string& resource);
 
-signals:
+Q_SIGNALS:
 	void updateName(const QString&);
 	void updateMood(const QString&);
 
@@ -65,6 +66,8 @@ private:
 	QPushButton* _pBtnStructure{}; // 组织架构
 	QPushButton* _pBtnAddGroup{};  // 增加群聊/邀请加入群
 	QPushButton* _pBtnLock{};      //锁
+	QPushButton* _pEdit{};      //锁
+
 
 private:
     bool         _isGroupChat{};

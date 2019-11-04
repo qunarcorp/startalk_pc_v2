@@ -79,7 +79,7 @@ public slots:
 private slots:
 	void updateStaffUi();
 
-signals:
+Q_SIGNALS:
 	void gotPhoneNo(const std::string&, const std::string&);
 	void showHeadPicture(const QString&);
 	void sgOpenNewSession(const StSessionInfo&);

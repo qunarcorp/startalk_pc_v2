@@ -21,7 +21,7 @@ public:
 public:
     void clear();
 
-signals:
+Q_SIGNALS:
     void sendJsonSig(const QString&);
 
 private:

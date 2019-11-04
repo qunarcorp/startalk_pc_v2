@@ -6,6 +6,7 @@
 #include <QMap>
 #include <mutex>
 #include <map>
+#include <set>
 #include "../include/ThreadPool.h"
 #include "../UICom/UIEntity.h"
 #include "../entity/im_userSupplement.h"
@@ -61,7 +62,7 @@ public:
 
     std::string getSourceHead(const std::string& headLink);
 
-signals:
+Q_SIGNALS:
 
     void showUserCardSignal();
 
@@ -109,6 +110,7 @@ private:
     std::shared_ptr<QTalk::Entity::ImUserSupplement> _imuserSup;
     std::shared_ptr<QTalk::Entity::ImUserInfo>   _userInfo;
     std::shared_ptr<QTalk::Entity::ImGroupInfo> _imGroupSup;
+    std::set<QTalk::StUserMedal> _user_medal;
 
 private:
     QTalk::util::spin_mutex sm;

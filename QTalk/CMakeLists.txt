@@ -16,6 +16,17 @@ set(CMAKE_AUTORCC ON)
 find_package(Qt5 COMPONENTS Core REQUIRED)
 find_package(Qt5Widgets REQUIRED)
 find_package(Qt5Network)
+find_package(Qt5Concurrent)
+
+#SET(TRANSLATIONS
+#        lang_de.ts
+#        lang_en.ts
+#        )
+#
+#FIND_PACKAGE(Qt5LinguistTools)
+#QT5_ADD_TRANSLATION(QM_FILES ${TRANSLATIONS})
+#SET(QM_FILES ${QM_FILES} PARENT_SCOPE)
+#ADD_CUSTOM_TARGET (translations ALL DEPENDS ${QM_FILES})
 
 if (APPLE)
     ADD_DEFINITIONS(-D_MACOS)
@@ -25,6 +36,7 @@ if (APPLE)
             MacApp.mm)
     link_libraries(/System/Library/Frameworks/Carbon.framework/Carbon)
     link_libraries("-framework AppKit")
+    link_libraries("-framework AVFoundation")
 
 elseif (UNIX)
     ADD_DEFINITIONS(-D_LINUX)
@@ -98,6 +110,7 @@ if (WIN32)
             Qt5::Core
             Qt5::Widgets
             Qt5::Network
+            Qt5::Concurrent
             CustomUi
             QtUtil
             EventBus
@@ -111,6 +124,7 @@ else ()
             Qt5::Core
             Qt5::Widgets
             Qt5::Network
+            Qt5::Concurrent
             CustomUi
             QtUtil
             EventBus
@@ -123,12 +137,15 @@ endif ()
 
 
 if (APPLE)
-    if (CMAKE_BUILD_TYPE MATCHES "Release")
+    if (CMAKE_BUILD_TYPE MATCHES "RelWithDebInfo")
         set_target_properties(${PROJECT_NAME} PROPERTIES
                 MACOSX_BUNDLE TRUE
                 )
         set_property(TARGET ${PROJECT_NAME} PROPERTY MACOSX_BUNDLE_ICON_FILE ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}.icos)
-        set_property(TARGET ${PROJECT_NAME} PROPERTY MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/startalk.info.plist)
+        if (STARTALK STREQUAL "ON")
+            message("startalk")
+            set_property(TARGET ${PROJECT_NAME} PROPERTY MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/startalk.info.plist)
+        endif ()
         install(TARGETS ${PROJECT_NAME} DESTINATION ${PROJECT_NAME}.app)
     endif ()
 endif ()

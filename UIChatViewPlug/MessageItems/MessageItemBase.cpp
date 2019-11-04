@@ -24,6 +24,7 @@ MessageItemBase::MessageItemBase(const QTalk::Entity::ImMessageInfo &msgInfo, QW
     _btnShareCheck(nullptr),
     _isPressEvent(false),
     _alreadyRelease(false),
+    _medalWgt(nullptr),
     _readSts(0)
 {
 	QTalk::Entity::JID userId(msgInfo.From.data());
@@ -48,10 +49,13 @@ MessageItemBase::MessageItemBase(const QTalk::Entity::ImMessageInfo &msgInfo, QW
         _nameLab->setFixedHeight(16);
         _nameLab->setTextFormat(Qt::PlainText);
         _nameLab->installEventFilter(this);
-
-        std::shared_ptr<QTalk::Entity::ImUserInfo> userInfo
-                = dbPlatForm::instance().getUserInfo(_msgInfo.From);
-        changeUserMood(userInfo ? userInfo->Mood : "");
+        QString nameText = QString::fromStdString(_msgInfo.UserName);
+        _nameLab->setText(nameText);
+//        std::shared_ptr<QTalk::Entity::ImUserInfo> userInfo
+//                = dbPlatForm::instance().getUserInfo(_msgInfo.From);
+//        changeUserMood(userInfo ? userInfo->Mood : "");
+        //
+        updateUserMedal();
     }
 
 	QFileInfo fInfo(QString::fromStdString(_msgInfo.HeadSrc));
@@ -83,8 +87,9 @@ MessageItemBase::MessageItemBase(const QTalk::Entity::ImMessageInfo &msgInfo, QW
     }
 
 	qRegisterMetaType<std::string>("std::string");
-	connect(this, &MessageItemBase::sgChangeUserMood, this, &MessageItemBase::changeUserMood, Qt::QueuedConnection);
+//	connect(this, &MessageItemBase::sgChangeUserMood, this, &MessageItemBase::changeUserMood, Qt::QueuedConnection);
 	connect(this, &MessageItemBase::sgDisconnected, this, &MessageItemBase::onDisconnected, Qt::QueuedConnection);
+	connect(this, &MessageItemBase::sgUpdateUserMedal, this, &MessageItemBase::updateUserMedal, Qt::QueuedConnection);
 }
 
 MessageItemBase::~MessageItemBase()
@@ -159,7 +164,7 @@ bool MessageItemBase::eventFilter(QObject *o, QEvent *e)
             if(g_pMainPanel && g_pMainPanel->getConnectStatus())
             {
                 //
-                int ret = QtMessageBox::question(g_pMainPanel, "提醒", "确认重发此消息？");
+                int ret = QtMessageBox::question(g_pMainPanel, tr("提醒"), tr("确认重发此消息？"));
                 if(ret == QtMessageBox::EM_BUTTON_YES)
                 {
                     //
@@ -189,10 +194,18 @@ void MessageItemBase::setReadState(const QInt32& state)
     if(_readSts > state)
         return;
     _readSts = state;
-    if(state > 0 && _sending && _sending->isVisible())
+    if(state > 0)
     {
-        delete _sending;
-        _sending = nullptr;
+        if(_sending)
+        {
+            _sending->deleteLater();
+            _sending = nullptr;
+        }
+        if(_resending)
+        {
+            _resending->deleteLater();
+            _resending = nullptr;
+        }
     }
 
 
@@ -209,12 +222,12 @@ void MessageItemBase::setReadState(const QInt32& state)
 
     if(state & EM_READSTS_READED)
     {
-        _readStateLabel->setText("已读");
+        _readStateLabel->setText(tr("已读"));
         _readStateLabel->setStyleSheet("color:rgba(181, 181, 181, 1)");
     }
     else if(state & EM_READSTS_UNREAD)
     {
-        _readStateLabel->setText("未读");
+        _readStateLabel->setText(tr("未读"));
         _readStateLabel->setStyleSheet("color:rgba(0, 195, 188, 1)");
     }
 }
@@ -247,7 +260,7 @@ void MessageItemBase::changeUserMood(const std::string& mood)
         QString strMood = QString::fromStdString(mood).trimmed().replace(QRegExp("\\s{1,}"), " ");
         if(!strMood.isEmpty() && mood != "这个人很懒，什么都没留下")
         {
-            nameText.append(QString("「 %1 」").arg(strMood));
+            nameText.append(QString(tr("「 %1 」")).arg(strMood));
         }
         _nameLab->setToolTip(mood.data());
         nameText = nameText.replace("\n", " ");
@@ -273,5 +286,17 @@ void MessageItemBase::onDisconnected() {
         }
         if(_resending)
             _resending->setVisible(true);
+    }
+}
+
+void MessageItemBase::updateUserMedal() {
+    if (QTalk::Enum::ChatType::GroupChat == _msgInfo.ChatType
+        && QTalk::Entity::MessageDirectionReceive == _msgInfo.Direction ) {
+
+        if(nullptr == _medalWgt)
+            _medalWgt = new MedalWgt(18, this);
+        std::set<QTalk::StUserMedal> user_medal;
+        g_pMainPanel->getUserMedal(_msgInfo.From, user_medal);
+        _medalWgt->addMedals(user_medal, true);
     }
 }

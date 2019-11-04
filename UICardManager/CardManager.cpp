@@ -41,6 +41,10 @@ void CardManager::shwoUserCard(const QString &userId) {
                 _pMsgManager->getUserCard(_imuserSup, _userInfo);
             }
         }
+        //
+        _user_medal.clear();
+        if(_pMsgManager)
+            _pMsgManager->getUserMedal(userId.toStdString(), _user_medal);
 
         if (nullptr != _imuserSup && _pMsgManager) {
             emit showUserCardSignal();
@@ -84,6 +88,9 @@ void CardManager::showUserCardSlot() {
         if (_mapMaskNames.contains(usrId)) {
             _pUserCard->setMaskName(QString::fromStdString(_mapMaskNames[usrId]));
         }
+        //
+        _pUserCard->showMedal(_user_medal);
+        //
         _pUserCard->adjustSize();
         _pUserCard->showCenter(false, nullptr);
 		_pUserCard->resize(_pUserCard->width() + 10, _pUserCard->height());

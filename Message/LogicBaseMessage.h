@@ -53,4 +53,26 @@ public:
     QTalk::HttpRequest request;
     std::function<void(int, const std::string &)> callback;
 };
+
+class WebRtcCommand : public Event
+{
+public:
+    int msgType;
+    std::string cmd;
+    std::string jid;
+    bool isCarbon = false;
+};
+
+class SWebRtcCommand : public Event
+{
+public:
+    int msgType;
+    std::string cmd;
+    std::string jid;
+};
+
+class SgMedalListChanged : public Event{};
+
+class SgUserMedalChanged : public Event{};
+
 #endif //QTALK_V2_LOGICBASEMESSAGE_H

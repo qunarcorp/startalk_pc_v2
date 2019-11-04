@@ -25,11 +25,11 @@
 #include "../../CustomUi/QtMessageBox.h"
 #include "../../Platform/AppSetting.h"
 #include "../../UICom/StyleDefine.h"
+#include "../../UICom/qimage/qimage.h"
 #include <math.h>
 
 #ifdef _WINDOWS
 #include<windows.h>
-#define MessageBox MessageBox
 #else
 #include <unistd.h>
 #endif
@@ -149,7 +149,8 @@ FileItemWgt::FileItemWgt(StData data, bool showTitle, QWidget *parent)
 
     QLabel* iconLabel = new QLabel(this);
     iconLabel->setFixedSize(36, 36);
-    iconLabel->setPixmap(QPixmap(_data.fileData.iconPath));
+    QPixmap pixmap = QTalk::qimage::instance().loadPixmap(_data.fileData.iconPath, true, true, 36);
+    iconLabel->setPixmap(pixmap);
 
     QLabel* fileNameLabel = new QLabel(_data.fileData.fileName, this);
     QLabel* fileSizeLabel = new QLabel(_data.fileData.fileSize, this);
@@ -213,7 +214,7 @@ FileItemWgt::FileItemWgt(StData data, bool showTitle, QWidget *parent)
     auto* _menu = new QMenu(this);
     _menu->setAttribute(Qt::WA_TranslucentBackground, true);
 
-    auto* forwardAct = new QAction("转发", _menu);
+    auto* forwardAct = new QAction(tr("转发"), _menu);
     _menu->addAction(forwardAct);
 
     connect(moreBtn, &QToolButton::clicked, [this, _menu](){
@@ -228,7 +229,7 @@ FileItemWgt::FileItemWgt(StData data, bool showTitle, QWidget *parent)
         QString fileName = _data.fileData.filePath;
         QFileInfo info(_data.fileData.filePath);
         if (fileName.isEmpty() || !info.exists()) {
-            QtMessageBox::warning(g_pMainPanel, "提醒", "未找到本地文件!");
+            QtMessageBox::warning(g_pMainPanel, tr("提醒"), tr("未找到本地文件!"));
             _openPathBtn->setVisible(false);
             downloadBtn->setVisible(true);
         } else {
@@ -265,7 +266,7 @@ FileItemWgt::FileItemWgt(StData data, bool showTitle, QWidget *parent)
         src << AppSetting::instance().getFileSaveDirectory()
             << "/"
             << fileName.toStdString();
-        QString qLocalFilePath = QFileDialog::getSaveFileName(g_pMainPanel, "选择文件下载路径", src.str().data());
+        QString qLocalFilePath = QFileDialog::getSaveFileName(g_pMainPanel, tr("选择文件下载路径"), src.str().data());
 
         if(!qLocalFilePath.isEmpty())
         {
@@ -324,10 +325,14 @@ void FileItemWgt::setProcess(double speed, double dtotal, double dnow, double ut
     if (compare_doule_Equal(100, process)) //
     {
         // 创建软链
-        std::thread([this](){
+        QPointer<FileItemWgt> pThis(this);
+        std::thread([pThis](){
+
+            if(!pThis) return;
+
             int i = 0;
-            QString localFilePath(getLocalFilePath(_data.messageId.toStdString(),
-                                              _data.fileData.fileMd5.toStdString()));
+            QString localFilePath(getLocalFilePath(pThis->_data.messageId.toStdString(),
+                                                   pThis->_data.fileData.fileMd5.toStdString()));
             while (!QFile::exists(localFilePath) && i < 100) {
 #ifdef _WINDOWS
                 Sleep(100);
@@ -336,10 +341,10 @@ void FileItemWgt::setProcess(double speed, double dtotal, double dnow, double ut
 #endif
                 ++i;
             }
-            if(!localFilePath.isEmpty())
+            if(pThis && !localFilePath.isEmpty())
             {
-                g_pMainPanel->makeFileLink(localFilePath, _data.fileData.fileMd5.toStdString().data());
-                _data.fileData.filePath = localFilePath;
+                g_pMainPanel->makeFileLink(localFilePath, pThis->_data.fileData.fileMd5.toStdString().data());
+                pThis->_data.fileData.filePath = localFilePath;
             }
 
         }).join();

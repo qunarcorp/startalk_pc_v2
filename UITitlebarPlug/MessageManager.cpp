@@ -1,8 +1,11 @@
 ﻿#include "MessageManager.h"
+
+#include <utility>
 #include "MainPanel.h"
 #include "../Message/UserMessage.h"
 #include "../EventBus/EventBus.h"
 #include "../Message/ChatMessage.h"
+#include "../Message/LogicBaseMessage.h"
 
 /**
   * 发送消息类
@@ -32,6 +35,27 @@ void TitlebarMsgManager::getUserCard(const std::string &domain, const std::strin
 	GetUserCardMessage e;
 	e.mapUserIds[domain][userName] = version;
 	EventBus::FireEvent(e);
+}
+
+std::string TitlebarMsgManager::uploadImage(const std::string& localFilePath)
+{
+    LocalImgEvt e;
+    e.localFilePath = localFilePath;
+    EventBus::FireEvent(e, false);
+
+    return e.netFilePath;
+}
+
+void TitlebarMsgManager::sendPostReq(const std::string &url, const std::string &params,
+        std::function<void(int code, const std::string &responseData)> callback)
+{
+    S_AddHttpQeq req;
+    req.request.url = url;
+    req.request.method = 1;
+    req.request.body = params;
+    req.request.header["Content-Type"] = "application/json;";
+    req.callback = std::move(callback);
+    EventBus::FireEvent(req);
 }
 
 /**

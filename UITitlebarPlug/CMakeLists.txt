@@ -41,7 +41,11 @@ set(SOURCE_FILES
         SKRecorder.cpp
         SKRecorder.h
         ChangeHeadWnd.cpp
-        ChangeHeadWnd.h SearchView.cpp SearchView.h UCButton.cpp UCButton.h)
+        ChangeHeadWnd.h
+        SearchView.cpp
+        SearchView.h
+        UCButton.cpp
+        UCButton.h)
 
 
 if (APPLE)

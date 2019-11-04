@@ -4,6 +4,8 @@
 
 #include "dbPlatForm.h"
 #include "../LogicManager/LogicManager.h"
+#include "../QtUtil/lib/cjson/cJSON_inc.h"
+#include "../QtUtil/lib/cjson/cJSON.h"
 
 dbPlatForm* dbPlatForm::_platform = nullptr;
 
@@ -74,7 +76,38 @@ void dbPlatForm::getAllGroup(std::vector<QTalk::Entity::ImGroupInfo> &groups)
 }
 
 bool dbPlatForm::isHotLine(const std::string &jid) {
-    return LogicManager::instance()->getDatabase()->isHotLine(jid);
+
+    if(_hotLines.empty())
+    {
+        std::string strHotLines;
+        LogicManager::instance()->getDatabase()->getHotLines(strHotLines);
+
+        if(strHotLines.empty())
+            return false;
+
+        cJSON *jsonObj = cJSON_Parse(strHotLines.c_str());
+        if (jsonObj == nullptr) {
+            error_log("json paring error");
+            return false;
+        }
+        cJSON_bool ret = QTalk::JSON::cJSON_SafeGetBoolValue(jsonObj, "ret");
+        if(ret){
+            cJSON *data = cJSON_GetObjectItem(jsonObj, "data");
+            cJSON *allHotLines = cJSON_GetObjectItem(data,"allhotlines");
+
+            cJSON* hotLine = allHotLines->child;
+            while (hotLine)
+            {
+                if(cJSON_IsString(hotLine))
+                    _hotLines.insert(hotLine->string);
+                hotLine = hotLine->next;
+            }
+
+            cJSON_Delete(jsonObj);
+        }
+    }
+
+    return _hotLines.find(jid) != _hotLines.end();
 }
 
 std::shared_ptr<std::vector<std::shared_ptr<QTalk::Entity::ImSessionInfo> > > dbPlatForm::reloadSession() {
@@ -107,4 +140,32 @@ std::string dbPlatForm::getMaskName(const std::string& xmppId) {
         return itFind->second;
     else
         return std::string();
+}
+
+//
+void dbPlatForm::setHotLines(const std::set<std::string> &hotlines) {
+    std::lock_guard<QTalk::util::spin_mutex> lock(sm);
+    _hotLines = hotlines;
+}
+
+void dbPlatForm::setMedals(const std::vector<QTalk::Entity::ImMedalList> &medals) {
+    std::lock_guard<QTalk::util::spin_mutex> lock(sm);
+    _medals = medals;
+}
+
+QTalk::Entity::ImMedalList dbPlatForm::getMedal(const int &id) {
+    std::lock_guard<QTalk::util::spin_mutex> lock(sm);
+    auto itFind = std::find_if(_medals.begin(), _medals.end(), [id](const QTalk::Entity::ImMedalList& medal){
+        return medal.medalId == id;
+    });
+
+    if(itFind == _medals.end())
+        return QTalk::Entity::ImMedalList();
+    else
+        return *itFind;
+}
+
+void dbPlatForm::getAllMedals(std::vector<QTalk::Entity::ImMedalList> &medals) {
+    std::lock_guard<QTalk::util::spin_mutex> lock(sm);
+    medals = this->_medals;
 }

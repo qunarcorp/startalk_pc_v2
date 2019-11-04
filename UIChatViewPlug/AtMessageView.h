@@ -35,7 +35,7 @@ public:
     explicit AtItemDelegate(QObject *parent = nullptr);
     ~AtItemDelegate() override;
 
-signals:
+Q_SIGNALS:
 	void itemClicked(const QString&, const QString&);
 
 protected:
@@ -44,7 +44,7 @@ protected:
     QSize sizeHint(const QStyleOptionViewItem &option,
                    const QModelIndex &index) const override;
 	bool editorEvent(QEvent *e, QAbstractItemModel *model,
-		const QStyleOptionViewItem &option, const QModelIndex &index);
+		const QStyleOptionViewItem &option, const QModelIndex &index) override ;
 };
 
 class InputWgt;
@@ -53,13 +53,14 @@ class AtMessageView : public QFrame
 	Q_OBJECT
 public:
     explicit AtMessageView(InputWgt *inputWgt);
-    ~AtMessageView();
+    ~AtMessageView() override;
 
 public:
     void addItem(const QString& icon, const QString& xmppId, const QString& name, const QString& searchIndex);
     void updateGroupMemberInfo(const std::vector<QTalk::StUserCard>& member);
     void deleteItem(const QString& memberId);
     void updateFilter();
+    bool match(const QString& str);
 
     bool eventFilter(QObject* o, QEvent* e) override;
 protected:
@@ -78,7 +79,7 @@ private:
 private:
     InputWgt              *_pInputWgt;
     int                   _pos;
-    int                   _count;
+    bool _matched = false;
 
     QMutex _mutex;
 };

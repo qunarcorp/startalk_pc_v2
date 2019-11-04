@@ -1,4 +1,4 @@
-//
+﻿//
 // Created by QITMAC000260 on 2019-04-16.
 //
 
@@ -18,6 +18,7 @@ class QRcode;
 class QLabel;
 class QTextEdit;
 class MakeQRcode : public QFrame {
+	Q_OBJECT
 public:
     explicit MakeQRcode(QRcode* parent = nullptr);
     ~MakeQRcode() override;

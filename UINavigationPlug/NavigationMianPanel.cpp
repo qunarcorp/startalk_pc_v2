@@ -29,8 +29,10 @@ NavigationMianPanel::NavigationMianPanel(QWidget *parent) :
         _messageListener(nullptr),
         _pTcpDisconnect(nullptr),
         _pConnToServerTimer(nullptr){
-    init();
+
     qRegisterMetaType<ReceiveSession>("ReceiveSession");
+    qRegisterMetaType<QTalk::Entity::UID>("QTalk::Entity::UID");
+    init();
 }
 
 NavigationMianPanel::~NavigationMianPanel() {
@@ -211,6 +213,10 @@ void NavigationMianPanel::connects() {
     connect(this, &NavigationMianPanel::sgShortCutSwitchSession, _pSessionFrm, &SessionFrm::onShortCutSwitchSession);
     connect(this, &NavigationMianPanel::sgChangeUserHead, _pSessionFrm, &SessionFrm::onUserHeadChange);
     connect(this, &NavigationMianPanel::sgUserConfigChanged, _pSessionFrm, &SessionFrm::onUserConfigChanged);
+    //
+    connect(this, &NavigationMianPanel::sgShowDraft, _pSessionFrm, &SessionFrm::onShowDraft);
+
+    connect(this, &NavigationMianPanel::sgGotMState, _pSessionFrm, &SessionFrm::onGotMState);
 }
 
 /**
@@ -222,9 +228,8 @@ void NavigationMianPanel::connects() {
   */
 void NavigationMianPanel::connToServerTimerSlot(bool sts) {
     if (nullptr != _pConnToServerTimer) {
-        // 如果是断链状态 则重新连接后 重现加载session
-        if (_conneted && _pConnToServerTimer->isActive())
-            emit loadSession();
+//        if (_conneted && _pConnToServerTimer->isActive())
+//            emit loadSession();
         sts ? _pConnToServerTimer->start() : _pConnToServerTimer->stop();
     }
 }
@@ -312,14 +317,14 @@ void NavigationMianPanel::retryToConnect() {
     }
     //
     if(_pTcpDisconnect)
-        _pTcpDisconnect->setText(QStringLiteral("正在重连"));
+        _pTcpDisconnect->setText((tr("正在重连")));
 
     if (nullptr != _messageManager) {
         std::thread([this, host, port](){
             // try connect to server
-            std::auto_ptr<QTcpSocket> tcpSocket(new QTcpSocket);
+            std::unique_ptr<QTcpSocket> tcpSocket(new QTcpSocket);
             tcpSocket->connectToHost(host.data(), port);
-            if(!tcpSocket->waitForConnected(5000))
+            if(!tcpSocket->waitForConnected(9000))
             {
                 tcpSocket->abort();
                 emit connToServerTimerSignal(true);
@@ -331,13 +336,13 @@ void NavigationMianPanel::retryToConnect() {
         }).detach();
     }
     //
-    QTimer::singleShot(6000, [this](){
+    QTimer::singleShot(10000, [this](){
         if(!_conneted)
         {
             if(_pTcpDisconnect)
-                _pTcpDisconnect->setText(QStringLiteral("当前网络不可用"));
+                _pTcpDisconnect->setText((tr("当前网络不可用")));
 
-            emit connToServerTimerSignal(true);
+//            emit connToServerTimerSignal(true);
         }
     });
 }
@@ -385,6 +390,7 @@ void NavigationMianPanel::onLoginSuccess() {
         QMutexLocker locker(&_pSessionFrm->_mutex);
         _pSessionFrm->pSessions = dbPlatForm::instance().QueryImSessionInfos();
         _conneted = true;
+        emit loadSession();
     }
     emit setDisconnectWgtVisible(false);
     emit connToServerTimerSignal(false);
@@ -506,7 +512,6 @@ void NavigationMianPanel::onDestroyGroup(const std::string &groupId) {
  */
 void NavigationMianPanel::jumpToNewMessage() {
     if (!Platform::instance().isMainThread()) {
-        ////info_log("NavigationMianPanel::jumpToNewMessage");
         throw std::runtime_error("not main thread");
     }
     if (_pSessionFrm)
@@ -543,4 +548,21 @@ void NavigationMianPanel::onChangeHeadRet(bool ret,  const std::string& xmppId, 
 void NavigationMianPanel::updateTatalReadCount()
 {
     emit updateTotalUnreadCount(_pSessionFrm->getAllCount());
+}
+
+void NavigationMianPanel::onAppDeactivated() {
+    if (_pSessionFrm)
+        _pSessionFrm->onAppDeactivated();
+}
+
+/**
+ *
+ */
+void NavigationMianPanel::onAppActive() {
+    if (_pSessionFrm)
+        _pSessionFrm->onAppActive();
+}
+
+void NavigationMianPanel::onGotMState(const QTalk::Entity::UID &uid, const QString &messageId, const long long &time) {
+    emit sgGotMState(uid, messageId, time);
 }

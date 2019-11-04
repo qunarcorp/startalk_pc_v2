@@ -1,4 +1,4 @@
-//
+﻿//
 // Created by cc on 19-1-9.
 //
 
@@ -26,6 +26,7 @@ struct StShowAtInfo {
 class ChatMainWgt;
 class AtMessageTip : public QFrame
 {
+	Q_OBJECT
 public:
     AtMessageTip(ChatMainWgt* chatMainWgt);
     ~AtMessageTip();

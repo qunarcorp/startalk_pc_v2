@@ -23,6 +23,7 @@ class HeadPhotoLab;
 class ModButton;
 class GroupCard : public UShadowDialog
 {
+	Q_OBJECT
 public:
     GroupCard(CardManager* cardManager);
     ~GroupCard();
@@ -47,7 +48,7 @@ private:
     HeadPhotoLab*      _pHeadLabel;
     QPushButton* _pSendMailBtn;
     QPushButton* _pExitGroupBtn;
-    QPushButton* _pMoreBtn;
+    QPushButton* _pDestroyGroupBtn;
 
     QLineEdit*   _pGroupNameEdit;
     QTextEdit*    _pGroupIdEdit;
@@ -57,8 +58,6 @@ private:
     QPushButton* _pSendMsgBtn;
 
     GroupMemberPopWnd* _pGroupMemberPopWnd;
-
-    QMenu*        _pMoreMenu;
 
     ModButton*    _modGroupName;
     ModButton*    _modGroupTopic;

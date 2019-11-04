@@ -19,13 +19,17 @@ public:
 
     ~WebJsObj() override;
 
-signals:
+Q_SIGNALS:
 
     void runScript(const QString &js);
 
     void sgFullScreen();
 
     void closeGroupRoom();
+
+    void sgSendSignal(const QString&, const QString&);
+
+    void sgCloseRtcWindow(const QString&, long long);
 
 public:
     Q_INVOKABLE void getCkey();
@@ -49,7 +53,16 @@ public:
     Q_INVOKABLE void enableFullScreen(const QString &roomid);
 
     Q_INVOKABLE void cancelFullScreen(const QString &roomid);
+    // 二人视频
+    Q_INVOKABLE void sendSignal(const QString& json, const QString&id);
 
+    Q_INVOKABLE void closeRtcWindow( const QString&id, long long occupied_time);
+
+    Q_INVOKABLE void StartVideoSound(const QString&id);
+
+    Q_INVOKABLE void StopVideoSound(const QString&id);
+
+    Q_INVOKABLE void WriteLocalLog(const QString&id, const QString&log);
 };
 
 

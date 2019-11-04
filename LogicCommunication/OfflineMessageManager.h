@@ -25,8 +25,8 @@ public:
 
 public:
     bool updateChatOfflineMessage();
-    void updateGroupOfflineMessage();
-    void updateNoticeOfflineMessage();
+    bool updateGroupOfflineMessage();
+    bool updateNoticeOfflineMessage();
     void updateGroupMasks();
     void updateChatMasks();
 

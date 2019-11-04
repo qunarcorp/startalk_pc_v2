@@ -34,7 +34,7 @@ private:
     void dealTimer();
     QString dealMessageContent();
 
-signals:
+Q_SIGNALS:
     void openChatWnd(QUInt8, QString,QString, QString, QString);
 
 protected:

@@ -13,6 +13,7 @@
 #include <functional>
 
 class SKRecorder : public QFrame {
+	Q_OBJECT
 public:
     typedef enum {
         SKRecorderState_Normal,

@@ -30,5 +30,14 @@
         <file>image1/Star_normal_2.png</file>
         <file>image1/sex_female_2.png</file>
         <file>image1/sex_male_2.png</file>
+        <file>image1/UserMedalBg.png</file>
+        <file>image1/MadelBg.png</file>
+        <file>image1/MadelDefault.png</file>
+        <file>image1/back.png</file>
+        <file>image1/ComingSoon.png</file>
+        <file>image1/btn_destroy.png</file>
+        <file>image1/btn_destroy_black.png</file>
+        <file>image1/btn_destroy_hover.png</file>
+        <file>image1/btn_destroy_hover_black.png</file>
     </qresource>
 </RCC>

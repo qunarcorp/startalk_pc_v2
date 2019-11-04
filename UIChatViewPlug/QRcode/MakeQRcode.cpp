@@ -29,9 +29,9 @@ MakeQRcode::MakeQRcode(QRcode* parent)
     _pInputEdit = new QTextEdit(this);
     _pInputEdit->setAcceptRichText(false);
     _pInputEdit->setObjectName("QRCodeEdit");
-    _pInputEdit->setPlaceholderText("请输入链接");
+    _pInputEdit->setPlaceholderText(tr("请输入链接"));
     _pInputEdit->setFixedHeight(68);
-    auto* submitBtn = new QPushButton("生成二维码", this);
+    auto* submitBtn = new QPushButton(tr("生成二维码"), this);
     submitBtn->setObjectName("makeQRCodeBtn");
     submitBtn->setFixedSize(94, 32);
     _pQRCodeLabel = new QLabel(this);
@@ -62,8 +62,8 @@ MakeQRcode::MakeQRcode(QRcode* parent)
     //
     _pMenu = new QMenu(this);
     _pMenu->setAttribute(Qt::WA_TranslucentBackground, true);
-    auto* copyAct = new QAction("拷贝", _pMenu);
-    auto* saveAct = new QAction("保存", _pMenu);
+    auto* copyAct = new QAction(tr("拷贝"), _pMenu);
+    auto* saveAct = new QAction(tr("保存"), _pMenu);
     _pMenu->addAction(copyAct);
     _pMenu->addAction(saveAct);
     //
@@ -150,9 +150,9 @@ void MakeQRcode::onSaveAct(bool)
 
             bool isOk = _pixmap.save(fileName, "png");
             if(isOk)
-                QtMessageBox::information(g_pMainPanel, "提示", QString("文件已成功保存至: %1").arg(fileName));
+                QtMessageBox::information(g_pMainPanel, tr("提示"), QString(tr("文件已成功保存至: %1")).arg(fileName));
             else
-                QtMessageBox::warning(g_pMainPanel, "错误", "文件保存失败");
+                QtMessageBox::warning(g_pMainPanel, tr("错误"), tr("文件保存失败"));
         }
     }
 }

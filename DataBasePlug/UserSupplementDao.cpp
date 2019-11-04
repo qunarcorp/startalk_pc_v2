@@ -6,18 +6,14 @@
 #include "../QtUtil/Utils/Log.h"
 
 UserSupplementDao::UserSupplementDao(qtalk::sqlite::database *sqlDb)
-    :_sqlDb(sqlDb)
+    :DaoInterface(sqlDb)
 {
-
-}
-
-UserSupplementDao::~UserSupplementDao() {
 
 }
 
 bool UserSupplementDao::creatTable()
 {
-    if (!_sqlDb)
+    if (!_pSqlDb)
     {
         return false;
     }
@@ -34,7 +30,7 @@ bool UserSupplementDao::creatTable()
                       "`ExtendedFlag`	BLOB, "
                       "PRIMARY KEY(`XmppId`) ) ";
 
-    qtalk::sqlite::statement query(*_sqlDb, sql);
+    qtalk::sqlite::statement query(*_pSqlDb, sql);
     bool sqlResult = query.executeStep();
     if (!sqlResult)
     {
@@ -48,13 +44,13 @@ bool UserSupplementDao::creatTable()
  * @return
  */
 bool UserSupplementDao::clearData() {
-    if (!_sqlDb) {
+    if (!_pSqlDb) {
         return false;
     }
 
     std::string sql = "DELETE FROM `IM_UserSupplement`;";
     try {
-        qtalk::sqlite::statement query(*_sqlDb, sql);
+        qtalk::sqlite::statement query(*_pSqlDb, sql);
         return query.executeStep();
     }
     catch (const std::exception &e) {
@@ -65,7 +61,7 @@ bool UserSupplementDao::clearData() {
 
 bool UserSupplementDao::insertOrUpdateUserMood(const std::string &userId, const std::string &userMood, const int &version)
 {
-    if (!_sqlDb)
+    if (!_pSqlDb)
     {
         return false;
     }
@@ -76,7 +72,7 @@ bool UserSupplementDao::insertOrUpdateUserMood(const std::string &userId, const 
     else
         sql = "UPDATE `IM_UserSupplement` SET `UserMood` = ?, `UserMoodVersion` = ? WHERE `XmppId` = ?";
 
-    qtalk::sqlite::statement query(*_sqlDb, sql);
+    qtalk::sqlite::statement query(*_pSqlDb, sql);
     try
     {
         query.bind(1, userMood);
@@ -93,7 +89,7 @@ bool UserSupplementDao::insertOrUpdateUserMood(const std::string &userId, const 
 
 int UserSupplementDao::checkRecordCount(const std::string &userId)
 {
-    if (!_sqlDb)
+    if (!_pSqlDb)
     {
         return 0;
     }
@@ -101,7 +97,7 @@ int UserSupplementDao::checkRecordCount(const std::string &userId)
     int ret = 0;
 
     std::string sql = "SELECT COUNT(`XmppId`) FROM `IM_UserSupplement` WHERE XmppId = ?";
-    qtalk::sqlite::statement query(*_sqlDb, sql);
+    qtalk::sqlite::statement query(*_pSqlDb, sql);
     try
     {
         query.bind(1, userId);
@@ -120,7 +116,7 @@ int UserSupplementDao::checkRecordCount(const std::string &userId)
 
 bool UserSupplementDao::insertOrUpdateUserPhoneNo(const std::string &userId, const std::string &phoneNo)
 {
-    if (!_sqlDb)
+    if (!_pSqlDb)
     {
         return false;
     }
@@ -131,7 +127,7 @@ bool UserSupplementDao::insertOrUpdateUserPhoneNo(const std::string &userId, con
     else
         sql = "UPDATE `IM_UserSupplement` SET `PhoneNo` = ? WHERE `XmppId` = ?";
 
-    qtalk::sqlite::statement query(*_sqlDb, sql);
+    qtalk::sqlite::statement query(*_pSqlDb, sql);
     try
     {
         query.bind(1, phoneNo);
@@ -147,7 +143,7 @@ bool UserSupplementDao::insertOrUpdateUserPhoneNo(const std::string &userId, con
 
 bool UserSupplementDao::insertOrUpdateUserSuppl(std::shared_ptr<QTalk::Entity::ImUserSupplement> imUserSup)
 {
-    if (!_sqlDb)
+    if (!_pSqlDb)
     {
         return false;
     }
@@ -156,7 +152,7 @@ bool UserSupplementDao::insertOrUpdateUserSuppl(std::shared_ptr<QTalk::Entity::I
                       "`LeaderId`, `LeaderName`, `PhoneNo`, `MailAddr`) "
                       "VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
 
-    qtalk::sqlite::statement query(*_sqlDb, sql);
+    qtalk::sqlite::statement query(*_pSqlDb, sql);
     try
     {
         query.bind(1, imUserSup->XmppId);

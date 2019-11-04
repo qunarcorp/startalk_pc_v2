@@ -60,7 +60,7 @@ bool PictureFrm::loadNewPicture(const QString &picTure, bool isFirst) {
     _pixmap = QTalk::qimage::instance().loadPixmap(picTure, false);
     if(_pixmap.isNull())
     {
-        QtMessageBox::information(nullptr, "提示", "加载图片失败");
+        QtMessageBox::information(nullptr, tr("提示"), tr("加载图片失败"));
         _pPicBrowser->setVisible(false);
         return false;
     }
@@ -137,21 +137,38 @@ void PictureFrm::connects() {
         QString strHistoryFileDir = QString::fromStdString(Platform::instance().getHistoryDir());
         QFileInfo oldFileInfo(_strPicPath);
         QString suffix = QTalk::qimage::instance().getRealImageSuffix(_strPicPath).toLower();
-        QString savePath = QFileDialog::getSaveFileName(_pPicBrowser, QStringLiteral("请选择保存路径"),
-            QString("%1/%2").arg(strHistoryFileDir, oldFileInfo.baseName()),
-            QString("(*.png);;(*.jpg);;(*.webp)"));
-        if (!savePath.isEmpty()) {
 
-            Platform::instance().setHistoryDir(QFileInfo(savePath).absoluteDir().absolutePath().toStdString());
-            QString newPath = QString("%1").arg(savePath);
-            QString newSuffix = QFileInfo(newPath).suffix().toUpper();
-            //
-            auto tmpPix = QTalk::qimage::instance().loadPixmap(_strPicPath, false);
-            if(!tmpPix.isNull())
-            {
-                auto format = newSuffix.toUtf8().data();
-                tmpPix.save(newPath, format, 100);
-                QtMessageBox::information(_pPicBrowser, "提醒", "图片保存成功");
+        if(suffix.toLower() == "webp")
+        {
+            QString newPath = QFileDialog::getSaveFileName(this, tr("请选择文件保存路径"),
+                                                           QString("%1/%2").arg(strHistoryFileDir, oldFileInfo.baseName()),
+                                                           QString("(*.png);;(*.jpg);;(*.webp)"));
+            if (!newPath.isEmpty()) {
+                Platform::instance().setHistoryDir(QFileInfo(newPath).absoluteDir().absolutePath().toStdString());
+                QString newSuffix = QFileInfo(newPath).suffix().toUpper();
+                //
+                auto tmpPix = QTalk::qimage::instance().loadPixmap(_strPicPath, false);
+                if(!tmpPix.isNull())
+                {
+                    auto format = newSuffix.toUtf8().data();
+                    if(tmpPix.save(newPath, format, 100))
+                        QtMessageBox::information(_pPicBrowser, tr("提醒"), tr("图片保存成功"));
+                }
+            }
+        }
+        else
+        {
+            QString saveDir = QFileDialog::getSaveFileName(this, tr("请选择文件保存路径"),
+                                                           QString("%1/%2").arg(strHistoryFileDir, oldFileInfo.baseName()),
+                                                           QString("%1 (*.%1)").arg(suffix.isEmpty() ? "*" : suffix));
+            if (!saveDir.isEmpty()) {
+                Platform::instance().setHistoryDir(QFileInfo(saveDir).absoluteDir().absolutePath().toStdString());
+                QString newPath = QString("%1").arg(saveDir);
+                if(QFileInfo(newPath).suffix().isEmpty() && !oldFileInfo.suffix().isEmpty())
+                    newPath += QString(".%1").arg(oldFileInfo.suffix());
+
+                if(QFile::copy(_strPicPath, newPath))
+                    QtMessageBox::information(_pPicBrowser, tr("提醒"), tr("图片保存成功"));
             }
         }
     });

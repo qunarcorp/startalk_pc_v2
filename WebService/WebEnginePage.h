@@ -21,7 +21,7 @@ public:
 
     ~WebEnginePage() override;
 
-signals:
+Q_SIGNALS:
     void sgFullScreen();
 
 private :

@@ -12,6 +12,7 @@
 #include "../entity/im_group.h"
 #include "../Message/GroupMessage.h"
 #include <string>
+#include <set>
 #include <memory>
 
 class CardManager;
@@ -24,6 +25,7 @@ public:
 public:
     void getUserCard(std::shared_ptr<QTalk::Entity::ImUserSupplement>&,
             std::shared_ptr<QTalk::Entity::ImUserInfo>&);
+    void getUserMedal(const std::string& xmppId, std::set<QTalk::StUserMedal>& medal);
     void getUserPhoneNo(const std::string& userId, std::string& phoneNo);
     void setUserSetting(bool isSetting, const std::string& key, const std::string& subKey, const std::string& value);
     void getGroupCard(std::shared_ptr<QTalk::Entity::ImGroupInfo>&);
@@ -33,6 +35,8 @@ public:
     void destroyGroupMsg(const std::string& groupId);
     void updateMood(const std::string& mood);
     std::string getSourceImage(const std::string& netPath);
+    static void getMedalUser(int medalId, std::vector<QTalk::StMedalUser>& metalUsers);
+    static bool modifyUserMedal(int medalId, bool wear);
 };
 
 class UserCardMessageListener : public EventHandler<UpdateUserConfigMsg>

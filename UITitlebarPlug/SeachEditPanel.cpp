@@ -94,7 +94,7 @@ bool SeachEditPanel::eventFilter(QObject *o, QEvent *e) {
         {
             _clearBtn->setVisible(true);
             QColor selectColor = QTalk::StyleDefine::instance().getTitleSearchSelectColor();
-            QString qss = QString("QFrame#searchFrm{background:rgba(%1, %2, %3, %4);"
+            QString qss = QString("QFrame{background:rgba(%1, %2, %3, %4);"
                                   "border:1px solid rgba(0,202,190,1);}")
                                           .arg(selectColor.red()).arg(selectColor.green())
                                           .arg(selectColor.blue()).arg(selectColor.alphaF());
@@ -105,7 +105,7 @@ bool SeachEditPanel::eventFilter(QObject *o, QEvent *e) {
         {
             _clearBtn->setVisible(false);
             QColor normalColor = QTalk::StyleDefine::instance().getTitleSearchNormalColor();
-            QString qss = QString("QFrame#searchFrm{background:rgba%1, %2, %3, %4);};") .arg(normalColor.red()).arg(normalColor.green())
+            QString qss = QString("QFrame{background:rgba(%1, %2, %3, %4);}") .arg(normalColor.red()).arg(normalColor.green())
                     .arg(normalColor.blue()).arg(normalColor.alphaF());
             this->setStyleSheet(qss);
             style()->polish(this);

@@ -22,7 +22,7 @@ public:
 public:
     void setCheckState(bool isCheck);
 
-signals:
+Q_SIGNALS:
     void clicked(int);
 
 protected:

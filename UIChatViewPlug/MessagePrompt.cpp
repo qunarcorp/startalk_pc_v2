@@ -122,7 +122,7 @@ void MessagePrompt::initUi()
     else if(_msg.ChatType == QTalk::Enum::System)
     {
         headPath = ":/chatview/image1/system.png";
-        _pLabelName->setText("系统消息");
+        _pLabelName->setText(tr("系统消息"));
     }
     else
     {
@@ -211,44 +211,54 @@ QString MessagePrompt::dealMessageContent() {
     {
 
 	case QTalk::Entity::MessageTypeFile:
-		ret += "[文件]";
+		ret += tr("[文件]");
 		break;
     case QTalk::Entity::MessageTypePhoto:
-        ret += "[图片]";
+        ret += tr("[图片]");
         break;
 	case QTalk::Entity::MessageTypeImageNew:
-		ret += "[表情]";
+		ret += tr("[表情]");
 		break;
     case QTalk::Entity::MessageTypeSmallVideo:
-        ret += "[视频]";
+        ret += tr("[视频]");
         break;
-    case QTalk::Entity::WebRTC_MsgType_Video:
-        ret += "[语音视频]";
+    case QTalk::Entity::WebRTC_MsgType_VideoCall:
+        ret += tr("[实时视频]");
+        break;
+    case QTalk::Entity::WebRTC_MsgType_AudioCall:
+        ret += tr("[实时音频]");
+        break;
+    case QTalk::Entity::WebRTC_MsgType_Video_Group:
+        ret += tr("[群组视频]");
         break;
 	case QTalk::Entity::MessageTypeCommonTrdInfo:
 	case QTalk::Entity::MessageTypeCommonTrdInfoV2:
-		ret += "[链接卡片]";
+		ret += tr("[链接卡片]");
 		break;
     case QTalk::Entity::MessageTypeSourceCode:
-        ret += "[代码块]";
+        ret += tr("[代码块]");
         break;
     case QTalk::Entity::MessageTypeVoice:
-        ret += "[语音]";
+        ret += tr("[语音]");
         break;
     case QTalk::Entity::MessageTypeProduct:
     case QTalk::Entity::MessageTypeNote:
-        ret += "[产品详情]";
+        ret += tr("[产品详情]");
         break;
     case QTalk::Entity::MessageTypeSystem:
-        ret += "[系统消息]";
+        ret += tr("[系统消息]");
         break;
     case QTalk::Entity::MessageTypeNotice:
-        ret += "[公告消息]";
+        ret += tr("[公告消息]");
         break;
      case QTalk::Entity::MessageTypeGrabMenuVcard:
      case QTalk::Entity::MessageTypeGrabMenuResult:
-         ret += "[抢单消息]";
+         ret += tr("[抢单消息]");
          break;
+    case 65537:
+    case 65538:
+        ret += tr("[热线提示信息]");
+        break;
     default:
     case QTalk::Entity::MessageTypeText:
     case QTalk::Entity::MessageTypeGroupAt:
@@ -265,13 +275,13 @@ QString MessagePrompt::dealMessageContent() {
                 QString type = regExp.cap(1); // 多媒体类型
 
                 if ("url" == type) {
-                    tmpContent.replace(pos, item.size(), "[链接]");
+                    tmpContent.replace(pos, item.size(), tr("[链接]"));
                 } else if ("image" == type) {
-                    tmpContent.replace(pos, item.size(), "[图片]");
+                    tmpContent.replace(pos, item.size(), tr("[图片]"));
                 } else if ("emoticon" == type) {
-                    tmpContent = "[表情]";
+                    tmpContent = tr("[表情]");
                 } else {
-                    tmpContent.replace(pos, item.size(), "[未知类型]");
+                    tmpContent.replace(pos, item.size(), tr("[未知类型]"));
                 }
             }
 

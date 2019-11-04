@@ -35,6 +35,7 @@ enum {
     REQ_TYPE_USER,
     REQ_TYPE_GROUP,
     REQ_TYPE_HISTORY,
+    REQ_TYPE_FILE,
 };
 
 class SearchItemDelegate : public QStyledItemDelegate

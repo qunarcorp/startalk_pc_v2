@@ -190,7 +190,12 @@ void CommonTrdInfoItem::initReceiveLayout() {
     mainLay->addLayout(rightLay);
     if (QTalk::Enum::ChatType::GroupChat == _msgInfo.ChatType
         && QTalk::Entity::MessageDirectionReceive == _msgInfo.Direction ) {
-        rightLay->addWidget(_nameLab);
+        auto* nameLay = new QHBoxLayout;
+        nameLay->setMargin(0);
+        nameLay->setSpacing(5);
+        nameLay->addWidget(_nameLab);
+        nameLay->addWidget(_medalWgt);
+        rightLay->addLayout(nameLay);
     }
     if (!_contentFrm) {
         _contentFrm = new QFrame(this);
@@ -242,7 +247,7 @@ void CommonTrdInfoItem::initContentLayout() {
         QString title = jsonObject.value("title").toString();
         QString desc = jsonObject.value("desc").toString();
         if (desc.isEmpty()) {
-            desc = "查看详情";
+            desc = tr("查看详情");
         }
         if (!_titleLab) {
 
@@ -330,11 +335,12 @@ void CommonTrdInfoItem::initContentLayout() {
             else
             {
                 _iconLab->setPixmap(defaultPix);
-                std::thread([this, imgUrl](){
+                QPointer<CommonTrdInfoItem> pThis(this);
+                g_pMainPanel->pool().enqueue([pThis, imgUrl](){
                     std::string downloadFile = g_pMainPanel->getMessageManager()->getLocalFilePath(imgUrl.toStdString());
-                    if(!downloadFile.empty())
-                        emit sgDownloadedIcon(QString::fromStdString(downloadFile));
-                }).detach();
+                    if(pThis && !downloadFile.empty())
+                        emit pThis->sgDownloadedIcon(QString::fromStdString(downloadFile));
+                });
             }
         }
         _contentFrm->setFixedHeight(

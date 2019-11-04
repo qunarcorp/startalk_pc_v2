@@ -57,10 +57,10 @@ void CodeShell::initUi()
 
     toolLay->setMargin(0);
     toolLay->setSpacing(20);
-    toolLay->addWidget(new QLabel("代码风格", this), 0);
+    toolLay->addWidget(new QLabel(tr("代码风格"), this), 0);
     toolLay->addWidget(_pCodeStyle);
     toolLay->addItem(new QSpacerItem(40, 10, QSizePolicy::Fixed));
-    toolLay->addWidget(new QLabel("编程语言", this), 0);
+    toolLay->addWidget(new QLabel(tr("编程语言"), this), 0);
     toolLay->addWidget(_pCodeLanguage);
     toolLay->addItem(new QSpacerItem(10, 10, QSizePolicy::Expanding));
 

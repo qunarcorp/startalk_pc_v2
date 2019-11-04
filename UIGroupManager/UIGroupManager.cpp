@@ -27,8 +27,6 @@
 #include "../include/Line.h"
 #include "../QtUtil/Entity/JID.h"
 
-#define DEM_TIP_MESSAGE "已选择了 %1 个联系人"
-
 UIGroupManager::UIGroupManager()
         : UShadowDialog(nullptr, true)
         , _pSearchWgt(nullptr)
@@ -47,6 +45,9 @@ UIGroupManager::UIGroupManager()
         , _pRecentItem(nullptr){
 
     initUi();
+#ifdef _MACOS
+    macAdjustWindows();
+#endif
     //
     _pMsgManager = new GroupManagerMsgManager;
     _pMsgListener = new GroupMsgListener(this);
@@ -62,7 +63,7 @@ UIGroupManager::~UIGroupManager() = default;
 //
 void UIGroupManager::onCreatGroup(const QString &memberId) {
     resetUi(memberId);
-    _pTitleLabel->setText("创建群组");
+    _pTitleLabel->setText(tr("创建群组"));
     _type = EM_TYPE_CREATGROUP;
     _pGroupNaemFrm->setVisible(true);
     _pTreeWgt->setVisible(true);
@@ -88,7 +89,7 @@ void UIGroupManager::onCreatGroup(const QString &memberId) {
 //
 void UIGroupManager::onAddGroupMember(const QString &groupId) {
     resetUi();
-    _pTitleLabel->setText("加人进群");
+    _pTitleLabel->setText(tr("加人进群"));
     _type = EM_TYPE_ADDGROUPMEMBER;
     _strGroupId = groupId;
     _pGroupNaemFrm->setVisible(false);
@@ -162,7 +163,7 @@ void UIGroupManager::initUi() {
     auto *btnlayout = new QHBoxLayout;
     btnlayout->setContentsMargins(12, 10, 18, 10);
     btnlayout->setSpacing(15);
-    _pTipLabel = new QLabel(QString(DEM_TIP_MESSAGE).arg(0), this);
+    _pTipLabel = new QLabel(QString(tr("已选择了 %1 个联系人")).arg(0), this);
     _pTipLabel->setObjectName("TipLabel");
     _pTipLabel->setContentsMargins(6, 6, 6, 10);
 
@@ -180,18 +181,18 @@ void UIGroupManager::initUi() {
     auto *groupNameLay = new QHBoxLayout(_pGroupNaemFrm);
     groupNameLay->setContentsMargins(20, 20, 5, 20);
     groupNameLay->setSpacing(10);
-    auto *groupNameLab = new QLabel("群名称", this);
+    auto *groupNameLab = new QLabel(tr("群名称"), this);
     groupNameLab->setObjectName("GroupNameLabel");
     _pGroupNameEdit = new QLineEdit(this);
     _pGroupNameEdit->setObjectName("GroupNameEdit");
-    _pGroupNameEdit->setPlaceholderText("取个群名方便后续搜索");
+    _pGroupNameEdit->setPlaceholderText(tr("取个群名方便后续搜索"));
     _pGroupNameEdit->setFixedHeight(30);
     groupNameLay->addWidget(groupNameLab);
     groupNameLay->addWidget(_pGroupNameEdit);
     //
-    auto *cancelBtn = new QPushButton("取消", this);
-    auto *okBtn = new QPushButton("确定", this);
-    _batchAddMemberBtn = new QPushButton("高级", this);
+    auto *cancelBtn = new QPushButton(tr("取消"), this);
+    auto *okBtn = new QPushButton(tr("确定"), this);
+    _batchAddMemberBtn = new QPushButton(tr("高级"), this);
     cancelBtn->setObjectName("cancelButton");
     _batchAddMemberBtn->setObjectName("cancelButton");
     okBtn->setObjectName("makeSureButton");
@@ -359,7 +360,7 @@ void UIGroupManager::addGroupMember(const QString &memberId, const QString &head
 
     _plstModel->appendRow(item);
     _mapLstWgtItem[memberId] = item;
-    _pTipLabel->setText(QString(DEM_TIP_MESSAGE).arg(_mapLstWgtItem.size()));
+    _pTipLabel->setText(QString(tr("已选择了 %1 个联系人")).arg(_mapLstWgtItem.size()));
     //
     std::string id = memberId.toStdString();
     if(!id.empty())
@@ -382,7 +383,7 @@ void UIGroupManager::removeGroupMeber(const QString &memberId) {
     if (itFind != _mapLstWgtItem.end()) {
         _plstModel->removeRow((*itFind)->row());
         _mapLstWgtItem.erase(itFind);
-        _pTipLabel->setText(QString(DEM_TIP_MESSAGE).arg(_mapLstWgtItem.size()));
+        _pTipLabel->setText(QString(tr("已选择了 %1 个联系人")).arg(_mapLstWgtItem.size()));
     }
     //
     std::string id = memberId.toStdString();
@@ -408,7 +409,7 @@ void UIGroupManager::resetUi(const QString &memberId) {
     //
     _plstModel->clear();
     _mapLstWgtItem.clear();
-    _pTipLabel->setText(QString(DEM_TIP_MESSAGE).arg(_mapLstWgtItem.size()));
+    _pTipLabel->setText(QString(tr("已选择了 %1 个联系人")).arg(_mapLstWgtItem.size()));
     //
     for(const auto& mapItem : _mapItems)
     {
@@ -445,7 +446,7 @@ void UIGroupManager::sendAddGroupMemberMessage(const QString &groupId, const QLi
 
     if(showTip && members.size() > 50)
     {
-        int ret = QtMessageBox::question(this, "提示", QString("选择的群成员已超过50人，是否继续？"));
+        int ret = QtMessageBox::question(this, tr("提示"), QString(tr("选择的群成员已超过50人，是否继续？")));
         if(ret == QtMessageBox::EM_BUTTON_NO)
             return;
     }
@@ -464,7 +465,7 @@ void UIGroupManager::creatGroup() {
 
     if(_mapLstWgtItem.size() > 50)
     {
-        int ret = QtMessageBox::question(this, "提示", QString("选择的群成员已超过50人，是否继续？"));
+        int ret = QtMessageBox::question(this, tr("提示"), QString(tr("选择的群成员已超过50人，是否继续？")));
         if(ret == QtMessageBox::EM_BUTTON_NO)
         {
             return;
@@ -650,7 +651,7 @@ void UIGroupManager::initGroupMembers()
 {
     // title
     auto* titleItem = new QStandardItem;
-    titleItem->setData("从群组选择", EM_STAFF_DATATYPE_TEXT);
+    titleItem->setData(tr("从群组选择"), EM_STAFF_DATATYPE_TEXT);
     titleItem->setData(":/GroupManager/image1/groupList.png", EM_STAFF_DATATYPE_ICONPATH);
     titleItem->setData(EM_ROW_TYPE_TITLE, EM_STAFF_DATATYPE_ROW_TYPE);
     titleItem->setData(false, EM_STAFF_DATATYPE_EXTEND);
@@ -743,13 +744,13 @@ void UIGroupManager::updateUi()
 //    initGroupMembers();
     //
     initFriends();
-    QApplication::processEvents();
+    QApplication::processEvents(QEventLoop::AllEvents, 100);
     //
     initStarUser();
-    QApplication::processEvents();
+    QApplication::processEvents(QEventLoop::AllEvents, 100);
     //
     initRecentSession();
-    QApplication::processEvents();
+    QApplication::processEvents(QEventLoop::AllEvents, 100);
     //
     initStructure();
 }
@@ -757,7 +758,7 @@ void UIGroupManager::updateUi()
 void UIGroupManager::initFriends()
 {
     _pFriendItem = new QStandardItem;
-    _pFriendItem->setData("从好友选择", EM_STAFF_DATATYPE_TEXT);
+    _pFriendItem->setData(tr("从好友选择"), EM_STAFF_DATATYPE_TEXT);
     _pFriendItem->setData(":/GroupManager/image1/friendList.png", EM_STAFF_DATATYPE_ICONPATH);
     _pFriendItem->setData(EM_ROW_TYPE_TITLE, EM_STAFF_DATATYPE_ROW_TYPE);
     _pFriendItem->setData(false, EM_STAFF_DATATYPE_EXTEND);
@@ -840,7 +841,7 @@ void UIGroupManager::updateUserConfig(const std::map<std::string, std::string> &
 void UIGroupManager::initStarUser()
 {
     _pStarItem = new QStandardItem;
-    _pStarItem->setData("从星标联系人选择", EM_STAFF_DATATYPE_TEXT);
+    _pStarItem->setData(tr("从星标联系人选择"), EM_STAFF_DATATYPE_TEXT);
     _pStarItem->setData(":/GroupManager/image1/star.png", EM_STAFF_DATATYPE_ICONPATH);
     _pStarItem->setData(EM_ROW_TYPE_TITLE, EM_STAFF_DATATYPE_ROW_TYPE);
     _pStarItem->setData(false, EM_STAFF_DATATYPE_EXTEND);
@@ -855,7 +856,7 @@ void UIGroupManager::initStarUser()
 void UIGroupManager::initRecentSession()
 {
     _pRecentItem = new QStandardItem;
-    _pRecentItem->setData("从最近联系人选择", EM_STAFF_DATATYPE_TEXT);
+    _pRecentItem->setData(tr("从最近联系人选择"), EM_STAFF_DATATYPE_TEXT);
     _pRecentItem->setData(":/GroupManager/image1/Recent.png", EM_STAFF_DATATYPE_ICONPATH);
     _pRecentItem->setData(EM_ROW_TYPE_TITLE, EM_STAFF_DATATYPE_ROW_TYPE);
     _pRecentItem->setData(false, EM_STAFF_DATATYPE_EXTEND);
@@ -920,7 +921,7 @@ void UIGroupManager::initStructure()
     {
         if(++index == 10)
         {
-            QApplication::processEvents();
+            QApplication::processEvents(QEventLoop::AllEvents, 100);
             index = 0;
         }
         //
@@ -969,7 +970,7 @@ void UIGroupManager::onItemDoubleClick(const QString& memberId, const QString& n
 {
     if(EM_TYPE_ADDGROUPMEMBER == _type)
     {
-        int ret =QtMessageBox::question(this, "提示", QString("确认仅邀请<b>%1</b>进群？").arg(name));
+        int ret =QtMessageBox::question(this, tr("提示"), QString(tr("确认仅邀请<b>%1</b>进群？")).arg(name));
         if(ret == QtMessageBox::EM_BUTTON_YES)
         {
             _mapLstWgtItem.clear();

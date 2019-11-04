@@ -90,7 +90,7 @@ public slots:
 	//! Set this hotkey to a native shortcut
 	bool setNativeShortcut(NativeShortcut nativeShortcut, bool autoRegister = false);
 
-signals:
+Q_SIGNALS:
 	//! Will be emitted if the shortcut is pressed
 	void activated(QPrivateSignal);
 

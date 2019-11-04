@@ -12,19 +12,19 @@
 #include "../QtUtil/lib/cjson/cJSON_inc.h"
 
 class QLabel;
-class TipMessageItem : public QFrame//: public MessageItemBase
+class TipMessageItem : public QFrame
 {
 	Q_OBJECT
 public:
-    TipMessageItem(QWidget *parent = Q_NULLPTR);
-    ~TipMessageItem();
+    explicit TipMessageItem(QWidget *parent = Q_NULLPTR);
+    ~TipMessageItem() override;
 
 public:
     void setText(const QString& text);
     QString getText();
 
 protected:
-    void resizeEvent(QResizeEvent *e);
+    void resizeEvent(QResizeEvent *e) override;
 
 protected slots:
     void openURL(QString url);

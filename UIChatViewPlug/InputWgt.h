@@ -65,6 +65,10 @@ public:
     void onPaste();
     // 发送消息处理
     void sendMessage();
+    //
+    QString translateText();
+    //
+    void setContentByJson(const QString& json);
 
 Q_SIGNALS:
     void sgTranslated(const QString&);
@@ -77,11 +81,11 @@ protected:
     void dragMoveEvent(QDragMoveEvent *e) override;
     void hideEvent(QHideEvent *e) override;
     void focusOutEvent(QFocusEvent *e) override;
+    void inputMethodEvent(QInputMethodEvent *e) override ;
 
 private:
     void initUi();
     void sendText(const QString&);
-    QString translateText();
     QString getNetImgPath(const QString &localPath); //
     void onTextChanged();
     void showAtView();
@@ -103,8 +107,6 @@ private:
 private:
     bool _atMessage = false;
     bool _isSending;
-    bool _showAtView = false;
-
 };
 
 #endif//_INPUTWGT_H_

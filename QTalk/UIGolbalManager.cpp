@@ -22,6 +22,10 @@ UIGolbalManager *UIGolbalManager::_pInstance = nullptr;
 #define LOG_LEVEL "LOG_LEVEL"
 #define THEME "THEME"
 #define FONT "FONT"
+#define QUAN "QUAN_TOOL"
+#define CHECK_UPDATER "CHECK_UPDATER"
+#define CO_EDIT "CO_EDIT"
+#define UPDATER_VERSION "UPDATER_VERSION"
 
 UIGolbalManager::~UIGolbalManager() {
     if (_pluginManager) {
@@ -59,7 +63,7 @@ QJsonDocument UIGolbalManager::LoadJsonConfig(const QString &path) {
             return QJsonDocument();
         }
     } else {
-        qWarning() << "open json flie fail" << path;
+        qWarning() << "open json file fail" << path;
         return QJsonDocument();
     }
 }
@@ -85,7 +89,7 @@ void UIGolbalManager::SaveJsonConfig(const QJsonDocument &doc, const QString &fi
         QByteArray str = doc.toJson(QJsonDocument::Indented);
         file.write(str);
     } else {
-        qWarning() << "open json flie fail" << path;
+        qWarning() << "open json file fail" << path;
         return;
     }
 }
@@ -146,7 +150,7 @@ std::shared_ptr<QMap<QString, QObject *> > UIGolbalManager::GetAllPluginInstance
 void UIGolbalManager::Init() {
     // init setting
     _ConfigDataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-    std::string userPath, fileSavePath, historyPath;
+    std::string userPath, fileSavePath, historyPath, coEdit;
     int logLevel = QTalk::logger::LEVEL_INVALID;
     _pSystemConfig = new QTalk::ConfigLoader(_ConfigDataDir.toLocal8Bit() + "/sysconfig");
     if (_pSystemConfig->reload()) {
@@ -156,8 +160,18 @@ void UIGolbalManager::Init() {
         logLevel = _pSystemConfig->getInteger(LOG_LEVEL);
         _theme = _pSystemConfig->getInteger(THEME);
         _font = _pSystemConfig->getString(FONT);
+        coEdit = _pSystemConfig->getString(CO_EDIT);
         if(logLevel == QTalk::logger::LEVEL_INVALID)
             _pSystemConfig->setInteger(LOG_LEVEL, QTalk::logger::LEVEL_WARING);
+
+        if(_pSystemConfig->hasKey(CHECK_UPDATER))
+            _check_updater = _pSystemConfig->getBool(CHECK_UPDATER);
+        else
+            _check_updater = true;
+
+        _updater_version = _pSystemConfig->getInteger(UPDATER_VERSION);
+        bool showTool = _pSystemConfig->hasKey(QUAN) && _pSystemConfig->getBool(QUAN);
+        AppSetting::instance().setShowQuanTool(showTool);
     }
 
     if(logLevel == QTalk::logger::LEVEL_INVALID)
@@ -171,6 +185,9 @@ void UIGolbalManager::Init() {
     AppSetting::instance().setFont(_font);
 
     AppSetting::instance().setLogLevel(logLevel);
+
+    if(!coEdit.empty())
+        AppSetting::instance().setCoEdit(coEdit);
 
     int channel = _pSystemConfig->getInteger("CHANNEL");
     if(0 == channel)
@@ -226,6 +243,7 @@ void UIGolbalManager::saveSysConfig() {
         _pSystemConfig->setInteger(LOG_LEVEL, AppSetting::instance().getLogLevel());
         _pSystemConfig->setInteger(THEME, AppSetting::instance().getThemeMode());
         _pSystemConfig->setString(FONT, font);
+        _pSystemConfig->setBool(CHECK_UPDATER, _check_updater);
         _pSystemConfig->saveConfig();
     }
 
@@ -396,7 +414,7 @@ void UIGolbalManager::initThemeConfig()
             else if ("_drop_select_font_color" == tagName)
                 QTalk::StyleDefine::instance().setDropSelectFontColor(QColor(r, g, b, a));
             else if("_link_url_color" == tagName)
-                QTalk::StyleDefine::instance().setLinkUrl(value);
+                QTalk::StyleDefine::instance().setLinkUrl(QColor(r, g, b, a));
             else if("_local_search_time_font_color" == tagName)
                 QTalk::StyleDefine::instance().setLocalSearchTimeFontColor(QColor(r, g, b, a));
             else if("_at_block_font_color" == tagName)
@@ -425,6 +443,10 @@ void UIGolbalManager::initThemeConfig()
                 QTalk::StyleDefine::instance().setFileProcessBarLine(QColor(r, g, b, a));
             else if("_head_photo_mask_color" == tagName)
                 QTalk::StyleDefine::instance().setHeadPhotoMaskColor(QColor(r, g, b, a));
+            else if("_hot_line_tip_item_color" == tagName)
+                QTalk::StyleDefine::instance().setHotLineTipItemColor(QColor(r, g, b, a));
+            else if("_hot_line_tip_item_font_color" == tagName)
+                QTalk::StyleDefine::instance().setHotLineTipItemFontColor(QColor(r, g, b, a));
         }
     }
 }

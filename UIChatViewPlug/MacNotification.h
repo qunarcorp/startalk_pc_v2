@@ -20,21 +20,6 @@
 namespace QTalk {
     namespace mac {
 
-            struct StNotificationParam {
-                std::string title{};
-//                std::string subTitle{};
-                std::string message{};
-                std::string icon{};
-                bool playSound{};
-                //
-                std::string xmppId{};
-                std::string from{};
-                std::string realJid{};
-                std::string loginUser{};
-                int   chatType{};
-            };
-
-
             class Notification {
             public:
                 static void showNotification(StNotificationParam* param);

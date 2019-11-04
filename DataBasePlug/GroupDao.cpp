@@ -3,7 +3,7 @@
 #include "../QtUtil/Utils/Log.h"
 
 GroupDao::GroupDao(qtalk::sqlite::database *sqlDb) :
-        _sqlDb(sqlDb) {
+        DaoInterface(sqlDb) {
 
 }
 
@@ -14,7 +14,7 @@ GroupDao::GroupDao(qtalk::sqlite::database *sqlDb) :
   * @date 2018.9.27
   */
 bool GroupDao::creatTable() {
-    if (!_sqlDb) {
+    if (!_pSqlDb) {
         return false;
     }
 
@@ -28,7 +28,7 @@ bool GroupDao::creatTable() {
                       "`ExtendedFlag`	BLOB, "
                       " PRIMARY KEY(`GroupId`) )";
 
-    qtalk::sqlite::statement query(*_sqlDb, sql);
+    qtalk::sqlite::statement query(*_pSqlDb, sql);
     return query.executeStep();
 }
 
@@ -37,13 +37,13 @@ bool GroupDao::creatTable() {
  * @return
  */
 bool GroupDao::clearData() {
-    if (!_sqlDb) {
+    if (!_pSqlDb) {
         return false;
     }
 
     std::string sql = "DELETE FROM `IM_Group`;";
     try {
-        qtalk::sqlite::statement query(*_sqlDb, sql);
+        qtalk::sqlite::statement query(*_pSqlDb, sql);
         return query.executeStep();
     }
     catch (const std::exception &e) {
@@ -59,7 +59,7 @@ bool GroupDao::clearData() {
   * @date 2018.9.29
   */
 bool GroupDao::insertGroupInfo(const QTalk::Entity::ImGroupInfo &groupInfo) {
-    if (!_sqlDb) {
+    if (!_pSqlDb) {
         return false;
     }
     std::string sql = "INSERT OR REPLACE INTO IM_Group(`GroupId`, `Name`, `Introduce`, `HeaderSrc`, `Topic`, "
@@ -67,7 +67,7 @@ bool GroupDao::insertGroupInfo(const QTalk::Entity::ImGroupInfo &groupInfo) {
                       "VALUES(?,?,?,?,?,?,?)";
 
     try {
-        qtalk::sqlite::statement query(*_sqlDb, sql);
+        qtalk::sqlite::statement query(*_pSqlDb, sql);
         query.bind(1, groupInfo.GroupId);
         query.bind(2, groupInfo.Name);
         query.bind(3, groupInfo.Introduce);
@@ -91,7 +91,7 @@ bool GroupDao::insertGroupInfo(const QTalk::Entity::ImGroupInfo &groupInfo) {
   * @date 2018.9.29
   */
 bool GroupDao::bulkInsertGroupInfo(const std::vector<QTalk::Entity::ImGroupInfo> &groupInfos) {
-    if (!_sqlDb) {
+    if (!_pSqlDb) {
         return false;
     }
 
@@ -99,9 +99,9 @@ bool GroupDao::bulkInsertGroupInfo(const std::vector<QTalk::Entity::ImGroupInfo>
                       "`LastUpdateTime`, `ExtendedFlag` ) "
                       "VALUES(?,?,?,?,?,?,?)";
 
-    qtalk::sqlite::statement query(*_sqlDb, sql);
+    qtalk::sqlite::statement query(*_pSqlDb, sql);
     try {
-        _sqlDb->exec("begin immediate;");
+        _pSqlDb->exec("begin immediate;");
         for (const QTalk::Entity::ImGroupInfo &groupInfo : groupInfos) {
             query.bind(1, groupInfo.GroupId);
             query.bind(2, groupInfo.Name);
@@ -117,11 +117,11 @@ bool GroupDao::bulkInsertGroupInfo(const std::vector<QTalk::Entity::ImGroupInfo>
             }
         }
         query.clearBindings();
-        _sqlDb->exec("commit transaction;");
+        _pSqlDb->exec("commit transaction;");
         return true;
     } catch (std::exception &e) {
         query.clearBindings();
-        _sqlDb->exec("rollback transaction;");
+        _pSqlDb->exec("rollback transaction;");
         return false;
     }
 }
@@ -134,13 +134,13 @@ bool GroupDao::bulkInsertGroupInfo(const std::vector<QTalk::Entity::ImGroupInfo>
   * @date     2018/09/30
   */
 bool GroupDao::getGroupLastUpdateTime(long long &lastUpdateTime) {
-    if (!_sqlDb) {
+    if (!_pSqlDb) {
         return false;
     }
     std::string sql = "select Value from DB_Config where Key = 'Group' and SubKey = 'mainVersion';";
 
     try {
-        qtalk::sqlite::statement query(*_sqlDb, sql);
+        qtalk::sqlite::statement query(*_pSqlDb, sql);
         if (query.executeNext()) {
             std::string version = query.getColumn(0).getString();
             lastUpdateTime = std::stol(version);
@@ -155,13 +155,13 @@ bool GroupDao::getGroupLastUpdateTime(long long &lastUpdateTime) {
 }
 
 bool GroupDao::setGroupMainVersion(long long version) {
-    if (!_sqlDb) {
+    if (!_pSqlDb) {
         return false;
     }
     std::string sql = "update DB_Config set Value = ? where Key = 'Group' and SubKey = 'mainVersion';";
     bool sqlResult = false;
     try {
-        qtalk::sqlite::statement query(*_sqlDb, sql);
+        qtalk::sqlite::statement query(*_pSqlDb, sql);
         query.bind(1, std::to_string(version));
         return query.executeStep();
     } catch (const std::exception &e) {
@@ -177,7 +177,7 @@ bool GroupDao::setGroupMainVersion(long long version) {
   * @date     2018/09/30
   */
 bool GroupDao::updateGroupCard(const std::vector<QTalk::Entity::ImGroupInfo> &groups) {
-    if (!_sqlDb) {
+    if (!_pSqlDb) {
         return false;
     }
 
@@ -188,9 +188,9 @@ bool GroupDao::updateGroupCard(const std::vector<QTalk::Entity::ImGroupInfo> &gr
                       "ON CONFLICT(GroupId) DO "
                       "update set Name = ?, Introduce = ?, HeaderSrc = ?, `Topic` = ? where GroupId = ?";
 
-    qtalk::sqlite::statement query(*_sqlDb, sql);
+    qtalk::sqlite::statement query(*_pSqlDb, sql);
     try {
-        _sqlDb->exec("begin immediate;");
+        _pSqlDb->exec("begin immediate;");
         for (const QTalk::Entity::ImGroupInfo& group : groups) {
             query.bind(1, group.GroupId);
             query.bind(2, group.Name);
@@ -208,12 +208,12 @@ bool GroupDao::updateGroupCard(const std::vector<QTalk::Entity::ImGroupInfo> &gr
             query.resetBindings();
         }
         query.clearBindings();
-        _sqlDb->exec("commit transaction;");
+        _pSqlDb->exec("commit transaction;");
         return true;
     }
     catch (std::exception &e) {
         query.clearBindings();
-        _sqlDb->exec("rollback transaction;");
+        _pSqlDb->exec("rollback transaction;");
         error_log(e.what());
         return false;
     }
@@ -226,7 +226,7 @@ bool GroupDao::updateGroupCard(const std::vector<QTalk::Entity::ImGroupInfo> &gr
   * @date 2018.9.30
   */
 std::shared_ptr<QTalk::Entity::ImGroupInfo> GroupDao::getGroupInfoByXmppId(const std::string &xmppid) {
-    if (!_sqlDb) {
+    if (!_pSqlDb) {
         return nullptr;
     }
 
@@ -234,7 +234,7 @@ std::shared_ptr<QTalk::Entity::ImGroupInfo> GroupDao::getGroupInfoByXmppId(const
                       "`LastUpdateTime`, `ExtendedFlag` "
                       "FROM IM_Group WHERE `GroupId` = ?";
 
-    qtalk::sqlite::statement query(*_sqlDb, sql);
+    qtalk::sqlite::statement query(*_pSqlDb, sql);
     query.bind(1, xmppid);
     try {
         if (query.executeNext()) {
@@ -264,13 +264,13 @@ std::shared_ptr<QTalk::Entity::ImGroupInfo> GroupDao::getGroupInfoByXmppId(const
   * @date     2018/10/12
   */
 bool GroupDao::getGroupTopic(const std::string &groupId, std::string &groupTopic) {
-    if (!_sqlDb) {
+    if (!_pSqlDb) {
         return false;
     }
 
     std::string sql = "SELECT `Topic` FROM IM_Group WHERE `GroupId` = ?;";
 
-    qtalk::sqlite::statement query(*_sqlDb, sql);
+    qtalk::sqlite::statement query(*_pSqlDb, sql);
     try {
         query.bind(1, groupId);
         if (query.executeNext()) {
@@ -286,15 +286,15 @@ bool GroupDao::getGroupTopic(const std::string &groupId, std::string &groupTopic
 
 bool GroupDao::bulkDeleteGroup(const std::vector<std::string> &groupIds) {
 
-    if (!_sqlDb) {
+    if (!_pSqlDb) {
         return false;
     }
 
     std::string sql = "DELETE FROM IM_Group WHERE `GroupId` = ?;";
 
-    qtalk::sqlite::statement query(*_sqlDb, sql);
+    qtalk::sqlite::statement query(*_pSqlDb, sql);
     try {
-        _sqlDb->exec("begin immediate;");
+        _pSqlDb->exec("begin immediate;");
         for (std::string id : groupIds) {
             query.bind(1, id);
 
@@ -302,19 +302,19 @@ bool GroupDao::bulkDeleteGroup(const std::vector<std::string> &groupIds) {
             query.resetBindings();
         }
         query.clearBindings();
-        _sqlDb->exec("commit transaction;");
+        _pSqlDb->exec("commit transaction;");
 
         return true;
 
     } catch (std::exception &e) {
         query.clearBindings();
-        _sqlDb->exec("rollback transaction;");
+        _pSqlDb->exec("rollback transaction;");
         return false;
     }
 }
 
 bool GroupDao::getAllGroup(std::vector<QTalk::Entity::ImGroupInfo> &groups) {
-    if (!_sqlDb) {
+    if (!_pSqlDb) {
         return false;
     }
 
@@ -322,7 +322,7 @@ bool GroupDao::getAllGroup(std::vector<QTalk::Entity::ImGroupInfo> &groups) {
                       "`LastUpdateTime`, `ExtendedFlag` "
                       "FROM IM_Group";
 
-    qtalk::sqlite::statement query(*_sqlDb, sql);
+    qtalk::sqlite::statement query(*_pSqlDb, sql);
     try {
         while (query.executeNext()) {
             QTalk::Entity::ImGroupInfo imGroupInfo;
@@ -350,7 +350,7 @@ bool GroupDao::getAllGroup(std::vector<QTalk::Entity::ImGroupInfo> &groups) {
  * @return
  */
 bool GroupDao::getGroupCardById(std::shared_ptr<QTalk::Entity::ImGroupInfo> &imGroupInfo) {
-    if (!_sqlDb) {
+    if (!_pSqlDb) {
         return false;
     }
 
@@ -358,7 +358,7 @@ bool GroupDao::getGroupCardById(std::shared_ptr<QTalk::Entity::ImGroupInfo> &imG
                       "`LastUpdateTime`, `ExtendedFlag` "
                       "FROM IM_Group WHERE GroupId = ?";
 
-    qtalk::sqlite::statement query(*_sqlDb, sql);
+    qtalk::sqlite::statement query(*_pSqlDb, sql);
     try {
         query.bind(1, imGroupInfo->GroupId);
 
@@ -381,13 +381,13 @@ bool GroupDao::getGroupCardById(std::shared_ptr<QTalk::Entity::ImGroupInfo> &imG
 }
 
 bool GroupDao::deleteAllGroup() {
-    if (!_sqlDb) {
+    if (!_pSqlDb) {
         return false;
     }
 
     std::string sql = "DELETE FROM IM_Group ";
 
-    qtalk::sqlite::statement query(*_sqlDb, sql);
+    qtalk::sqlite::statement query(*_pSqlDb, sql);
     try {
         return query.executeStep();
     }
@@ -402,13 +402,13 @@ bool GroupDao::deleteAllGroup() {
  */
 void GroupDao::getGroupCardMaxVersion(long long &version)
 {
-    if (!_sqlDb) {
+    if (!_pSqlDb) {
         return;
     }
 
     std::string sql = "SELECT max(`LastUpdateTime`) FROM IM_Group ;";
 
-    qtalk::sqlite::statement query(*_sqlDb, sql);
+    qtalk::sqlite::statement query(*_pSqlDb, sql);
 
     if (query.executeNext()) {
         version = query.getColumn(0).getInt64();

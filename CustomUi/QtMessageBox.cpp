@@ -9,6 +9,7 @@
 #include <QKeyEvent>
 #include <QApplication>
 #include <QClipboard>
+#include <QDesktopServices>
 
 QtMessageBox::QtMessageBox(QWidget* parent, int type, const QString& message, const QString& subMessage, int buttons)
     : UShadowDialog(parent, true), _retButton(EM_BUTTON_INVALID)
@@ -25,6 +26,7 @@ QtMessageBox::QtMessageBox(QWidget* parent, int type, const QString& message, co
     subMessageLabel->setObjectName("MessageBoxSubMessage");
     subMessageLabel->setWordWrap(true);
     subMessageLabel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
+    subMessageLabel->setAlignment(Qt::AlignTop);
     //
     auto * leftLay = new QVBoxLayout;
     leftLay->setMargin(0);
@@ -40,7 +42,7 @@ QtMessageBox::QtMessageBox(QWidget* parent, int type, const QString& message, co
     buttonLay->addItem(new QSpacerItem(1, 1, QSizePolicy::Expanding));
     if(buttons & EM_BUTTON_NO)
     {
-        auto * noButton = new QPushButton("取消", this);
+        auto * noButton = new QPushButton(tr("取消"), this);
         noButton->setObjectName("NoButton");
         buttonLay->addWidget(noButton);
         noButton->setFixedSize(72, 32);
@@ -50,9 +52,21 @@ QtMessageBox::QtMessageBox(QWidget* parent, int type, const QString& message, co
             _evtLoop->exit();
         });
     }
+    if(buttons & EM_BUTTON_CANCEL_UPDATE)
+    {
+        auto * noButton = new QPushButton(tr("暂不更新"), this);
+        noButton->setObjectName("NoButton");
+        buttonLay->addWidget(noButton);
+        noButton->setFixedSize(72, 32);
+        connect(noButton, &QPushButton::clicked, [this](){
+            _retButton = EM_BUTTON_CANCEL_UPDATE;
+            this->setVisible(false);
+            _evtLoop->exit();
+        });
+    }
     if(buttons & EM_BUTTON_YES)
     {
-        auto *yesButton = new QPushButton("确定", this);
+        auto *yesButton = new QPushButton(tr("确定"), this);
         yesButton->setObjectName("YesButton");
         buttonLay->addWidget(yesButton);
         yesButton->setFixedSize(72, 32);
@@ -65,7 +79,7 @@ QtMessageBox::QtMessageBox(QWidget* parent, int type, const QString& message, co
     }
     if(buttons & EM_BUTTON_DELETE)
     {
-        auto *deleteButton = new QPushButton("删除", this);
+        auto *deleteButton = new QPushButton(tr("删除"), this);
         deleteButton->setObjectName("DeleteButton");
         buttonLay->addWidget(deleteButton);
         deleteButton->setFixedSize(72, 32);
@@ -116,6 +130,13 @@ QtMessageBox::QtMessageBox(QWidget* parent, int type, const QString& message, co
 #ifdef _MACOS
     macAdjustWindows();
 #endif
+
+    connect(subMessageLabel, &QLabel::linkActivated, [this](const QString& link){
+        QDesktopServices::openUrl(QUrl(link));
+        _retButton = EM_BUTTON_YES;
+        this->setVisible(false);
+        _evtLoop->exit();
+    });
 }
 
 QtMessageBox::~QtMessageBox() = default;

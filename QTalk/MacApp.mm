@@ -3,6 +3,7 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import <AVFoundation/AVFoundation.h>
 #include "MacApp.h"
 
 void MacApp::initApp()
@@ -30,4 +31,29 @@ void MacApp::AllowMinimizeForFramelessWindow(QWidget *window)
 #else
     Q_UNUSED(window);
 #endif
+}
+
+void MacApp::wakeUpWnd(QWidget *window) {
+    NSWindow* nsWindow = [(NSView*)(window->winId()) window];
+    [nsWindow makeKeyAndOrderFront:nsWindow];
+}
+
+void MacApp::showMinWnd(QWidget *window) {
+    NSWindow* nsWindow = [(NSView*)(window->winId()) window];
+    [nsWindow miniaturize:nil];
+}
+
+void MacApp::checkValidToVisitMicroPhone() {
+
+#if defined __APPLE__ && __MAC_OS_X_VERSION_MAX_ALLOWED >= 101400
+    if(@available(macOS 10.14, *))
+    {
+        NSArray *audioDevices = [AVCaptureDevice devicesWithMediaType:AVMediaTypeAudio];
+        NSArray *videoDevices = [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo];
+
+        AVAuthorizationStatus audioStatus = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeAudio];
+        AVAuthorizationStatus videoStatus = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
+    }
+#endif
+
 }

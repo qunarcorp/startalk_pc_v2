@@ -1,7 +1,9 @@
 //
 // Created by cc on 18-11-11.
 //
-
+#if _MSC_VER >= 1600
+#pragma execution_character_set("utf-8")
+#endif
 #ifndef QTALK_V2_SEARCHWGT_H
 #define QTALK_V2_SEARCHWGT_H
 
@@ -20,7 +22,7 @@ public:
 public:
     void clearText();
 
-signals:
+Q_SIGNALS:
     void textChanged(const QString&);
 
 private:

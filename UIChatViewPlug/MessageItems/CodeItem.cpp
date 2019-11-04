@@ -12,10 +12,7 @@
 #include <QJsonDocument>
 #include <QDesktopServices>
 #include <QMouseEvent>
-#include <QUrl>
-#include "../../Platform/Platform.h"
 #include "../../UICom/qimage/qimage.h"
-#include "../../QtUtil/Utils/Log.h"
 
 extern ChatViewMainPanel *g_pMainPanel;
 CodeItem::CodeItem(const QTalk::Entity::ImMessageInfo &msgInfo, QWidget *parent) :
@@ -161,7 +158,12 @@ void CodeItem::initReceiveLayout() {
     mainLay->addLayout(rightLay);
     if (QTalk::Enum::ChatType::GroupChat == _msgInfo.ChatType
         && QTalk::Entity::MessageDirectionReceive == _msgInfo.Direction ) {
-        rightLay->addWidget(_nameLab);
+        auto* nameLay = new QHBoxLayout;
+        nameLay->setMargin(0);
+        nameLay->setSpacing(5);
+        nameLay->addWidget(_nameLab);
+        nameLay->addWidget(_medalWgt);
+        rightLay->addLayout(nameLay);
     }
     if (!_contentFrm) {
         _contentFrm = new QFrame(this);
@@ -220,7 +222,7 @@ void CodeItem::initContentLayout() {
 
     auto* rightLay = new QVBoxLayout(rightFrm);
     rightLay->setSpacing(5);
-    _titleLab = new QLabel("代码片段", this);
+    _titleLab = new QLabel(tr("代码片段"), this);
     _titleLab->setObjectName("CodeTitle");
 
     _contentLab = new QLabel(this);
@@ -231,7 +233,7 @@ void CodeItem::initContentLayout() {
     _contentLab->setMaximumHeight(90);
     _contentLab->adjustSize();
 
-    auto* bottomLab = new QLabel("查看更多", this);
+    auto* bottomLab = new QLabel(tr("查看更多"), this);
     bottomLab->setObjectName("CodeBottomLab");
     rightLay->addWidget(_titleLab, 0);
     rightLay->addWidget(_contentLab, 1);

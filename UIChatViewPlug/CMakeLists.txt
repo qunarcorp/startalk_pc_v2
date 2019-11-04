@@ -22,7 +22,7 @@ find_package(Qt5Widgets)
 find_package(Qt5WebEngineWidgets)
 find_package(Qt5MultimediaWidgets)
 find_package(Qt5Network)
-
+find_package(Qt5Concurrent)
 #
 set(SOURCE_FILES
         ../qzxing/QZXing.h
@@ -42,6 +42,8 @@ set(SOURCE_FILES
         MessageItems/TextBrowser.h
         MessageItems/TextMessItem.cpp
         MessageItems/TextMessItem.h
+        MessageItems/MedalMind.h
+        MessageItems/MedalMind.cpp
         ChatMainWgt.cpp
         ChatMainWgt.h
         chatview.json
@@ -129,7 +131,11 @@ set(SOURCE_FILES
         QuickReplyWnd.h QuickReplyWnd.cpp
         GIFManager.cpp GIFManager.h
         ChatUtil.h ChatUtil.cpp
-        QchatMoreFun.h QchatMoreFun.cpp)
+        QchatMoreFun.h QchatMoreFun.cpp
+        MessageItems/HotLineTipItem.cpp
+        MessageItems/HotLineTipItem.h
+        MessageItems/HotLineAnswerItem.cpp
+        MessageItems/HotLineAnswerItem.h)
 
 
 set(LIBRARY_OUTPUT_PATH ../bin)
@@ -140,7 +146,7 @@ if (APPLE)
             sound/PlayAudioSound.mm
             sound/PlayAudioSound.h
             MacNotification.mm
-            MacNotification.h)
+            MacNotification.h MessageItems/HotLineAnswerItem.cpp MessageItems/HotLineAnswerItem.h)
     #    set_property(SOURCE lib/http/asihttprequest/ASIDataCompressor.m APPEND_STRING PROPERTY COMPILE_FLAGS "-fno-objc-arc")
     FIND_LIBRARY(AudioToolbox_Library AudioToolbox)
     if (NOT AudioToolbox_Library)
@@ -169,6 +175,7 @@ if (APPLE)
             Qt5::WebEngineWidgets
             Qt5::MultimediaWidgets
             Qt5::Network
+            Qt5::Concurrent
             Platform
             QtUtil
             EventBus
@@ -190,6 +197,7 @@ elseif (WIN32)
             Qt5::WebEngineWidgets
             Qt5::MultimediaWidgets
             Qt5::Network
+            Qt5::Concurrent
             Platform
             QtUtil
             EventBus
@@ -209,6 +217,7 @@ else ()
             Qt5::WebEngineWidgets
             Qt5::MultimediaWidgets
             Qt5::Network
+            Qt5::Concurrent
             Platform
             QtUtil
             EventBus

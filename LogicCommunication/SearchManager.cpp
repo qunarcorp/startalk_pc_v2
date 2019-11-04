@@ -101,7 +101,52 @@ void SearchManager::GetSearchResult(SearchInfoEvent &e) {
                             tmpRet._groups.push_back(tmpItem);
                         }
                     }
+                    else if((tmpRet.resultType & Search::EM_ACTION_HS_SINGLE) ||
+                            (tmpRet.resultType & Search::EM_ACTION_HS_MUC))
+                    {
+                        cJSON *iitem = nullptr;
+                        cJSON_ArrayForEach(iitem, info) {
+                            Search::StHistory tmpItem;
 
+                            tmpItem.key = e.key;
+                            tmpItem.type = JSON::cJSON_SafeGetIntValue(iitem, "todoType");
+                            tmpItem.name = JSON::cJSON_SafeGetStringValue(iitem, "label");
+                            tmpItem.icon = JSON::cJSON_SafeGetStringValue(iitem, "icon");
+                            tmpItem.count = JSON::cJSON_SafeGetIntValue(iitem, "count");
+                            tmpItem.body = JSON::cJSON_SafeGetStringValue(iitem, "body");
+                            tmpItem.time = JSON::cJSON_SafeGetLonglongValue(iitem, "time");
+                            tmpItem.from = JSON::cJSON_SafeGetStringValue(iitem, "from");
+                            tmpItem.to = JSON::cJSON_SafeGetStringValue(iitem, "to");
+//                            tmpItem.real_from = JSON::cJSON_SafeGetStringValue(iitem, "realfrom");
+//                            tmpItem.real_to = JSON::cJSON_SafeGetStringValue(iitem, "realto");
+
+                            tmpRet._history.push_back(tmpItem);
+                        }
+                    }
+                    else if((tmpRet.resultType & Search::EM_ACTION_HS_FILE)) {
+                        cJSON *iitem = nullptr;
+                        cJSON_ArrayForEach(iitem, info) {
+                            Search::StHistoryFile tmpItem;
+
+                            tmpItem.key = e.key;
+                            tmpItem.source = JSON::cJSON_SafeGetStringValue(iitem, "source");
+                            tmpItem.icon = JSON::cJSON_SafeGetStringValue(iitem, "icon");
+                            tmpItem.body = JSON::cJSON_SafeGetStringValue(iitem, "body");
+                            tmpItem.extend_info = JSON::cJSON_SafeGetStringValue(iitem, "extendinfo");
+                            tmpItem.time = JSON::cJSON_SafeGetLonglongValue(iitem, "time");
+                            tmpItem.from = JSON::cJSON_SafeGetStringValue(iitem, "from");
+                            tmpItem.to = JSON::cJSON_SafeGetStringValue(iitem, "to");
+
+                            cJSON* file_item = cJSON_GetObjectItem(iitem, "fileinfo");
+
+                            tmpItem.file_md5 = JSON::cJSON_SafeGetStringValue(file_item, "FILEMD5");
+                            tmpItem.file_name = JSON::cJSON_SafeGetStringValue(file_item, "FileName");
+                            tmpItem.file_size = JSON::cJSON_SafeGetStringValue(file_item, "FileSize");
+                            tmpItem.file_url = JSON::cJSON_SafeGetStringValue(file_item, "HttpUrl");
+
+                            tmpRet._files.push_back(tmpItem);
+                        }
+                    }
                     e.searchRet[tmpRet.resultType] = tmpRet;
                 }
             }

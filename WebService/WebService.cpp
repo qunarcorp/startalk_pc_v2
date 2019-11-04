@@ -22,8 +22,9 @@
 WebService* WebService::_service = nullptr;
 std::mutex _mutex;
 WebService::WebService()
-    : QFrame(nullptr)
+    : QDialog(nullptr)
 {
+    setSizeGripEnabled(true);
     setMinimumSize(512, 256);
     Qt::WindowFlags flags = Qt::Window | Qt::WindowContextHelpButtonHint | Qt::FramelessWindowHint
 #ifdef _WINDOWS
@@ -53,12 +54,12 @@ WebService::WebService()
     _pCopyUrlBtn->setObjectName("CopyUrlBtn");
     _pJumpToBrowserBtn->setObjectName("JumpToBrowserBtn");
 
-    _pBackBtn->setToolTip("后退");
-    _pForwardBtn->setToolTip("前进");
-    _pReloadBtn->setToolTip("重新加载");
-    _pShareBtn->setToolTip("分享");
-    _pCopyUrlBtn->setToolTip("复制链接");
-    _pJumpToBrowserBtn->setToolTip("使用默认浏览器打开");
+    _pBackBtn->setToolTip(tr("后退"));
+    _pForwardBtn->setToolTip(tr("前进"));
+    _pReloadBtn->setToolTip(tr("重新加载"));
+    _pShareBtn->setToolTip(tr("分享"));
+    _pCopyUrlBtn->setToolTip(tr("复制链接"));
+    _pJumpToBrowserBtn->setToolTip(tr("使用默认浏览器打开"));
 
     _pBackBtn->setFixedSize(24, 24);
     _pForwardBtn->setFixedSize(24, 24);
@@ -86,10 +87,14 @@ WebService::WebService()
     toolLay->addWidget(_pBackBtn);
     toolLay->addWidget(_pForwardBtn);
     toolLay->addWidget(_pReloadBtn);
+    toolLay->addItem(new QSpacerItem(1, 1, QSizePolicy::Expanding));
     toolLay->addWidget(_pAddressEdit);
     toolLay->addWidget(_pShareBtn);
     toolLay->addWidget(_pCopyUrlBtn);
     toolLay->addWidget(_pJumpToBrowserBtn);
+
+    toolLay->setStretch(3,1);
+    toolLay->setStretch(4,100);
 
     _pShareBtn->setVisible(false);
     //
@@ -139,7 +144,7 @@ WebService::WebService()
             auto *mimeData = new QMimeData;
             mimeData->setText(curUrl);
             QApplication::clipboard()->setMimeData(mimeData);
-            LiteMessageBox::success("链接已复制", 1000);
+            LiteMessageBox::success(tr("链接已复制"), 1000);
         }
     });
     connect(_pJumpToBrowserBtn, &QToolButton::clicked, [this](){
@@ -178,8 +183,15 @@ WebService::WebService()
 WebService::~WebService()
 = default;
 
+void WebService::loadCoEdit(const QUrl &url) {
+    loadUrl(url,std::string(), true);
+    _service->_pAddressEdit->setVisible(false);
+    _service->_pCopyUrlBtn->setVisible(false);
+    _service->_pJumpToBrowserBtn->setVisible(false);
+}
+
 void WebService::loadUrl(const QUrl &url, bool showUrl, const MapCookie& cookies) {
-    loadUrl(url,"",showUrl,cookies);
+    loadUrl(url,"", showUrl, cookies);
 }
 
 void WebService::loadUrl(const QUrl &url, const std::string &domain, bool showUrl, const MapCookie &cookies) {
@@ -194,6 +206,10 @@ void WebService::loadUrl(const QUrl &url, const std::string &domain, bool showUr
 
     if(nullptr != _service)
     {
+        _service->_pAddressEdit->setVisible(true);
+        _service->_pCopyUrlBtn->setVisible(true);
+        _service->_pJumpToBrowserBtn->setVisible(true);
+
         _service->_toolFrm->setVisible(showUrl);
         if(_service->isVisible())
         {
@@ -258,7 +274,7 @@ void WebService::mouseDoubleClickEvent(QMouseEvent * e)
 		else
 			this->showMaximized();
 	}
-	QFrame::mouseDoubleClickEvent(e);
+	QDialog::mouseDoubleClickEvent(e);
 }
 
 /**
@@ -292,7 +308,7 @@ void WebService::closeEvent(QCloseEvent *e)
         QWebEngineHttpRequest req;
         req.setUrl(QUrl());
     }
-    QFrame::closeEvent(e);
+    QDialog::closeEvent(e);
 }
 
 /**
@@ -331,5 +347,5 @@ bool WebService::event(QEvent *e)
         req.setUrl(QUrl());
         _webView->startReq(req);
     }
-    return QFrame::event(e);
+    return QDialog::event(e);
 }

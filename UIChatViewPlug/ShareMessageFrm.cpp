@@ -5,8 +5,6 @@
 #include "ShareMessageFrm.h"
 #include <QHBoxLayout>
 
-#define DEM_SELECTCOUNT_TEXT "已选%1条消息"
-
 ShareMessageFrm::ShareMessageFrm(QWidget* parent)
     : QFrame(parent)
 {
@@ -15,7 +13,7 @@ ShareMessageFrm::ShareMessageFrm(QWidget* parent)
     _pSelectCount = new QLabel(this);
     _pSelectCount->setObjectName("SelectCountLabel");
     //
-    _pShareBtn = new FunctionButton("分享消息", "ShareBtn", this);
+    _pShareBtn = new FunctionButton(tr("分享消息"), "ShareBtn", this);
     _pCancelBtn = new QToolButton(this);
     _pCancelBtn->setObjectName("CancelShareBtn");
     _pCancelBtn->setFixedSize(40, 40);
@@ -46,6 +44,6 @@ ShareMessageFrm::~ShareMessageFrm() {
 
 void ShareMessageFrm::setSelectCount(unsigned int count)
 {
-    QString text = QString(DEM_SELECTCOUNT_TEXT).arg(count);
+    QString text = QString(tr("已选%1条消息")).arg(count);
     _pSelectCount->setText(text);
 }

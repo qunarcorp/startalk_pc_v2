@@ -25,7 +25,7 @@ public:
     StaffDelegate(QWidget* parent);
     ~StaffDelegate();
 
-signals:
+Q_SIGNALS:
     void itemClicked(const QModelIndex& );
 
 protected:

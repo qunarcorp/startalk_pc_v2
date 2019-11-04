@@ -35,4 +35,6 @@
     <_file_process_bar_background>60,66,72, 255</_file_process_bar_background>
     <_file_process_bar_line>106, 116, 121, 255</_file_process_bar_line>
     <_head_photo_mask_color>0, 0, 0, 64</_head_photo_mask_color>
+    <_hot_line_tip_item_color>69, 75, 82, 255</_hot_line_tip_item_color>
+    <_hot_line_tip_item_font_color>236,241,243, 255</_hot_line_tip_item_font_color>
 </Style>

@@ -48,5 +48,11 @@ void UILoginPlug::init()
 }
 
 void UILoginPlug::saveHeadPath() {
-    _mainPanel->saveHeadPath();
+    if(_mainPanel)
+        _mainPanel->saveHeadPath();
+}
+
+void UILoginPlug::setLoginMessage(const QString &msg) {
+    if(_mainPanel)
+        _mainPanel->onAuthFailed(msg);
 }

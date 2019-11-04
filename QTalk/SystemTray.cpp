@@ -40,14 +40,14 @@ SystemTray::SystemTray(MainWindow* mainWnd)
     //
     QMenu* pSysTrayMenu = new QMenu;
     pSysTrayMenu->setAttribute(Qt::WA_TranslucentBackground, true);
-    QAction* sysQuitAct = new QAction("系统退出");
-    QAction* showWmdAct = new QAction("显示面板");
-    QAction* autoLoginAct = new QAction("自动登录");
-    QAction* sendLog = new QAction("快速反馈日志");
+    QAction* sysQuitAct = new QAction(tr("系统退出"));
+    QAction* showWmdAct = new QAction(tr("显示面板"));
+    QAction* autoLoginAct = new QAction(tr("自动登录"));
+    QAction* sendLog = new QAction(tr("快速反馈日志"));
     if (_pMainWindow->getLoginPlug())
     {
         bool isAuto = _pMainWindow->getLoginPlug()->getAutoLoginFlag();
-        if (isAuto) autoLoginAct->setText("取消自动登录");
+        if (isAuto) autoLoginAct->setText(tr("取消自动登录"));
     }
     pSysTrayMenu->addAction(autoLoginAct);
     pSysTrayMenu->addAction(sendLog);
@@ -76,13 +76,17 @@ SystemTray::SystemTray(MainWindow* mainWnd)
             bool isAuto = _pMainWindow->getLoginPlug()->getAutoLoginFlag();
             _pMainWindow->setAutoLogin(!isAuto);
             if (isAuto)
-                autoLoginAct->setText("自动登录");
+                autoLoginAct->setText(tr("自动登录"));
             else
-                autoLoginAct->setText("取消自动登录");
+                autoLoginAct->setText(tr("取消自动登录"));
         }
     });
 
     connect(_timer, &QTimer::timeout, this, &SystemTray::onTimer);
+//    connect(_pSysTrayIcon, &QSystemTrayIcon::messageClicked, this, &SystemTray::onMessageClicked);
+    //
+    bool isSupportsMessages = _pSysTrayIcon->supportsMessages();
+    AppSetting::instance().setNativeMessagePromptEnable(isSupportsMessages);
 }
 
 SystemTray::~SystemTray() {
@@ -108,15 +112,25 @@ void SystemTray::activeTray(QSystemTrayIcon::ActivationReason reason)
 void SystemTray::onRecvMessage()
 {
     //
-    if(!_timer->isActive() && !_pMainWindow->isActiveWindow())
+    if(!_pMainWindow->isActiveWindow())
     {
-        _timerCount = 0;
-        _timer->start();
+        if(!_timer->isActive() )
+        {
+            _timerCount = 0;
+            _timer->start();
+        }
+
         if(AppSetting::instance().getStrongWarnFlag())
         {
             QApplication::alert(_pMainWindow);
         }
     }
+}
+
+void SystemTray::onShowNotify(const QTalk::StNotificationParam &param) {
+
+    if(_pSysTrayIcon)
+        _pSysTrayIcon->showMessage(param.title.data(), param.message.data(), QIcon(param.icon.data()));
 }
 
 void SystemTray::onTimer() {
@@ -190,4 +204,9 @@ void SystemTray::onSendLog()
             }
         }
     }).detach();
+}
+
+void SystemTray::onMessageClicked() {
+    if(_pMainWindow && !_pMainWindow->isVisible())
+        _pMainWindow->wakeUpWindow();
 }

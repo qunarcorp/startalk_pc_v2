@@ -16,7 +16,7 @@ public:
 	QString getPkgId() { return _strPkgId; }
 	QString getShortCut() { return _strEmoShortCut; }
 
-signals:
+Q_SIGNALS:
     void sgPreviewImage(const QString&);
 
 protected:

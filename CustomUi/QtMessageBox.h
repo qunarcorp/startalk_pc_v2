@@ -14,6 +14,7 @@
 * @create: 2019-01-27 19:40
 **/
 class CUSTOMUISHARED_EXPORT QtMessageBox : public UShadowDialog {
+	Q_OBJECT
 public:
     QtMessageBox(QWidget* parent, int type, const QString& message, const QString& subMessage, int buttons);
     ~QtMessageBox() override;
@@ -34,7 +35,8 @@ public:
         EM_BUTTON_INVALID = 0,
         EM_BUTTON_YES = 1,
         EM_BUTTON_NO = 2,
-        EM_BUTTON_DELETE = 4
+        EM_BUTTON_DELETE = 4,
+        EM_BUTTON_CANCEL_UPDATE = 8,
     };
 
 public:

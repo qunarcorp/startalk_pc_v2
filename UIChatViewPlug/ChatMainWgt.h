@@ -34,14 +34,21 @@ public:
 	enum {EM_DATE_TYPE_TIME = Qt::UserRole, EM_DATETYPE_MSGTYPE};
 
 public:
+    void analysisMessage(QVector<StTextMessage> &msgs, const std::string& content, const std::string& msgId);
 	// 显示消息
     void showMessage(const QTalk::Entity::ImMessageInfo &msg, bool isHistory);
     void recvFileProcess(const double &speed, const double &dtotal, const double &dnow, const double &utotal, const double &unow, const std::string &key);
 	void setHasNotHistoryMsgFlag(bool hasHistory);
     void resizeItems();
     void recvBlackListMessage(const QString& messageId);
+    void clearData();
+    // 处理时间信息判断是否显示 超一分钟显示
+    void showMessageTime(const QString& msgId, const QInt64& strTime, bool isHistoryMessage = false);
 
-signals:
+private:
+    void connects();
+
+Q_SIGNALS:
 	void showTipMessageSignal(int, const QString&, bool, QInt64);
 	void adjustItems();
 	void sgSelectItem();
@@ -54,6 +61,7 @@ public:
     void onShareMessage();
     void onChangeUserMood(const std::string&, const std::string&);
     void setConnectState(bool isConnected) {_connectState = isConnected; };
+    void onUserMedalChanged(const std::set<std::string>& changedUser);
 
 protected:
 	void resizeEvent(QResizeEvent *e) override;
@@ -64,17 +72,18 @@ protected:
 private slots:
     void onRecvFRileProcess(double speed, double dtotal, double dnow, double utotal, double unow, std::string key);
     void onRecvReadState(const std::map<std::string, QInt32 >& readStates);
+    void onMState(const QString& msgId, const long long& time);
     void onRecvGroupMState(const std::vector<std::string> &msgIds);
-    void updateRevokeMessage(const QString& fromId, const QString& messageId);
+    void updateRevokeMessage(const QString& fromId, const QString& messageId, const long long&);
     void onForwardAct(bool);
 	void onScrollBarChanged(int val);
 	void onImageDownloaded(const QString& msgId, const QString& path);
+	void onCustomContextMenuRequested(const QPoint &pos);
 
 private:
-	// 处理时间信息判断是否显示 超一分钟显示
-	void showMessageTime(const QInt64& strTime, bool isHistoryMessage = false);
+
 	//
-    void analysisMessage(QVector<StTextMessage> &msgs, const QTalk::Entity::ImMessageInfo &msg);
+
     void analysisSendTextMessage(QVector<StTextMessage> &msgs, const std::string &msg);
 
     void analysisTextMessage(QVector<StTextMessage> &msgs, const QString& text);
@@ -84,7 +93,7 @@ private:
 	QTalk::Entity::ImMessageInfo analysisFileMessage(const QTalk::Entity::ImMessageInfo &msg, bool isHis);
     void dealMessage(MessageItemBase *msgItemWgt, QListWidgetItem *pLstItem, bool isHistoryMessage);
     void showRevokeMessage(const QString& userName, bool isHistory, QInt64 t);
-    void showTipMessage(long long type, const QString& content, bool isHistory, QInt64 t = 0);
+    void showTipMessage(long long type, const QString& content, bool isHistory, QInt64 t);
     void saveAsImage(const QString &oldFilePath);
 
 private:
@@ -100,13 +109,14 @@ private:
     void onDisconnected();
     void onSendMessageFailed(const QString& msgId);
 
-signals:
+Q_SIGNALS:
     void sgRecvFRileProcess(double speed, double dtotal, double dnow, double utotal, double unow, std::string key);
     void gotReadStatueSignal(const std::map<std::string, QInt32 >& readStates);
     void sgGotGroupMStatue(const std::vector<std::string>& msgIds);
     void sgDisConnected();
-    void updateRevokeSignal(const QString& fromId, const QString& messageId);
+    void updateRevokeSignal(const QString& fromId, const QString& messageId, const long long&);
     void sgSendFailed(const QString& msgId);
+    void sgGotMState(const QString& msgId, const long long& time);
 
 private:
     void downloadImage(const QString& msgId, const QString& link, int width, int height);
@@ -128,7 +138,6 @@ private:
     //long long      downloadProcess = 0;
     bool          _hasnotHistoryMsg;
     QMutex        _mutex;
-    int           _index;
     QMenu         *_pMenu;
 
     QMultiMap<QString, MessageItemBase*> _itemWgts;
@@ -153,6 +162,16 @@ private:
 
 private:
     bool _selectEnable;
+
+private:
+    QAction* saveAsAct;
+    QAction* copyAct;
+    QAction* quoteAct;
+    QAction* forwardAct;
+    QAction* revokeAct;
+    QAction* collectionAct;
+    QAction* shareMessageAct;
+    QAction* qrcodeAct;
 };
 
 #endif//_CHATMAINWGT_H_

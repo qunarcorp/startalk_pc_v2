@@ -17,9 +17,11 @@ public:
 
 public:
     // 连接服务器
-    virtual bool tryConnectToServer(const std::string &userName, const std::string &password, const std::string &host, int port) = 0;
+    virtual bool tryConnectToServer(const std::string &userName, const std::string &password, const std::string &host, int port,bool isNewLogin) = 0;
     // chat rsa
     virtual std::string chatRsaEncrypt(const std::string &value) = 0;
+    //normal rsa
+    virtual std::string normalRsaEncrypt(const std::string &value) = 0;
     // 销毁群处理
     virtual void destroyGroup(const std::string &groupId) = 0;
     // 退出群

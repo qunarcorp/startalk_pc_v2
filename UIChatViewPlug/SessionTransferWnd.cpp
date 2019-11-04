@@ -89,7 +89,7 @@ void SessionTransferWnd::initUI() {
     {
         std::string reason = _pEdit->toPlainText().toStdString();
         if(newCsrName.empty()){
-            LiteMessageBox::failed("请选择要转移的客服!", 2000);
+            LiteMessageBox::failed(tr("请选择要转移的客服!"), 2000);
             return;
         }
         emit sessiontransfer(newCsrName,reason);

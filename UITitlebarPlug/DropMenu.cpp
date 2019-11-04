@@ -37,16 +37,16 @@ void DropMenu::initUi()
     //
     comboBox = new ComboBox(this);
     comboBox->setObjectName("userStatusCombox");
-    comboBox->addItem("在线");
-    comboBox->addItem("繁忙");
-    comboBox->addItem("离开");
+    comboBox->addItem(tr("在线"));
+    comboBox->addItem(tr("繁忙"));
+    comboBox->addItem(tr("离开"));
 
     _menu = new QMenu(this);
     _menu->setFixedWidth(80);
     _menu->setAttribute(Qt::WA_TranslucentBackground, true);
-    auto* actOnline = new QAction("在线", _menu);
-    auto* actBusy = new QAction("繁忙", _menu);
-    auto* actAway = new QAction("离开", _menu);
+    auto* actOnline = new QAction(tr("在线"), _menu);
+    auto* actBusy = new QAction(tr("繁忙"), _menu);
+    auto* actAway = new QAction(tr("离开"), _menu);
     _menu->addAction(actOnline);
     _menu->addAction(actBusy);
     _menu->addAction(actAway);
@@ -67,11 +67,11 @@ void DropMenu::initUi()
     topLay->addLayout(topLeftLay);
     topLay->addWidget(_headLabel);
     //
-    _pUserCardLabel = new ActionLabel("个人资料");
-    _pSettingLabel = new ActionLabel("系统设置");
-    _pLogoutLabel = new ActionLabel("退出登录");
-    _pSysQuitLabel = new ActionLabel("系统退出");
-    _pAboutLabel = new ActionLabel("关于");
+    _pUserCardLabel = new ActionLabel(tr("个人资料"));
+    _pSettingLabel = new ActionLabel(tr("系统设置"));
+    _pLogoutLabel = new ActionLabel(tr("退出登录"));
+    _pSysQuitLabel = new ActionLabel(tr("系统退出"));
+    _pAboutLabel = new ActionLabel(tr("关于"));
 
     auto* mainFrm = new QFrame(this);
     mainFrm->setObjectName("DropMenu");

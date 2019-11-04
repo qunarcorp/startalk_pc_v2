@@ -26,23 +26,22 @@
 
 #ifdef _WINDOWS
 #include<windows.h>
-#define MessageBox MessageBox
 #else
 
 #include <unistd.h>
 
 #endif
 
-#define FILEICON_AUDIO ":/chatview/image1/messageItem/filetype/audio.png"
-#define FILEICON_EXCEL ":/chatview/image1/messageItem/filetype/excel.png"
-#define FILEICON_PDF ":/chatview/image1/messageItem/filetype/pdf.png"
-#define FILEICON_PPT ":/chatview/image1/messageItem/filetype/ppt.png"
-#define FILEICON_PROCESS ":/chatview/image1/messageItem/filetype/process.png"
-#define FILEICON_TEXT ":/chatview/image1/messageItem/filetype/text.png"
-#define FILEICON_UNKNOWN ":/chatview/image1/messageItem/filetype/unknown.png"
-#define FILEICON_VIDEO ":/chatview/image1/messageItem/filetype/video.png"
-#define FILEICON_WORD ":/chatview/image1/messageItem/filetype/word.png"
-#define FILEICON_ZIP ":/chatview/image1/messageItem/filetype/zip.png"
+#define FILEICON_AUDIO ":/QTalk/image1/file_type/audio.png"
+#define FILEICON_EXCEL ":/QTalk/image1/file_type/excel.png"
+#define FILEICON_PDF ":/QTalk/image1/file_type/pdf.png"
+#define FILEICON_PPT ":/QTalk/image1/file_type/ppt.png"
+#define FILEICON_PROCESS ":/QTalk/image1/file_type/process.png"
+#define FILEICON_TEXT ":/QTalk/image1/file_type/text.png"
+#define FILEICON_UNKNOWN ":/QTalk/image1/file_type/unknown.png"
+#define FILEICON_VIDEO ":/QTalk/image1/file_type/video.png"
+#define FILEICON_WORD ":/QTalk/image1/file_type/word.png"
+#define FILEICON_ZIP ":/QTalk/image1/file_type/zip.png"
 
 #define compare_doule_Equal(x, y) (abs(x - y) < 0.00001)
 
@@ -105,6 +104,20 @@ QSize FileSendReceiveMessItem::itemWdtSize() {
   * @date 2018.10.22
   */
 void FileSendReceiveMessItem::setProcess(double speed, double dtotal, double dnow, double utotal, double unow) {
+
+    // 发送文件切换会话处理
+    if(QTalk::Entity::MessageDirectionSent == _msgDirection && utotal > 0)
+    {
+        if(_resending && _resending->isVisible())
+            _resending->setVisible(false);
+
+        if(_sending && !_sending->isVisible())
+        {
+            _sending->startMovie();
+            _sending->setVisible(true);
+        }
+    }
+
     double process = 0;
     if (dtotal > 0) {
         process = (dnow * 100.0) / dtotal;
@@ -138,7 +151,7 @@ void FileSendReceiveMessItem::setProcess(double speed, double dtotal, double dno
         isUpLoad = true;
 
         if (QTalk::Entity::MessageDirectionSent == _msgDirection) {
-            _contentButtomFrmMessLab->setText(tr("发送成功"));
+            _contentButtomFrmMessLab->setText(tr("上传成功"));
             _contentButtomFrmProgressBar->hide();
             _contentButtomFrmOPenFileBtn->show();
         } else if (QTalk::Entity::MessageDirectionReceive == _msgDirection) {
@@ -149,9 +162,12 @@ void FileSendReceiveMessItem::setProcess(double speed, double dtotal, double dno
             _contentButtomFrmOPenFileBtn->show();
         }
 
-        std::thread([this](){
+        QPointer<FileSendReceiveMessItem> pThis(this);
+        std::thread([pThis](){
             int i = 0;
-            QString filePath(getLocalFilePath());
+            if(!pThis) return;
+
+            QString filePath(pThis->getLocalFilePath());
             while (!QFile::exists(filePath) && i < 1000) {
 #ifdef _WINDOWS
                 Sleep(100);
@@ -161,20 +177,23 @@ void FileSendReceiveMessItem::setProcess(double speed, double dtotal, double dno
                 ++i;
             }
 
-            if(!filePath.isEmpty())
-                g_pMainPanel->makeFileLink(filePath, _msgInfo.FileMd5.data());
+            if(pThis && !filePath.isEmpty())
+                g_pMainPanel->makeFileLink(filePath, pThis->_msgInfo.FileMd5.data());
 
-            if (_openDir || _openFile) {
+            if (pThis && (pThis->_openDir || pThis->_openFile)) {
                 if(!filePath.isEmpty())
                 {
-                    if (_openDir)
-                        onOpenFilePath();
-                    else if (_openFile)
-                        onOpenFile();
+                    if (pThis && pThis->_openDir)
+                        emit pThis->sgOpenDir();
+                    else if (pThis && pThis->_openFile)
+                        emit pThis->sgOpenFile(false);
                 }
 
-                _openDir = false;
-                _openFile = false;
+                if(pThis)
+                {
+                    pThis->_openDir = false;
+                    pThis->_openFile = false;
+                }
             }
 
         }).detach();
@@ -227,7 +246,7 @@ void FileSendReceiveMessItem::initFileIconMap() {
   */
 void FileSendReceiveMessItem::initMenu() {
     _saveAsAct = new QAction(tr("另存为"), this);
-    _openFileAct = new QAction("打开文件", this);
+    _openFileAct = new QAction(tr("打开文件"), this);
     _downLoadMenu = new QMenu(this);
     _downLoadMenu->setAttribute(Qt::WA_TranslucentBackground, true);
     _downLoadMenu->setFixedWidth(84);
@@ -235,6 +254,7 @@ void FileSendReceiveMessItem::initMenu() {
     _downLoadMenu->addAction(_saveAsAct);
     connect(_saveAsAct, SIGNAL(triggered(bool)), this, SLOT(onSaveAsAct()));
     connect(_openFileAct, &QAction::triggered, this, &FileSendReceiveMessItem::onOpenFile);
+    connect(this, &FileSendReceiveMessItem::sgOpenFile, this, &FileSendReceiveMessItem::onOpenFile, Qt::QueuedConnection);
 }
 
 /**
@@ -376,7 +396,12 @@ void FileSendReceiveMessItem::initReceiveLayout() {
     mainLay->addLayout(rightLay);
     if (QTalk::Enum::ChatType::GroupChat == _msgInfo.ChatType
         && QTalk::Entity::MessageDirectionReceive == _msgInfo.Direction ) {
-        rightLay->addWidget(_nameLab);
+        auto* nameLay = new QHBoxLayout;
+        nameLay->setMargin(0);
+        nameLay->setSpacing(5);
+        nameLay->addWidget(_nameLab);
+        nameLay->addWidget(_medalWgt);
+        rightLay->addLayout(nameLay);
     }
     if (!_contentFrm) {
         _contentFrm = new QFrame(this);
@@ -634,6 +659,9 @@ void FileSendReceiveMessItem::initReceiveContentButtomFrmLayout() {
             this, SLOT(onOpenFilePath()));
     connect(_contentButtomFrmMenuBtn, SIGNAL(clicked(bool)),
             this, SLOT(onMenuBtnChicked()));
+    connect(this, SIGNAL(sgOpenDir()),
+            this, SLOT(onOpenFilePath()));
+
 }
 
 /**
@@ -671,7 +699,8 @@ void FileSendReceiveMessItem::setData() {
   */
 void FileSendReceiveMessItem::judgeFileIsDownLoad()
 {
-    if (!getLocalFilePath().isEmpty()) {
+    auto path = getLocalFilePath();
+    if (!path.isEmpty() && QFileInfo(path).size() > 0) {
         _contentButtomFrmMessLab->setText(tr("已下载"));
         _contentButtomFrmDownLoadBtn->hide();
         _contentButtomFrmMenuBtn->show();
@@ -725,6 +754,9 @@ void FileSendReceiveMessItem::sendDownLoadFile(const std::string &strLocalPath, 
   */
 void FileSendReceiveMessItem::downLoadFile()
 {
+    QPointer<FileSendReceiveMessItem> pThis(this);
+
+    if(!pThis) return;
 
     if (_contentButtomFrmDownLoadBtn)
         _contentButtomFrmDownLoadBtn->hide();
@@ -860,7 +892,7 @@ void FileSendReceiveMessItem::onSaveAsAct() {
             Platform::instance().setHistoryDir(QFileInfo(fileName).absoluteDir().absolutePath().toStdString());
 
             QFile::copy(filePath, fileName);
-            LiteMessageBox::success(QString("文件已另存为:%1").arg(fileName));
+            LiteMessageBox::success(QString(tr("文件已另存为:%1")).arg(fileName));
             return;
         }
     }
@@ -881,13 +913,12 @@ void FileSendReceiveMessItem::onOpenFilePath()
     QString fileName = getLocalFilePath();
     QFileInfo info(fileName);
     if (fileName.isEmpty() || !info.exists()) {
-        int ret = QtMessageBox::question(this, "提醒", "未找到本地文件, 是否下载?");
+        int ret = QtMessageBox::question(this, tr("提醒"), tr("未找到本地文件, 是否下载?"));
         if (ret == QtMessageBox::EM_BUTTON_NO) {
             return;
         } else {
             _openDir = true;
-            std::thread t(std::bind(&FileSendReceiveMessItem::downLoadFile, this));
-            t.detach();
+            g_pMainPanel->pool().enqueue(std::bind(&FileSendReceiveMessItem::downLoadFile, this));
         }
     } else {
 
@@ -920,13 +951,12 @@ void FileSendReceiveMessItem::onOpenFile(bool) {
     QString fileName = getLocalFilePath();
 
     if (!QFileInfo::exists(fileName)) {
-        int ret = QtMessageBox::question(this, "提醒", "未找到本地文件, 是否下载?");
+        int ret = QtMessageBox::question(this, tr("提醒"), tr("未找到本地文件, 是否下载?"));
         if (ret == QtMessageBox::EM_BUTTON_NO) {
             return;
         } else {
             _openFile = true;
-            std::thread t(std::bind(&FileSendReceiveMessItem::downLoadFile, this));
-            t.detach();
+            g_pMainPanel->pool().enqueue(std::bind(&FileSendReceiveMessItem::downLoadFile, this));
         }
     } else {
         QDesktopServices::openUrl(QUrl::fromLocalFile(fileName));

@@ -20,7 +20,7 @@ public:
     void setLinkText(const QString& text);
     void setNormalText(const QString& text);
 
-signals:
+Q_SIGNALS:
     void clicked();
     void setLinkTextSignal(const QString&);
 

@@ -1,4 +1,8 @@
-﻿#ifndef LOGINPANEL_H
+﻿#if _MSC_VER >= 1600
+#pragma execution_character_set("utf-8")
+#endif
+
+#ifndef LOGINPANEL_H
 #define LOGINPANEL_H
 
 #include <QCheckBox>
@@ -7,6 +11,7 @@
 #include <QVBoxLayout>
 #include <QTimer>
 #include <QLocalServer>
+#include <QCompleter>
 #include "MessageManager.h"
 #include "../CustomUi/HeadPhotoLab.h"
 #include "../CustomUi/UShadowWnd.h"
@@ -41,8 +46,9 @@ public:
 
 public slots:
     void onSynDataSuccess();
+    Q_INVOKABLE void onAuthFailed(const QString& msg);
 
-signals:
+Q_SIGNALS:
     void showStatusMessage(const QString&);
     void sgSynDataSuccess();
     void AuthFailedSignal(const QString& msg);
@@ -54,7 +60,6 @@ protected:
     void initloginWnd();
     void initLogingWnd();
     void onLoginBtnClicked();
-    void onAuthFailed(const QString& msg);
 
 protected:
     void mousePressEvent(QMouseEvent *e) override ;
@@ -82,6 +87,7 @@ private:
 
     QFrame * _userNameFrm;
     QLineEdit* _userNameEdt;
+    QCompleter* _userNameCompleter;
 
     QFrame * _passworldFrm;
     QLineEdit* _passworldEdt;

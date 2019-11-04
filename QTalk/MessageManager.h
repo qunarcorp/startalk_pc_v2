@@ -7,6 +7,7 @@
 #include "../EventBus/EventHandler.hpp"
 #include "../EventBus/HandlerRegistration.hpp"
 #include "../include/CommonStrcut.h"
+#include "../Message/StatusMessage.h"
 
 class QTalkMsgManager : public Object
 {
@@ -21,11 +22,13 @@ public:
     void sendLogReport(const std::string& desc, const std::string &logPath);
     void chanegUserStatus(const std::string &status);
     void reportDump(const std::string & dump);
+    std::string checkUpdater(int version);
 };
 
 //
 class MainWindow;
 class QTalkMsgListener : public EventHandler<LoginSuccessMessage>
+        , public EventHandler<GetHistoryError>
 {
 public:
 	explicit QTalkMsgListener(MainWindow* pUiControl);
@@ -33,10 +36,11 @@ public:
 
 public:
 	void onEvent(LoginSuccessMessage& e) override;
+	void onEvent(GetHistoryError& e) override;
 
 private:
 	MainWindow*           _pUiControl;
 
-	};
+};
 
 #endif // _MESSAGEMANAGER_H_

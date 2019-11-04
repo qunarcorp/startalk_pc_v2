@@ -14,6 +14,7 @@
 #include <QProcess>
 #include <QNetworkConfigurationManager>
 #include <QTcpSocket>
+#include <QtConcurrent>
 #include "../CustomUi/UShadowEffect.h"
 #include "../UICom/uicom.h"
 #include "../QtUtil/lib/ini/ConfigLoader.h"
@@ -42,7 +43,8 @@
 #endif
 
 LoginPanel::LoginPanel(QWidget *parent) :
-        QDialog(parent), _pStLoginConfig(nullptr), _pDefaultConfig(nullptr), _pLocalServer(nullptr) {
+        QDialog(parent), _pStLoginConfig(nullptr), _pDefaultConfig(nullptr), _pLocalServer(nullptr)
+        , _userNameCompleter(nullptr){
     _pManager = new UILoginMsgManager;
     _pListener = new UILoginMsgListener(this);
     _mousePressed = false;
@@ -70,7 +72,39 @@ LoginPanel::~LoginPanel() {
 }
 
 void LoginPanel::onGotLoginstauts(const QString &msg) {
-    emit showStatusMessage(msg);
+
+    QString newMsg (msg);
+    if(QLocale::system().language() == QLocale::Chinese)
+    {
+        if(msg == "opening database")
+            newMsg = "正在打开数据库";
+        else if(msg == "getting user information")
+            newMsg = "正在获取用户信息";
+        else if(msg == "getting group information")
+            newMsg = "正在获取群信息";
+        else if(msg == "initializing configuration")
+            newMsg = "正在初始化配置";
+        else if(msg == "getting user message")
+            newMsg = "正在获取单人信息";
+        else if(msg == "updating message read mask")
+            newMsg = "正在更新单人阅读状态";
+        else if(msg == "getting group message")
+            newMsg = "正在获取群信息";
+        else if(msg == "getting notice message")
+            newMsg = "正在获取系统信息";
+        else if(msg == "getting user state")
+            newMsg = "正在获取用户状态";
+        else if(msg == "login success")
+            newMsg = "登录成功 正在启动";
+        else if(msg.contains("getting user message:"))
+            newMsg = newMsg.replace("getting user message:", "正在获取单人消息: ");
+        else if(msg.contains("getting group message:"))
+            newMsg = newMsg.replace("getting group message:", "正在获取群消息: ");
+        else if(msg.contains("getting system message:"))
+            newMsg = newMsg.replace("getting system message:", "正在获取系统消息: ");
+    }
+
+    emit showStatusMessage(newMsg);
 }
 
 /**
@@ -139,7 +173,7 @@ void LoginPanel::initLayout() {
     _pAuthFailedFrm->setFixedHeight(40);
     leftFrmLay->addWidget(_pAuthFailedFrm);
     auto *authFailLay = new QHBoxLayout(_pAuthFailedFrm);
-    HeadPhotoLab *errPic = new HeadPhotoLab;
+    auto *errPic = new HeadPhotoLab;
     errPic->setParent(this);
     errPic->setHead(":/login/image1/error.png", 10, false, false, true);
     authFailLay->addItem(new QSpacerItem(10, 10, QSizePolicy::Expanding));
@@ -185,7 +219,7 @@ void LoginPanel::initLayout() {
     auto *thbox = new QHBoxLayout;
     rhbox->addLayout(thbox);
     thbox->addItem(new QSpacerItem(40, 1, QSizePolicy::Expanding));
-    _closeBtn = new QPushButton;
+    _closeBtn = new QPushButton(this);
     _closeBtn->setObjectName("closeBtn");
     _closeBtn->setFixedSize(30, 30);
     _closeBtn->setFocusPolicy(Qt::NoFocus);
@@ -213,7 +247,7 @@ void LoginPanel::initLayout() {
     leftFrmLay->addSpacerItem(new QSpacerItem(10, 10, QSizePolicy::Minimum, QSizePolicy::Expanding));
     //
     connect(_cancelLoginBtn, &QPushButton::clicked, [this](){
-        int ret =QtMessageBox::question(this, "提示", "确认取消登录 ? ");
+        int ret =QtMessageBox::question(this, tr("提示"), tr("确认取消登录 ? "));
         if(ret == QtMessageBox::EM_BUTTON_YES)
         {
             QString program = QApplication::applicationFilePath();
@@ -390,7 +424,7 @@ void LoginPanel::initConf() {
 		float leftSpace = (float)i64FreeBytesToCaller / 1024 / 1024;
 		if (leftSpace < 1024)
 		{
-			int ret = QtMessageBox::question(this, "磁盘空间不足", "磁盘不足, 可能会导致程序异常退出, 是否立即退出?");
+			int ret = QtMessageBox::question(this, tr("磁盘空间不足"), tr("磁盘不足, 可能会导致程序异常退出, 是否立即退出?"));
 			if (ret == QtMessageBox::EM_BUTTON_YES)
 			{
 				exit(0);
@@ -419,24 +453,34 @@ void LoginPanel::initConf() {
 
         //
         _pDefaultConfig = nullptr;
+        QStringList users;
         for (QTalk::StConfig *tmpConf : _pStLoginConfig->children) {
             if (tmpConf->hasAttribute(CONFIG_KEY_DEFAULT) &&
                 tmpConf->attribute(CONFIG_KEY_DEFAULT).toInt()) {
                 _pDefaultConfig = tmpConf;
             }
+            users << tmpConf->attribute(CONFIG_KEY_USERNAME);
         }
+
+        if(!users.isEmpty() && _userNameEdt)
+        {
+            _userNameCompleter = new QCompleter(users, this);
+            _userNameCompleter->setCaseSensitivity(Qt::CaseInsensitive);
+            _userNameEdt->setCompleter(_userNameCompleter);
+        }
+
         if (nullptr != _pDefaultConfig) {
             int savePassword = _pDefaultConfig->attribute(CONFIG_KEY_SAVEPASSWORD).toInt();
             int autoLogin = _pDefaultConfig->attribute(CONFIG_KEY_AUTOLOGIN).toInt();
             AppSetting::instance().setAutoLoginEnable(autoLogin);
             QString userName = _pDefaultConfig->attribute(CONFIG_KEY_USERNAME);
             QString headPath = _pDefaultConfig->attribute(CONFIG_KEY_HEADPATH);
+            QString password = _pDefaultConfig->attribute(CONFIG_KEY_PASSWORD);
             _userNameEdt->setText(userName);
             _rememberPassBtn->setChecked(savePassword);
             setHead(headPath);
             if (savePassword) {
                 _autoLoginBtn->setChecked(autoLogin);
-                QString password = _pDefaultConfig->attribute(CONFIG_KEY_PASSWORD);
                 _passworldEdt->setText(password);
                 if (autoLogin && _enableAutoLogin) {
 #ifdef _QCHAT
@@ -444,7 +488,6 @@ void LoginPanel::initConf() {
 #else
                     _loginBtn->clicked();
 #endif
-
                 }
             }
         }
@@ -471,6 +514,7 @@ void LoginPanel::initloginWnd() {
     userNamelay->setMargin(0);
     userNamelay->setSpacing(0);
     _userNameEdt = new QLineEdit(this);
+
     _userNameEdt->setPlaceholderText(tr("请输入账号"));
     _userNameEdt->setObjectName("userNameEdt");
     userNamelay->addWidget(_userNameEdt);
@@ -579,7 +623,7 @@ void LoginPanel::initLogingWnd() {
     logingLayout->addWidget(_pStsLabel);
     //
     _cancelLoginBtn = new QPushButton(tr("取消登录"));
-    _cancelLoginBtn->setFixedSize(85, 26);
+    _cancelLoginBtn->setFixedHeight(26);
     _cancelLoginBtn->setObjectName("cancelLoginButton");
     auto *cancelLay = new QHBoxLayout;
     cancelLay->setContentsMargins(0, 80, 0, 0);
@@ -625,8 +669,20 @@ void LoginPanel::setAutoLoginFlag(bool flag) {
 
 void LoginPanel::onLoginBtnClicked()
 {
-    connect(this, &LoginPanel::showStatusMessage, _pStsLabel, &QLabel::setText, Qt::QueuedConnection);
-    connect(this, &LoginPanel::AuthFailedSignal, this, &LoginPanel::onAuthFailed);
+    // init
+    static bool isInit  = false;
+    if(!isInit)
+    {
+        isInit = true;
+        connect(this, &LoginPanel::showStatusMessage, _pStsLabel, &QLabel::setText, Qt::QueuedConnection);
+        connect(this, &LoginPanel::AuthFailedSignal, this, &LoginPanel::onAuthFailed);
+    }
+    // submit check
+    static qint64 submit_time = 0;
+    qint64 now = QDateTime::currentMSecsSinceEpoch();
+    if(now - submit_time < 1000)
+        return;
+    submit_time = now;
     //
     QString strName = _userNameEdt->text();
     QString strPassword = _passworldEdt->text();
@@ -645,20 +701,18 @@ void LoginPanel::onLoginBtnClicked()
 
     if(nullptr == _pLocalServer)
         _pLocalServer = new QLocalServer;
-
-    // 单进程监听
 #ifndef _DEBUG
+    // 单进程监听
     QLocalSocket localSocket;
     QString listenName = QString("%1@%2").arg(strName, domain);
     localSocket.connectToServer(listenName);
-    if (localSocket.waitForConnected(1000)) {
+    if (localSocket.waitForConnected(2000)) {
         localSocket.disconnectFromServer();
         localSocket.close();
         emit AuthFailedSignal(tr("该账号已登录!"));
         return;
     }
 #endif
-
     // 设置画面显隐
     _pLoginFrm->setVisible(false);
     _pLogingFrm->setVisible(true);
@@ -702,7 +756,11 @@ void LoginPanel::onLoginBtnClicked()
         Platform::instance().setNavName(navName.toStdString());
         //
         _pStsLabel->setText(tr("正在获取导航信息"));
-        bool ret = _pManager->getNavInfo(nav);
+        QFuture<bool> curRet = QtConcurrent::run(_pManager, &UILoginMsgManager::getNavInfo, nav);
+        while (!curRet.isFinished())
+            QApplication::processEvents(QEventLoop::AllEvents, 100);
+
+        bool ret = curRet.result();
         if (!ret) {
             emit AuthFailedSignal(tr("导航获取失败, 请检查网络连接!"));
             return;
@@ -719,7 +777,7 @@ void LoginPanel::onLoginBtnClicked()
         _pStsLabel->setText(tr("正在尝试连接服务器"));
         std::auto_ptr<QTcpSocket> tcpSocket(new QTcpSocket);
         tcpSocket->connectToHost(host.data(), port);
-        if(!tcpSocket->waitForConnected(5000))
+        if(!tcpSocket->waitForConnected(10000))
         {
             tcpSocket->abort();
             emit AuthFailedSignal(tr("连接服务器失败!"));
@@ -831,6 +889,7 @@ void LoginPanel::loginError(const std::string &errMs) {
     {
         errorMsg = QString::fromStdString(errMs);
     }
+    error_log(errMs);
     emit AuthFailedSignal(errorMsg);
 }
 
@@ -839,15 +898,19 @@ void LoginPanel::loginError(const std::string &errMs) {
  */
 void LoginPanel::loginSuccess()
 {
-    // 监听
+    static bool isListen = false;
 #ifndef _DEBUG
+    // 监听
     QString strName = Platform::instance().getSelfUserId().data();
     QString domain = _pNavManager->getDefaultDomain();
     QString listenName = QString("%1@%2").arg(strName, domain);
-    QLocalServer::removeServer(listenName);
-    _pLocalServer->listen(listenName);
+    if(!isListen && _pLocalServer)
+    {
+        isListen = true;
+        QLocalServer::removeServer(listenName);
+        _pLocalServer->listen(listenName);
+    }
 #endif
-
     if (_rememberPassBtn->isChecked()) {
         _pDefaultConfig->setAttribute(CONFIG_KEY_SAVEPASSWORD, true);
         _pDefaultConfig->setAttribute(CONFIG_KEY_AUTOLOGIN, _autoLoginBtn->isChecked());

@@ -29,6 +29,8 @@ public:
     std::string errorMessage;
 };
 
+class GetHistoryError : public Event{};
+
 //
 class UserOnlineState : public Event
 {

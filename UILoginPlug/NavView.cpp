@@ -16,9 +16,12 @@
 #include "../qzxing/QZXing.h"
 #include "../UICom/StyleDefine.h"
 
+int w = 0;
 NavItemDelegate::NavItemDelegate()
 {
-
+    QFont detailFont;
+    detailFont.setPixelSize(13);
+    w = QFontMetricsF(detailFont).width(tr("查看详情"));
 }
 
 NavItemDelegate::~NavItemDelegate()
@@ -33,36 +36,51 @@ void NavItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &optio
     // 背景色
     QRect rect = option.rect;
     QPen pen;
-    if (option.state & QStyle::State_Selected)
-    {
-        painter->fillRect(rect, QTalk::StyleDefine::instance().getDropSelectColor());
-        painter->fillRect(QRect(rect.x(), rect.y(), 5, rect.height()), QColor(0, 202, 190));
-        pen.setColor(QTalk::StyleDefine::instance().getDropSelectFontColor());
-    }
-    else
-    {
-        painter->fillRect(rect, QTalk::StyleDefine::instance().getDropNormalColor());
-        pen.setColor(QTalk::StyleDefine::instance().getDropNormalFontColor());
-    }
+    painter->setPen(QColor(219,219,219));
+    painter->fillRect(rect, QTalk::StyleDefine::instance().getDropNormalColor());
+    painter->drawRoundedRect(QRect(rect.x(), rect.y() + 7, rect.width(), rect.height() - 14), 7, 7);
     //
     QString text = index.data(ITEM_DATA_NAME).toString();
-    bool    isSelected = index.data(ITEM_DATA_CHECKED).toBool();
+    QString link = index.data(ITEM_DATA_Link).toString();
+    bool isSelected = index.data(ITEM_DATA_CHECKED).toBool();
     //
+    QFont nameFont;
+    nameFont.setPixelSize(18);
+    pen.setColor(QTalk::StyleDefine::instance().getDropNormalFontColor());
     painter->setPen(pen);
-    QRect textRect(rect.x() + 30, rect.y(), rect.width(), rect.height());
-    painter->drawText(textRect, Qt::AlignVCenter, index.data(ITEM_DATA_NAME).toString());
+    painter->setFont(nameFont);
+    QRect nameRect(rect.x() + 50, rect.y() + 20, rect.width() - 100, 30);
+    painter->drawText(nameRect, Qt::AlignTop, text);
 
+    QFont textFont;
+    textFont.setPixelSize(15);
+    pen.setColor(QColor(153,153,153));
+    painter->setPen(pen);
+    painter->setFont(textFont);
+    link = QFontMetricsF(textFont).elidedText(link, Qt::ElideRight, rect.width() - 210);
+    QRect textRect(rect.x() + 50, rect.bottom() - 50, rect.width() - 200, 30);
+    painter->drawText(textRect, Qt::AlignBottom, link);
+    //
+    QFont detailFont;
+    detailFont.setPixelSize(13);
+    pen.setColor(QColor(0,202,190));
+    painter->setPen(pen);
+    painter->setFont(detailFont);
+    QRectF detailRect((int)rect.right() - 30 - w, (int)rect.y(), w, (int)rect.height());
+    painter->drawText(detailRect, Qt::AlignVCenter, tr("查看详情"));
+
+    QRect checkRect = {rect.left() + 20, rect.y() + 20, 20, 20};
     if(isSelected)
-    {
-        painter->drawPixmap(rect.right() - 30, rect.y() + 15, 20, 20, QPixmap(":/login/image1/checkbox_checked.png"));
-    }
+        painter->drawPixmap(checkRect, QPixmap(":/login/image1/checkbox_checked.png"));
+    else
+        painter->drawPixmap(checkRect, QPixmap(":/login/image1/checkbox_unchecked.png"));
     //
     painter->restore();
 }
 
 QSize NavItemDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const {
     QSize size = QStyledItemDelegate::sizeHint(option, index);
-    return {size.width(), 50};
+    return {size.width(), 86};
 }
 
 bool NavItemDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option,
@@ -70,7 +88,22 @@ bool NavItemDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, cons
     if(event->type() == QEvent::MouseButtonPress)
     {
         QString name = index.data(ITEM_DATA_NAME).toString();
-        emit itemClicked(name);
+        auto pos = ((QMouseEvent*)event)->pos();
+        QRect rect = option.rect;
+        QRectF detailRect((int)rect.right() - 30 - w, (int)rect.y(), w, (int)rect.height());
+        if(detailRect.contains(pos))
+        {
+            emit showDetail(name);
+        }
+        else
+        {
+//            static QString _name;
+//            if(_name != name)
+            {
+//                _name = name;
+                emit itemClicked(name);
+            }
+        }
     }
     return QStyledItemDelegate::editorEvent(event, model, option, index);
 }
@@ -83,6 +116,14 @@ NavMainView::NavMainView(const StNav& nav, QWidget* parnet)
 {
     setObjectName("NavMainView");
 
+    //
+    auto* backBtn = new QPushButton(tr("返回"), this);
+    backBtn->setObjectName("BackBtn");
+    auto* topLay = new QHBoxLayout;
+    topLay->setMargin(20);
+    topLay->addWidget(backBtn);
+    topLay->addItem(new QSpacerItem(10, 10, QSizePolicy::Expanding));
+    //
     _pQRCodeLabel = new QLabel(this);
     _pQRCodeLabel->setObjectName("QRCodeLabel");
     _pNameEdit = new QLineEdit(this);
@@ -90,27 +131,21 @@ NavMainView::NavMainView(const StNav& nav, QWidget* parnet)
     _pAddressEdit = new QTextEdit(this);
     _pAddressEdit->setAcceptRichText(false);
     //
-    QLabel* nameLabel = new QLabel("名称");
-    QLabel* hostLabel = new QLabel("域名");
-    QLabel* addrLabel = new QLabel("导航地址");
+    auto* nameLabel = new QLabel(tr("名称"));
+    auto* hostLabel = new QLabel(tr("域名"));
+    auto* addrLabel = new QLabel(tr("导航地址"));
     //
-    _pNavDetail = new LinkButton("导航详情");
-    //
-    _pChoseBtn = new QPushButton("选择");
-    _pDeleteBtn = new QPushButton("删除");
+    _pDeleteBtn = new QPushButton(tr("删除此导航"));
     _pDeleteBtn->setObjectName("DeleteBtn");
-    _pChoseBtn->setObjectName("ChoseBtn");
-    _pChoseBtn->setFixedHeight(30);
-//    _pChoseBtn->setVisible(false);
     //
+    _pHostEdit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     _pNameEdit->setReadOnly(true);
     _pHostEdit->setReadOnly(true);
     _pAddressEdit->setFixedHeight(60);
-    _pDeleteBtn->setFixedSize(70, 30);
     _pAddressEdit->installEventFilter(this);
 
-    auto* layout = new QGridLayout(this);
-    layout->setContentsMargins(0, 40, 40, 0);
+    auto* layout = new QGridLayout;
+    layout->setContentsMargins(0, 0, 40, 40);
     layout->setHorizontalSpacing(15);
     layout->setVerticalSpacing(15);
     layout->addWidget(_pQRCodeLabel, 0, 1, Qt::AlignLeft);
@@ -121,10 +156,12 @@ NavMainView::NavMainView(const StNav& nav, QWidget* parnet)
     layout->addWidget(addrLabel, 3, 0, Qt::AlignRight| Qt::AlignTop);
     layout->addWidget(_pAddressEdit, 3, 1, 1, 2, Qt::AlignLeft | Qt::AlignTop);
 
-    layout->addWidget(_pNavDetail, 4, 1);
-
-    layout->addWidget(_pChoseBtn, 5, 1);
     layout->addWidget(_pDeleteBtn, 5, 2);
+    //
+    auto* lay = new QVBoxLayout(this);
+    lay->setContentsMargins(0, 0, 0, 10);
+    lay->addLayout(topLay);
+    lay->addLayout(layout);
     //
     QImage qrCode = QZXing::encodeData(nav.url,
             QZXing::EncoderFormat_QR_CODE, {128, 128});
@@ -134,36 +171,18 @@ NavMainView::NavMainView(const StNav& nav, QWidget* parnet)
     _pHostEdit->setText(nav.domain);
     _pAddressEdit->setText(nav.url);
 
-    connect(_pChoseBtn, &QPushButton::clicked, [this]()
-    {
-        emit selectSignal(_nav.name);
-    });
     connect(_pDeleteBtn, &QPushButton::clicked, [this]()
     {
+        emit sgBack();
         emit deleteSignal(_nav.name);
     });
-    connect(_pNavDetail, &LinkButton::clicked, [this]()
-    {
-        QUrl url(_nav.url);
-        QUrlQuery query;
-        query.addQueryItem("p", "pc");
-        url.setQuery(query);
 
-        QDesktopServices::openUrl(url);
-    });
-    //emit navDebugChanged(_nav.name, _nav.debug);
+    connect(backBtn, &QPushButton::clicked, this, &NavMainView::sgBack);
 }
 
 NavMainView::~NavMainView()
 {
 
-}
-
-void NavMainView::setSelectState(bool selected)
-{
-    _pChoseBtn->setText(selected ? "已选择" : "选择");
-    _pChoseBtn->setEnabled(!selected);
-    _pDeleteBtn->setEnabled(!selected);
 }
 
 /**
@@ -194,10 +213,6 @@ NavView::NavView(QMap<QString, StNav>& mapNav, QString& defalutNav, QWidget *wgt
     :QFrame(wgt), _defaultName(defalutNav), _mapNav(mapNav)
 {
     //
-    QFrame* leftFrm = new QFrame(this);
-    auto* leftLay = new QVBoxLayout(leftFrm);
-    leftLay->setMargin(0);
-    //
     _itemView = new QListView;
     _itemModel = new QStandardItemModel;
     _itemDelegate = new NavItemDelegate;
@@ -207,33 +222,37 @@ NavView::NavView(QMap<QString, StNav>& mapNav, QString& defalutNav, QWidget *wgt
     _itemView->setFrameShape(QFrame::NoFrame);
     _itemView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     //
-    _addBtn = new QPushButton("添加");
+    _addBtn = new QPushButton(tr("添加"), this);
     _addBtn->setObjectName("NavView_addbtn");
     _addBtn->setFixedSize(128, 30);
-    leftLay->addWidget(_itemView);
-    leftLay->addWidget(_addBtn);
-    leftLay->setAlignment(_addBtn, Qt::AlignHCenter);
+    auto* label = new QLabel(tr("导航选择："), this);
     //
     _itemStackWgt = new QStackedWidget;
-    _itemStackWgt->setMinimumWidth(400);
     //
-    QSplitter* mainSplitter = new QSplitter();
-    mainSplitter->setHandleWidth(1);
-    mainSplitter->addWidget(leftFrm);
-    mainSplitter->addWidget(_itemStackWgt);
-    mainSplitter->setStretchFactor(0, 176);
-    mainSplitter->setStretchFactor(1, 451);
-    mainSplitter->setCollapsible(0, false);
-    mainSplitter->setCollapsible(1, false);
-
-    auto* lay = new QHBoxLayout(this);
-    lay->setContentsMargins(0, 1, 0, 17);
-    lay->addWidget(mainSplitter);
+    auto* topLay = new QHBoxLayout;
+    topLay->setMargin(0);
+    topLay->addWidget(label);
+    topLay->addItem(new QSpacerItem(10, 10, QSizePolicy::Expanding));
+    topLay->addWidget(_addBtn);
+    //
+    _mainFrm = new QFrame(this);
+    auto* lay = new QVBoxLayout(_mainFrm);
+    lay->setContentsMargins(24, 10, 24, 12);
+    lay->addLayout(topLay);
+    lay->addWidget(_itemView);
     //
     _pAddNavWnd = new AddNavWnd(this);
+    //
+    auto* mainLay = new QHBoxLayout(this);
+    mainLay->setMargin(0);
+    mainLay->setSpacing(0);
+    mainLay->addWidget(_mainFrm);
+    mainLay->addWidget(_itemStackWgt);
+    _itemStackWgt->setVisible(false);
 
     connect(this, &NavView::addItemSignal, this, &NavView::addItem);
     connect(_itemDelegate, &NavItemDelegate::itemClicked, this, &NavView::onItemClicked);
+    connect(_itemDelegate, &NavItemDelegate::showDetail, this, &NavView::onShowDetail);
     connect(_addBtn, &QPushButton::clicked, [this](){
         _pAddNavWnd->resetWnd();
         _pAddNavWnd->showCenter(true, this);
@@ -256,18 +275,19 @@ void NavView::addItem(const StNav &stNav)
     auto* item = new QStandardItem;
     item->setData(stNav.name, ITEM_DATA_NAME);
     item->setData(stNav.name == _defaultName, ITEM_DATA_CHECKED);
+    item->setData(stNav.url, ITEM_DATA_Link);
     _itemModel->appendRow(item);
 
     _mapListItem[stNav.name] = item;
     auto* view = new NavMainView(stNav);
-    view->setSelectState(stNav.name == _defaultName);
     _itemStackWgt->addWidget(view);
     _mapMainView[stNav.name] = view;
 
-    connect(view, &NavMainView::selectSignal, this, &NavView::onSelectChange, Qt::QueuedConnection);
+//    connect(view, &NavMainView::selectSignal, this, &NavView::onSelectChange, Qt::QueuedConnection);
     connect(view, &NavMainView::deleteSignal, this, &NavView::onDeleteItem, Qt::QueuedConnection);
     connect(view, &NavMainView::navAddrChanged, this, &NavView::onNavAddrChanged, Qt::QueuedConnection);
     connect(view, &NavMainView::navDebugChanged, this, &NavView::onNavDebugChanged, Qt::QueuedConnection);
+    connect(view, &NavMainView::sgBack, this, &NavView::onBack, Qt::QueuedConnection);
 
 //    if(_itemModel->rowCount() == 1)
     {
@@ -283,12 +303,11 @@ void NavView::addItem(const StNav &stNav)
 void NavView::onItemClicked(const QString& name)
 {
     if(_mapMainView.contains(name) && _mapListItem.contains(name))
-    {
         _itemStackWgt->setCurrentWidget(_mapMainView[name]);
-        //
-        QModelIndex index = _mapListItem[name]->index();
-        _itemView->setCurrentIndex(index);
-    }
+
+    onSelectChange(name);
+    //
+    emit sgClose();
 }
 
 /**
@@ -299,11 +318,6 @@ void NavView::onSelectChange(const QString& name)
 {
     _defaultName = name;
     emit saveConfSignal();
-
-    for (NavMainView* view : _mapMainView.values())
-    {
-        view->setSelectState(view->_nav.name == _defaultName);
-    }
     //
     for (QStandardItem* item : _mapListItem.values()) {
         QString itemName = item->data(ITEM_DATA_NAME).toString();
@@ -382,4 +396,17 @@ bool NavView::checkName(const QString& name)
 {
     bool ret = _mapNav.contains(name);
     return ret;
+}
+
+void NavView::onShowDetail(const QString &name) {
+    if(_mapMainView.contains(name) && _mapListItem.contains(name))
+        _itemStackWgt->setCurrentWidget(_mapMainView[name]);
+
+    _itemStackWgt->setVisible(true);
+    _mainFrm->setVisible(false);
+}
+
+void NavView::onBack() {
+    _itemStackWgt->setVisible(false);
+    _mainFrm->setVisible(true);
 }

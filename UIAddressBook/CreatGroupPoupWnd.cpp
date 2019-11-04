@@ -13,7 +13,7 @@ CreatGroupPoupWnd::CreatGroupPoupWnd(QWidget* parent)
 {
     setFixedWidth(300);
     //
-	QLabel* labelTitle = new QLabel(QString::fromLocal8Bit("创建群聊"));
+	QLabel* labelTitle = new QLabel(tr("创建群聊"));
     labelTitle->setContentsMargins(10, 0, 0, 0);
     _pLineEdit = new QLineEdit(this);
     _pWarningLabel = new QLabel(this);
@@ -32,12 +32,12 @@ CreatGroupPoupWnd::CreatGroupPoupWnd(QWidget* parent)
     _pWarningLabel->setContentsMargins(20, 0, 20, 0);
     _pLineEdit->setObjectName("CreatGroupName");
     //
-    _pLineEdit->setPlaceholderText(QString::fromLocal8Bit("请输入群名称"));
+    _pLineEdit->setPlaceholderText(tr("请输入群名称"));
 
     _pWarningLabel->setObjectName("CreatGroupWarning");
     //
-    QPushButton* btnYes = new QPushButton(QString::fromLocal8Bit("确定"));
-    QPushButton* btnNo = new QPushButton(QString::fromLocal8Bit("取消"));
+    QPushButton* btnYes = new QPushButton(tr("确定"));
+    QPushButton* btnNo = new QPushButton(tr("取消"));
     btnYes->setFixedWidth(70);
     btnNo->setFixedWidth(70);
     btnYes->setObjectName("CreatGroupYesBtn");
@@ -90,7 +90,7 @@ void CreatGroupPoupWnd::setCunt(int count)
 {
     if(count > 50)
     {
-        _pWarningLabel->setText(QString::fromLocal8Bit("群成员超过50人, 当前人数: %1").arg(count));
+        _pWarningLabel->setText(tr("群成员超过50人, 当前人数: %1").arg(count));
         _pWarningLabel->setVisible(true);
     }
     else

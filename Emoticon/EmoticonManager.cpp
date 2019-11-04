@@ -19,7 +19,7 @@ EmoticonTitleBar::EmoticonTitleBar(EmoticonManager* parent)
 	setFixedHeight(50);
 	setObjectName("EmoticonManagerTopFrame");
     auto * topLayout = new QHBoxLayout;
-	QLabel* titleLabel = new QLabel(QStringLiteral("管理表情"));
+	QLabel* titleLabel = new QLabel(tr("管理表情"));
 	titleLabel->setObjectName("EmoticonManagerTitle");
     auto * closeBtn = new QToolButton();
 	closeBtn->setObjectName("EmoticonManagerClose");
@@ -60,8 +60,8 @@ void EmoticonManager::initUi()
 	QFrame* midFrame = new QFrame(this);
 	midFrame->setObjectName("EmoticonManagerMidFrame");
     auto * midLayout = new QHBoxLayout(midFrame);
-	_pBtnLocalEmo = new QPushButton(QStringLiteral("本地表情"));
-	_pBtnNetEmo = new QPushButton(QStringLiteral("服务器表情"));
+	_pBtnLocalEmo = new QPushButton(tr("本地表情"));
+	_pBtnNetEmo = new QPushButton(tr("服务器表情"));
     _pBtnLocalEmo->setFlat(true);
     _pBtnNetEmo->setFlat(true);
 	_pBtnLocalEmo->setObjectName("EmoticonManagerLocalEmo");

@@ -8,6 +8,7 @@
 #include "../CustomUi/UShadowWnd.h"
 #include <QMap>
 #include <QCheckBox>
+#include <QComboBox>
 #include "../Platform/AppSetting.h"
 #include "MessageManager.h"
 
@@ -17,7 +18,6 @@ class ActionLabel;
 class QListWidgetItem;
 class SKRecorder;
 class QTextEdit;
-class QComboBox;
 class SettingCheckBox : public QCheckBox
 {
 public:
@@ -31,13 +31,26 @@ public:
 
 };
 
+class NoSlidingHandoverComboBox : public QComboBox {
+public:
+    explicit NoSlidingHandoverComboBox(QWidget* parent = nullptr)
+            :QComboBox(parent) {
+    }
+
+protected:
+    void wheelEvent(QWheelEvent* e) override
+    {
+
+    }
+};
+
 class SystemSettingWnd  : public UShadowDialog{
     Q_OBJECT
 public:
     explicit SystemSettingWnd(TitlebarMsgManager *messageManager,QWidget * parent = nullptr);
     ~SystemSettingWnd() override;
 
-signals:
+Q_SIGNALS:
     void sgSetAutoLogin(bool);
     void sgFeedbackLog(const QString&);
     void sgCheckUpdate();
@@ -73,10 +86,11 @@ private:
 private:
     SKRecorder* addSortCutItem(const QString& text, const QKeySequence& keys, QVBoxLayout* layout,std::function<void(const QKeySequence& keys)> callback);
 
-    private slots:
+private slots:
     void setAutoReplyMessage();
     void onAutoReplyClicked(int);
     void onLeveMinuteChanged(int);
+    void onScaleFactorChanged(int);
 
 private:
     QListWidget *_settingListWidget;

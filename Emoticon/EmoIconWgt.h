@@ -14,7 +14,7 @@ public:
 	EmoIcon(const QString& iconPath);
 	~EmoIcon();
 
-signals:
+Q_SIGNALS:
 	void clicked();
 
 public:

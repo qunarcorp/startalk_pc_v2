@@ -1,7 +1,7 @@
 ﻿#ifndef USERDAO_H
 #define USERDAO_H
 
-#include "sqlite/database.h"
+#include "DaoInterface.h"
 #include <vector>
 #include <memory>
 #include "../include/CommonStrcut.h"
@@ -12,13 +12,11 @@ namespace QTalk {
     }
 }
 
-class UserDao {
+class UserDao : public DaoInterface{
 public:
     explicit UserDao(qtalk::sqlite::database *sqlDb = nullptr);
-
-    bool creatTable();
-
-    bool clearData();
+    bool creatTable() override;
+    bool clearData() override;
 
 public:
     bool getUserVersion(int &version);
@@ -53,9 +51,6 @@ public:
     bool addColumn_03();
     void addColumn_04();
     void modDefaultValue_05();
-
-private:
-    qtalk::sqlite::database *_sqlDb;
 };
 
 #endif // USERDAO_H

@@ -6,6 +6,7 @@
 #include "Communication.h"
 #include "../Platform/NavigationManager.h"
 #include "../Platform/Platform.h"
+#include "../Platform/dbPlatForm.h"
 #include "../QtUtil/lib/cjson/cJSON_inc.h"
 #include <iostream>
 
@@ -20,23 +21,45 @@ HotLinesConfig::~HotLinesConfig()
 void HotLinesConfig::getVirtualUserRole(){
     std::ostringstream url;
     url << NavigationManager::instance().getHttpHost()
-        << "/qcadmin/getHotlineShopList.qunar"
-        << "?username=" << Platform::instance().getSelfUserId()
-        << "&host=" << Platform::instance().getSelfDomain()
-        << "&line=QTalk";
+        << "/admin/outer/qtalk/getHotlineList";
     std::string strUrl = url.str();
 
+    cJSON* obj = cJSON_CreateObject();
+    cJSON_AddStringToObject(obj, "username", Platform::instance().getSelfName().data());
+    cJSON_AddStringToObject(obj, "host", Platform::instance().getSelfDomain().data());
+    std::string postDta = QTalk::JSON::cJSON_to_string(obj);
+    cJSON_Delete(obj);
     //
-    auto callback = [this](int code, const std::string &responseData) {
-
+    std::set<std::string> hotlines;
+    auto callback = [this, &hotlines](int code, const std::string &responseData) {
         if (code == 200) {
-            LogicManager::instance()->getDatabase()->insertHotLine(responseData.c_str());
+            cJSON* json = cJSON_Parse(responseData.c_str());
+            if(nullptr == json)
+                error_log("error json {0}", responseData);
+
+            cJSON_bool ret = QTalk::JSON::cJSON_SafeGetBoolValue(json, "ret");
+            if(ret)
+            {
+                cJSON* data = cJSON_GetObjectItem(json, "data");
+                cJSON* allhotlines = cJSON_GetObjectItem(data, "allhotlines");
+
+
+                cJSON* item = nullptr;
+                cJSON_ArrayForEach(item, allhotlines) {
+                    if(item && cJSON_IsString(item))
+                        hotlines.insert(item->valuestring);
+                }
+            }
         }
     };
     if (_pComm) {
-        QTalk::HttpRequest req(strUrl, QTalk::RequestMethod::GET);
+        QTalk::HttpRequest req(strUrl, QTalk::RequestMethod::POST);
         req.header["Content-Type"] = "application/json;";
+        req.body = postDta;
         _pComm->addHttpRequest(req, callback);
+
+        if(!hotlines.empty())
+            dbPlatForm::instance().setHotLines(hotlines);
     }
 }
 
@@ -343,6 +366,30 @@ void HotLinesConfig::sendWechat(const QTalk::Entity::UID uid) {
         QTalk::HttpRequest req(strUrl, QTalk::RequestMethod::POST);
         req.header["Content-Type"] = "application/json;";
         req.body = postData;
+        _pComm->addHttpRequest(req, callback);
+    }
+}
+
+void HotLinesConfig::getHotLineMessageList(const std::string &xmppId) {
+
+    QTalk::Entity::JID jid(xmppId.data());
+
+    std::ostringstream url;
+    url << NavigationManager::instance().getHttpHost()
+        << "/robot/qtalk_robot/sendtips"
+        << "?rexian_id=" << jid.username()
+        << "&m_from=" << jid.barename()
+        << "&m_to=" << Platform::instance().getSelfXmppId();
+
+    auto callback = [this](int code, const std::string &responseData) {
+        if (code == 200) {
+
+        }
+    };
+
+    std::string strUrl = url.str();
+    if (_pComm) {
+        QTalk::HttpRequest req(strUrl);
         _pComm->addHttpRequest(req, callback);
     }
 }

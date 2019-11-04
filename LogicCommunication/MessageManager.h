@@ -16,6 +16,7 @@
 #include "../entity/im_group.h"
 #include "../Message/UselessMessage.h"
 #include "../Message/LogicBaseMessage.h"
+#include "../entity/im_user_status_medal.h"
 
 class CommMsgManager : public Object
 {
@@ -30,6 +31,7 @@ public:
 //	void OnRecvIQMessage(IQMessageEvt& e);
     // 登录失败消息
     void sendLoginErrMessage(const std::string& message);
+    void sendGetHistoryError();
     void sendGotStructure(bool ret);
     void sendSynOfflineSuccees();
 	void sendGotUserCard(const std::vector<QTalk::StUserCard> &userCard);
@@ -69,6 +71,8 @@ public:
 	//
 	void gotIncrementUser(const std::vector<QTalk::Entity::ImUserInfo> &arUserInfo,
 	        const std::vector<std::string> &arDeletes);
+
+	void onUserMadelChanged(const std::vector<QTalk::Entity::ImUserStatusMedal>& userMedals);
 };
 
 // 
@@ -122,7 +126,7 @@ class CommMsgListener :
         , public EventHandler<RecentSessionEvt>
         , public EventHandler<ContactsSessionEvt>
         , public EventHandler<UpdateMoodEvt>
-		,public EventHandler<GetQchatToken>
+		, public EventHandler<GetQchatToken>
 		, public EventHandler<ImageMessageEvt>
 		, public EventHandler<StartUpdaterEvt>
 		, public EventHandler<EmptyMessageEvt>
@@ -155,6 +159,15 @@ class CommMsgListener :
 		, public EventHandler<S_StaffChanged>
 		, public EventHandler<DestroyGroupRet>
 		, public EventHandler<S_AddHttpQeq>
+		, public EventHandler<HotLineMessageListEvt>
+		, public EventHandler<UpdateMsgExtendInfo>
+		, public EventHandler<GetHotLines>
+		, public EventHandler<CheckUpdaterEvt>
+		, public EventHandler<UserMedalEvt>
+		, public EventHandler<SgMedalListChanged>
+		, public EventHandler<SgUserMedalChanged>
+		, public EventHandler<GetMedalUserEvt>
+		, public EventHandler<ModifyUserMedalStatusEvt>
 
 {
 public:
@@ -255,7 +268,19 @@ public:
     void onEvent(DestroyGroupRet& e) override ;
     //
     void onEvent(S_AddHttpQeq& e) override ;
+    // 获取热线消问题列表
+    void onEvent(HotLineMessageListEvt& e) override ;
+    //
+    void onEvent(UpdateMsgExtendInfo& e) override ;
 
+    void onEvent(GetHotLines& e) override;
+    void onEvent(CheckUpdaterEvt& e) override;
+    void onEvent(UserMedalEvt& e) override;
+    //
+    void onEvent(SgMedalListChanged& e) override;
+    void onEvent(SgUserMedalChanged& e) override;
+    void onEvent(GetMedalUserEvt& e) override;
+    void onEvent(ModifyUserMedalStatusEvt& e) override;
 
 private:
 	Communication*       _pComm;

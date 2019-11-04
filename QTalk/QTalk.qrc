@@ -27,13 +27,25 @@
         <file>image1/atalk_50.png</file>
         <file>image1/atalk.png</file>
         <file>config/qt_zh_CN.qm</file>
-        <file>config/widgets.qm</file>
+        <file>config/widgets_zh_CN.qm</file>
         <file>config/english.qm</file>
+        <file>config/qtalk_en.qm</file>
         <file>qml/main.qml</file>
         <file>image1/radio_icon_normal.png</file>
         <file>image1/radio_icon_selected.png</file>
         <file>image1/checkbox_icon_uncheck.png</file>
         <file>image1/checkbox_icon_check.png</file>
+        <file>image1/medal_default.png</file>
+        <file>image1/file_type/audio.png</file>
+        <file>image1/file_type/excel.png</file>
+        <file>image1/file_type/pdf.png</file>
+        <file>image1/file_type/ppt.png</file>
+        <file>image1/file_type/process.png</file>
+        <file>image1/file_type/text.png</file>
+        <file>image1/file_type/unknown.png</file>
+        <file>image1/file_type/video.png</file>
+        <file>image1/file_type/word.png</file>
+        <file>image1/file_type/zip.png</file>
         <file>ttf/FZLTHJW.TTF</file>
         <file>ttf/FZLTZHJW.TTF</file>
     </qresource>

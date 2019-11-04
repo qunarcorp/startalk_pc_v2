@@ -32,7 +32,7 @@ private:
     void onScan();
     void onScanSuccess(const QString&);
 
-signals:
+Q_SIGNALS:
     void sgScanSuccess(const QString&);
 
 private:

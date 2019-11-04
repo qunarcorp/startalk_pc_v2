@@ -54,7 +54,7 @@ public:
         }
     }
 
-signals:
+Q_SIGNALS:
     void clicked();
 
 protected:

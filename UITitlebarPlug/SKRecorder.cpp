@@ -157,7 +157,7 @@ void SKRecorder::updateState() {
         case SKRecorderState_Input:
         {
             this->setStyleSheet("QFrame#SKBgFrame {background:#6B97EE;border-radius:4px;}");
-            _keyLabel->setText("设置快捷键");
+            _keyLabel->setText(tr("设置快捷键"));
             _keyLabel->setStyleSheet("QLabel#SKKeyLabel {font-size:12px;color:#bfbfbf;background:#FFFFFF;border-radius:"+QString::number(_contentFrame->height()/2.0)+"px;}");
             QPixmap btnIcon( ":/title/image1/btn_sk_cancel.png");
             _optionBtn->setHidden(false);

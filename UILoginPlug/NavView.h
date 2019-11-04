@@ -26,8 +26,9 @@ struct StNav {
 
 enum
 {
-    ITEM_DATA_NAME,
+    ITEM_DATA_NAME = Qt::UserRole + 1,
     ITEM_DATA_CHECKED,
+    ITEM_DATA_Link,
 };
 
 /**
@@ -40,8 +41,9 @@ public:
     NavItemDelegate();
     ~NavItemDelegate() override;
 
-signals:
+Q_SIGNALS:
     void itemClicked(const QString&);
+    void showDetail(const QString&);
 
 protected:
     void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
@@ -60,14 +62,11 @@ public:
     explicit NavMainView(const StNav& nav, QWidget* parnet = nullptr);
     ~NavMainView() override;
 
-public:
-    void setSelectState(bool selected);
-
 protected:
     bool eventFilter(QObject *o, QEvent *e) override;
 
-signals:
-    void selectSignal(const QString&);
+Q_SIGNALS:
+    void sgBack();
     void deleteSignal(const QString&);
     void navAddrChanged(const QString&, const QString&); // name, addr
     void navDebugChanged(const QString&, bool); // name, debug
@@ -77,10 +76,6 @@ private:
     QLineEdit* _pNameEdit;
     QLineEdit* _pHostEdit;
     QTextEdit* _pAddressEdit;
-
-    LinkButton* _pNavDetail;
-
-    QPushButton* _pChoseBtn;
     QPushButton* _pDeleteBtn;
 
 public:
@@ -101,11 +96,13 @@ public:
 public:
     bool checkName(const QString& name);
     void onItemClicked(const QString& name);
+    void onShowDetail(const QString& name);
 
-signals:
+Q_SIGNALS:
     void addItemSignal(const StNav&);
     void saveConfSignal();
     void addNavSinal(const QString &name, const QString &navAddr, const bool &isDebug);
+    void sgClose();
 
 private:
     void addItem(const StNav& stNav);
@@ -113,6 +110,7 @@ private:
     void onDeleteItem(const QString& name);
     void onNavAddrChanged(const QString& name, const QString& addr);
     void onNavDebugChanged(const QString& name, bool debug);
+    void onBack();
 
 private:
     QListView*  _itemView;
@@ -122,6 +120,7 @@ private:
     QStackedWidget*     _itemStackWgt;
 
     AddNavWnd*          _pAddNavWnd;
+    QFrame* _mainFrm;
 
 private:
     QMap<QString, NavMainView*> _mapMainView;
